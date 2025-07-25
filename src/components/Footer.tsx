@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
-import { Heart, MapPin, Phone, Mail } from 'lucide-react';
+import {  MapPin, Phone, Mail } from 'lucide-react';
 
 export function Footer() {
   return (

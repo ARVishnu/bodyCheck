@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { mockPatients, mockReport } from "../data/mockData";
 import { StatusPill } from "../components/StatusPill";
+import img1 from "/Images/main.png";
+import img2 from "/Images/liver_roi.png";
+import img3 from "/Images/abdominal_region.png";
 
 // Utility function for calcification risk category
 function getCalcificationRiskCategory(score: number): 'No CALC' | 'Low' | 'Medium' | 'High' {
@@ -381,16 +384,11 @@ export function SampleReport() {
                   CT Slice Analysis
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {["Axial Slice 1", "Axial Slice 2", "Axial Slice 3"].map(
-                    (slice, index) => (
+                  {[{img:img1 }, {img:img2 }, {img:img3}].map(
+                    (images, index) => (
                       <div key={index} className="text-center">
-                        <div className="bg-gray-100 rounded-lg h-48 mb-3 flex items-center justify-center">
-                          <div className="text-center">
-                            <Activity className="w-12 h-12 text-blue-600 mx-auto mb-2" />
-                            <div className="text-sm font-medium text-gray-900">
-                              {slice}
-                            </div>
-                          </div>
+                        <div className=" rounded-lg mb-3 flex items-center justify-center" style={{height:'24rem'}}>
+                            <img src={images.img} alt="" style={{width:'100%', height:'100%', objectFit:'contain'}} />
                         </div>
                         <p className="text-sm text-gray-600">
                           {index === 0 &&
