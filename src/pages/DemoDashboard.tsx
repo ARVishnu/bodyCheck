@@ -40,7 +40,7 @@ export function DemoDashboard() {
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.id.includes(searchTerm);
       const matchesCategory =
-        categoryFilter === "all" || patient.CACRiskCategory === categoryFilter;
+        categoryFilter === "all" || patient.CACScore === categoryFilter;
       const matchesStatus =
         statusFilter === "all" || patient.crmStatus === statusFilter;
 
@@ -429,12 +429,12 @@ export function DemoDashboard() {
                           <span className="text-sm font-medium">
                             {(() => {
                               const highRiskAbbrs = [
-                                patient.CACRiskCategory === "High" && "CAC",
-                                patient.AACRiskCategory === "High" && "AAC",
-                                patient.TACRiskCategory === "High" && "TAC",
-                                patient.AANCRiskCategory === "High" && "AAnC",
-                                patient.MACRiskCategory === "High" && "MAnC",
-                                patient.AVLCRiskCategory === "High" && "AVLC",
+                                getCalcificationRiskCategory(Number(patient.CACScore)) === "High" && "CAC",
+                                getCalcificationRiskCategory(Number(patient.AACScore)) === "High" && "AAC",
+                                getCalcificationRiskCategory(Number(patient.TACScore)) === "High" && "TAC",
+                                getCalcificationRiskCategory(Number(patient.AANCScore)) === "High" && "AAnC",
+                                getCalcificationRiskCategory(Number(patient.MACScore)) === "High" && "MAnC",
+                                getCalcificationRiskCategory(Number(patient.AVLCScore)) === "High" && "AVLC",
                               ].filter(Boolean);
 
                               const abbrToFull = {

@@ -68,18 +68,28 @@ export const HomePage: React.FC = () => {
     },
   ];
   const abdominalData = [
-    { label: "Liver Attenuation",  unit: "[HU]", value: 12.02 },
-    { label: "Bone Density at L1",  unit: "[HU]", value: 227.81 },
-    { label: "Abdominal Muscle Area at L3",  unit: "[cm²]", value: 185.55 },
-    { label: "Abdominal Muscle Quality at L3",  unit: "[HU]", value: 33.53 },
-    { label: "Abdominal Muscle Fat Area at L3",  unit: "[cm²]", value: 203.55 },
-    { label: "Abdominal Muscle Fat Density at L3",  unit: "[HU]", value: -89.34 },
-    { label: "Abdominal Subcutaneous Fat Area at L3",  unit: "[cm²]", value: 238.77 },
-    { label: "Abdominal Subcutaneous Fat Density at L3",  unit: "[HU]", value: -93.31 },
-    { label: "Abdominal Circumference at L3",  unit: "[cm]", value: 125.58 }
+    { label: "Liver Attenuation", unit: "[HU]", value: 12.02 },
+    { label: "Bone Density at L1", unit: "[HU]", value: 227.81 },
+    { label: "Abdominal Muscle Area at L3", unit: "[cm²]", value: 185.55 },
+    { label: "Abdominal Muscle Quality at L3", unit: "[HU]", value: 33.53 },
+    { label: "Abdominal Muscle Fat Area at L3", unit: "[cm²]", value: 203.55 },
+    {
+      label: "Abdominal Muscle Fat Density at L3",
+      unit: "[HU]",
+      value: -89.34,
+    },
+    {
+      label: "Abdominal Subcutaneous Fat Area at L3",
+      unit: "[cm²]",
+      value: 238.77,
+    },
+    {
+      label: "Abdominal Subcutaneous Fat Density at L3",
+      unit: "[HU]",
+      value: -93.31,
+    },
+    { label: "Abdominal Circumference at L3", unit: "[cm]", value: 125.58 },
   ];
-  
-  
 
   return (
     <div className="min-h-screen bg-white">
@@ -186,9 +196,7 @@ export const HomePage: React.FC = () => {
       <section className="py-16 bg-[#F5F7FA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-jacarta mb-4">
-              What We Do
-            </h2>
+            <h2 className="text-4xl font-bold text-jacarta mb-4">What We Do</h2>
             <p className="text-xl text-gray-600">
               Comprehensive AI-driven insights from your CT scans
             </p>
@@ -240,11 +248,10 @@ export const HomePage: React.FC = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-jacarta mb-4">
-              Body Check
-            </h2>
+            <h2 className="text-4xl font-bold text-jacarta mb-4">Body Check</h2>
             <p className="text-xl text-gray-600">
-              Advanced Image Processing for Precise Cardiovascular and Metabolic Health Analysis
+              Advanced Image Processing for Precise Cardiovascular and Metabolic
+              Health Analysis
             </p>
           </div>
 
@@ -268,7 +275,8 @@ export const HomePage: React.FC = () => {
                     Deep Learning Analysis
                   </h3>
                   <p className="text-geay-600">
-                    Our proprietary AI models were developed with leading experts and analyze CT images with unprecedented accuracy.
+                    Our proprietary AI models were developed with leading
+                    experts and analyze CT images with unprecedented accuracy.
                   </p>
                 </div>
                 {/* Card 2 */}
@@ -322,8 +330,82 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-{/* Path We Provide */}
+      {/* Path We Provide */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Choose Your Path
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Tailored solutions for healthcare providers, patients, and
+              researchers
+            </p>
+          </div>
 
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Providers */}
+            <div className="group cursor-pointer">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent group-hover:border-blue-200">
+                <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Stethoscope className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Providers
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Enhance patient care with AI-powered insights, comprehensive
+                  reports, and seamless integration into your workflow.
+                </p>
+                <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
+                  Learn More{" "}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+
+            {/* Patients */}
+            <div className="group cursor-pointer">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent group-hover:border-green-200">
+                <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <UserCheck className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Patients
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Take control of your health with detailed insights about your
+                  cardiovascular health and body composition.
+                </p>
+                <div className="flex items-center text-green-600 font-semibold group-hover:text-green-700">
+                  Get Started{" "}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+
+            {/* Researchers */}
+            <div className="group cursor-pointer">
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent group-hover:border-purple-200">
+                <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <FlaskConical className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Researchers
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Access powerful tools and datasets to advance cardiovascular
+                  and metabolic health research.
+                </p>
+                <div className="flex items-center text-purple-600 font-semibold group-hover:text-purple-700">
+                  Explore{" "}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Live Report & Dashboard Preview */}
       <section className="py-16 bg-[#F5F7FA]">
@@ -365,202 +447,199 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-            <div className="container mx-auto mt-20">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {activeReport === "cardiac" ? (
-                  <>
-                    {/* Cardiac Report Preview */}
+          <div className="container mx-auto mt-20">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {activeReport === "cardiac" ? (
+                <>
+                  {/* Cardiac Report Preview */}
 
-                    {[
-                      {
-                        title: "Raw CT Scan",
-                        description:
-                          "Original cardiac CT slice showing coronary arteries",
-                        video: video1,
-                      },
-                      {
-                        title: "AI Detection",
-                        description:
-                          "Automated Coronary Arteries and Aortic calcium identification and segmentation",
-                        video: video2,
-                      },
-                    ].map((item, index) => (
+                  {[
+                    {
+                      title: "Raw CT Scan",
+                      description:
+                        "Original cardiac CT slice showing coronary arteries",
+                      video: video1,
+                    },
+                    {
+                      title: "AI Detection",
+                      description:
+                        "Automated Coronary Arteries and Aortic calcium identification and segmentation",
+                      video: video2,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-6 text-center"
+                    >
                       <div
-                        key={index}
-                        className="bg-white rounded-lg p-6 text-center"
+                        className="bg-white rounded-lg mb-4 flex items-center justify-center"
+                        style={{ height: "28rem" }}
                       >
-                        <div
-                          className="bg-white rounded-lg mb-4 flex items-center justify-center"
-                          style={{ height: "28rem" }}
-                        >
-                          {item.video ? (
-                            <video
-                              src={item.video}
-                              autoPlay
-                              loop
-                              muted
-                              className="w-full h-full object-contain rounded-lg"
-                            />
-                          ) : (
-                            <Play className="w-16 h-16 text-gray-400" />
-                          )}
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        {item.video ? (
+                          <video
+                            src={item.video}
+                            autoPlay
+                            loop
+                            muted
+                            className="w-full h-full object-contain rounded-lg"
+                          />
+                        ) : (
+                          <Play className="w-16 h-16 text-gray-400" />
+                        )}
                       </div>
-                    ))}
-                    <div className="text-center">
-                      <div
-                        className="bg-white rounded-lg p-4 shadow-md flex flex-col border-t-8 border-bright-turquoise dark:border-bay-of-many relative overflow-hidden"
-                        style={{ height: "100%" }}
-                      >
-                        {/* Decorative Gradient Bar */}
-                        <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
-                          Agatston Score Breakdown by Artery
-                        </h3>
-                        <div className="flex-grow overflow-y-auto">
-                          <table className="w-full text-left text-sm rounded-lg overflow-hidden">
-                            <thead>
-                              <tr className="text-xs uppercase bg-blue-50 text-jacarta">
-                                <th className="py-2 px-2 font-bold"></th>
-                                <th className="py-2 px-2 font-bold">
-                                  Full Name
-                                </th>
-                                <th className="py-2 px-2 font-bold text-right">
-                                  Score
-                                </th>
-                                <th className="py-2 px-2 font-bold text-right">
-                                  Band
-                                </th>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </div>
+                  ))}
+                  <div className="text-center">
+                    <div
+                      className="bg-white rounded-lg p-4 shadow-md flex flex-col border-t-8 border-bright-turquoise dark:border-bay-of-many relative overflow-hidden"
+                      style={{ height: "100%" }}
+                    >
+                      {/* Decorative Gradient Bar */}
+                      <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
+                        Agatston Score Breakdown by Artery
+                      </h3>
+                      <div className="flex-grow overflow-y-auto">
+                        <table className="w-full text-left text-sm rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="text-xs uppercase bg-blue-50 text-jacarta">
+                              <th className="py-2 px-2 font-bold"></th>
+                              <th className="py-2 px-2 font-bold">Full Name</th>
+                              <th className="py-2 px-2 font-bold text-right">
+                                Score
+                              </th>
+                              <th className="py-2 px-2 font-bold text-right">
+                                Band
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {calciumScores.map((item, idx) => (
+                              <tr
+                                key={idx}
+                                className="border-b border-gray-200"
+                              >
+                                <td className="py-2 px-2 font-bold text-jacarta flex items-center gap-2 ">
+                                  {item.name}
+                                </td>
+                                <td className="py-2 px-2 text-gray-600 ">
+                                  {item.region}
+                                </td>
+                                <td className="py-2 px-2 text-right font-semibold text-gray-800 ">
+                                  {item.agatstonScore.toFixed(2)}
+                                </td>
+                                <td className="py-2 px-2 text-right ">
+                                  <span className="inline-block min-w-[3.5rem] text-xs font-semibold bg-bright-turquoise/10 dark:bg-bright-turquoise/20  rounded-full px-2 py-0.5">
+                                    {item.band}
+                                  </span>
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody>
-                              {calciumScores.map((item, idx) => (
-                                <tr
-                                  key={idx}
-                                  className="border-b border-gray-200"
-                                >
-                                  <td className="py-2 px-2 font-bold text-jacarta flex items-center gap-2 ">
-                                    {item.name}
-                                  </td>
-                                  <td className="py-2 px-2 text-gray-600 ">
-                                    {item.region}
-                                  </td>
-                                  <td className="py-2 px-2 text-right font-semibold text-gray-800 ">
-                                    {item.agatstonScore.toFixed(2)}
-                                  </td>
-                                  <td className="py-2 px-2 text-right ">
-                                    <span className="inline-block min-w-[3.5rem] text-xs font-semibold bg-bright-turquoise/10 dark:bg-bright-turquoise/20  rounded-full px-2 py-0.5">
-                                      {item.band}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Body Composition Report Preview */}
-                    <div className="text-center">
-                      <div
-                        className="bg-white rounded-lg p-4 shadow-md flex flex-col border-t-8 border-bright-turquoise dark:border-bay-of-many relative overflow-hidden"
-                        style={{ height: "100%" }}
-                      >
-                        {/* Decorative Gradient Bar */}
-                        <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
-                          Body Composition Analysis
-                        </h3>
-                        <div className="flex-grow overflow-y-auto">
-                          <table className="w-full text-left text-sm rounded-lg overflow-hidden">
-                            <thead>
-                              <tr className="text-xs uppercase bg-blue-50 text-jacarta">
-                                <th className="py-2 px-2 font-bold">
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Body Composition Report Preview */}
+                  <div className="text-center">
+                    <div
+                      className="bg-white rounded-lg p-4 shadow-md flex flex-col border-t-8 border-bright-turquoise dark:border-bay-of-many relative overflow-hidden"
+                      style={{ height: "100%" }}
+                    >
+                      {/* Decorative Gradient Bar */}
+                      <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
+                        Body Composition Analysis
+                      </h3>
+                      <div className="flex-grow overflow-y-auto">
+                        <table className="w-full text-left text-sm rounded-lg overflow-hidden">
+                          <thead>
+                            <tr className="text-xs uppercase bg-blue-50 text-jacarta">
+                              <th className="py-2 px-2 font-bold">
                                 Clinical Parameter
-                                </th>
-                                <th className="py-2 px-2 font-bold text-right">
-                                  Unit
-                                </th>
-                                <th className="py-2 px-2 font-bold text-right">
-                                  Score
-                                </th>
+                              </th>
+                              <th className="py-2 px-2 font-bold text-right">
+                                Unit
+                              </th>
+                              <th className="py-2 px-2 font-bold text-right">
+                                Score
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {abdominalData.map((item, idx) => (
+                              <tr
+                                key={idx}
+                                className="border-b border-gray-200"
+                              >
+                                <td className="py-2 px-2 text-gray-600 ">
+                                  {item.label}
+                                </td>
+                                <td className="py-2 px-2 text-right font-semibold text-gray-800 ">
+                                  {item.unit}
+                                </td>
+                                <td className="py-2 px-2 text-right ">
+                                  <span className="inline-block min-w-[3.5rem] text-xs font-semibold bg-bright-turquoise/10 dark:bg-bright-turquoise/20  rounded-full px-2 py-0.5">
+                                    {item.value}
+                                  </span>
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody>
-                              {abdominalData.map((item, idx) => (
-                                <tr
-                                  key={idx}
-                                  className="border-b border-gray-200"
-                                >
-
-                                  <td className="py-2 px-2 text-gray-600 ">
-                                    {item.label}
-                                  </td>
-                                  <td className="py-2 px-2 text-right font-semibold text-gray-800 ">
-                                    {item.unit}
-                                  </td>
-                                  <td className="py-2 px-2 text-right ">
-                                    <span className="inline-block min-w-[3.5rem] text-xs font-semibold bg-bright-turquoise/10 dark:bg-bright-turquoise/20  rounded-full px-2 py-0.5">
-                                      {item.value}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                    {[
-                      {
-                        title: "Original CT Slice",
-                        description:
-                          "Axial CT image at L3 used as the anatomical reference for body composition assessment.",
-                        video: video1,
-                      },
-                      {
-                        title: "AI-Segmented Output",
-                        description:
-                          "Automated segmentation of muscle and fat compartments for accurate metabolic pro",
-                        video: video3,
-                      },
-                    ].map((item, index) => (
+                  </div>
+                  {[
+                    {
+                      title: "Original CT Slice",
+                      description:
+                        "Axial CT image at L3 used as the anatomical reference for body composition assessment.",
+                      video: video1,
+                    },
+                    {
+                      title: "AI-Segmented Output",
+                      description:
+                        "Automated segmentation of muscle and fat compartments for accurate metabolic pro",
+                      video: video3,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg p-6 text-center"
+                    >
                       <div
-                        key={index}
-                        className="bg-white rounded-lg p-6 text-center"
+                        className="bg-white rounded-lg mb-4 flex items-center justify-center"
+                        style={{ height: "28rem" }}
                       >
-                        <div
-                          className="bg-white rounded-lg mb-4 flex items-center justify-center"
-                          style={{ height: "28rem" }}
-                        >
-                          {item.video ? (
-                            <video
-                              src={item.video}
-                              autoPlay
-                              loop
-                              muted
-                              className="w-full h-full object-contain rounded-lg"
-                            />
-                          ) : (
-                            <Play className="w-16 h-16 text-gray-400" />
-                          )}
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-gray-600">{item.description}</p>
+                        {item.video ? (
+                          <video
+                            src={item.video}
+                            autoPlay
+                            loop
+                            muted
+                            className="w-full h-full object-contain rounded-lg"
+                          />
+                        ) : (
+                          <Play className="w-16 h-16 text-gray-400" />
+                        )}
                       </div>
-                    ))}
-                  </>
-                )}
-              </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
+        </div>
       </section>
 
       {/* How It Works */}
@@ -606,12 +685,17 @@ export const HomePage: React.FC = () => {
                   "Healthcare professionals review and track patient progress",
               },
             ].map((item, index) => (
-              <div key={index} className="text-center relative" >
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-[#D9E2EC]" style={{height: "100%"}}>
+              <div key={index} className="text-center relative">
+                <div
+                  className="bg-white rounded-xl p-6 shadow-sm border border-[#D9E2EC]"
+                  style={{ height: "100%" }}
+                >
                   <div className="bg-[#002F6C] text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                     {item.step}
                   </div>
-                  <div className="text-[#00B8A9] mb-4 flex justify-center">{item.icon}</div>
+                  <div className="text-[#00B8A9] mb-4 flex justify-center">
+                    {item.icon}
+                  </div>
                   <h3 className="text-lg font-semibold text-jacarta mb-2">
                     {item.title}
                   </h3>
@@ -690,7 +774,9 @@ export const HomePage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-[#002F6C] mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-[#002F6C]/70 text-sm">{feature.description}</p>
+                <p className="text-[#002F6C]/70 text-sm">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
