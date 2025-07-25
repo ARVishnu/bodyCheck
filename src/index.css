@@ -1,0 +1,13 @@
+:root {
+  --dodger-blue: #336cf3;
+  --turquoise: #2ad7c5;
+  --cloud-burst: #242c64;
+  --bright-turquoise: #2cf4b4;
+  --jacarta: #282c64;
+  --calypso: #2c6088;
+  --bay-of-many: #2c2c8c;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
