@@ -16,12 +16,13 @@ import { StatusPill } from "../components/StatusPill";
 import { Patient } from "../types";
 
 // Utility function for calcification risk category
-function getCalcificationRiskCategory(score: number): 'No CALC' | 'Low' | 'Medium' | 'High' {
-  if (score === 0) return 'No CALC';
-  if (score <= 100) return 'Low';
-  if (score <= 200) return 'Medium';
-  if (score <= 300) return 'High';
-  return 'High';
+function getCalcificationRiskCategory(
+  score: number
+): "Low" | "Medium" | "High" {
+  if (score <= 100) return "Low";
+  if (score <= 200) return "Medium";
+  if (score <= 300) return "High";
+  return "High";
 }
 
 export function DemoDashboard() {
@@ -34,15 +35,18 @@ export function DemoDashboard() {
     "cardiac"
   );
 
+  // Filter and sort for mockPatients (cardiac/calcification)
   const filteredAndSortedPatients = useMemo(() => {
     let filtered = mockPatients.filter((patient) => {
       const matchesSearch =
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.id.includes(searchTerm);
+      // Fix: Match categoryFilter to risk level, not exact CACScore number
       const matchesCategory =
-        categoryFilter === "all" || patient.CACScore === categoryFilter;
+        categoryFilter === "all" ||
+        patient.highRiskLevel === categoryFilter;
       const matchesStatus =
-        statusFilter === "all" || patient.crmStatus === statusFilter;
+        statusFilter === "all" || patient.careStatus === statusFilter;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -55,12 +59,58 @@ export function DemoDashboard() {
       if (typeof bValue === "string") bValue = bValue.toLowerCase();
 
       if (sortDirection === "asc") {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        return aValue && bValue && aValue < bValue
+          ? -1
+          : aValue && bValue && aValue > bValue
+          ? 1
+          : 0;
       } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        return aValue && bValue && aValue > bValue
+          ? -1
+          : aValue && bValue && aValue < bValue
+          ? 1
+          : 0;
       }
     });
   }, [searchTerm, categoryFilter, statusFilter, sortColumn, sortDirection]);
+
+  // Filter and sort for bodyCompositionData (body composition)
+  const filteredAndSortedBodyComposition = useMemo(() => {
+    let filtered = mokeBodyCompositionData.filter((patient) => {
+      const matchesSearch =
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.id.includes(searchTerm);
+      // For body composition, categoryFilter could be used for a risk band if available, or just "all"
+      // If you want to filter by a specific field, adjust here. For now, just support "all"
+      const matchesCategory = categoryFilter === "all";
+      const matchesStatus =
+        statusFilter === "all" || patient.careStatus === statusFilter;
+
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+
+    return filtered.sort((a, b) => {
+      let aValue = a[sortColumn as keyof typeof a];
+      let bValue = b[sortColumn as keyof typeof b];
+
+      if (typeof aValue === "string") aValue = aValue.toLowerCase();
+      if (typeof bValue === "string") bValue = bValue.toLowerCase();
+
+      if (sortDirection === "asc") {
+        return aValue && bValue && aValue < bValue
+          ? -1
+          : aValue && bValue && aValue > bValue
+          ? 1
+          : 0;
+      } else {
+        return aValue && bValue && aValue > bValue
+          ? -1
+          : aValue && bValue && aValue < bValue
+          ? 1
+          : 0;
+      }
+    });
+  }, [mokeBodyCompositionData, searchTerm, categoryFilter, statusFilter, sortColumn, sortDirection]);
 
   const handleSort = (column: keyof Patient) => {
     if (sortColumn === column) {
@@ -73,18 +123,18 @@ export function DemoDashboard() {
 
   const stats = {
     total: mockPatients.length,
-    pending: mockPatients.filter((p) => p.crmStatus === "Needs Review").length,
+    pending: mockPatients.filter((p) => p.careStatus === "Needs Review").length,
     highRisk: mockPatients.filter(
       (p) => p.highRiskLevel === "High" || p.highRiskLevel === "Very High"
     ).length,
     completed: mockPatients.filter(
       (p) =>
-        p.crmStatus === "No Review Needed" ||
-        p.crmStatus === "Appointment Scheduled"
+        p.careStatus === "No Review Needed" ||
+        p.careStatus === "Appointment Scheduled"
     ).length,
   };
 
-  const bodyCompositionData = mokeBodyCompositionData;
+  // const bodyCompositionData = mokeBodyCompositionData;
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -223,17 +273,16 @@ export function DemoDashboard() {
                 </div>
 
                 {/* Category Filter */}
-                <select
+                {/* <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="all">All Categories</option>
-                  <option value="Minimal">Minimal</option>
-                  <option value="Mild">Mild</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="Severe">Severe</option>
-                </select>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select> */}
 
                 {/* Status Filter */}
                 <select
@@ -272,7 +321,7 @@ export function DemoDashboard() {
                         // Remove Agatston Score column, keep new columns
                         {
                           key: "coronary",
-                          label: "Coronary Arteries Calcium",
+                          label: "Coronary Artery Calcium",
                         },
                         { key: "abdominal", label: "Abdominal Aortic Calcium" },
                         { key: "thoracic", label: "Thoracic Aortic Calcium" },
@@ -286,15 +335,15 @@ export function DemoDashboard() {
                         },
                         {
                           key: "aorticValveLeaflets",
-                          label: "Aortic Valve Leaflets Calcium",
+                          label: "Aortic Valve Calcium",
                         },
                         {
                           key: "Cardiothoracic Ratio",
-                          label: "Cardiothoracic Ratio",
+                          label: "Cardiothoracic Ratio (LINEAR)",
                         },
                         { key: "highRiskLevel", label: "High Risk" },
                         { key: "Known CVD", label: "Known CVD" },
-                        { key: "crmStatus", label: "CRM Status" },
+                        { key: "careStatus", label: "Care Status" },
                       ].map((column) => (
                         <th
                           key={column.key}
@@ -333,108 +382,151 @@ export function DemoDashboard() {
                         {/* For each new column, show labeled Agatston Score and Band */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.CACScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.CACScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.CACScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.CACScore))}
-                            type="Risk Category"
-                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.AACScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.AACScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.AACScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.AACScore))}
-                            type="Risk Category"
-                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.TACScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.TACScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.TACScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.TACScore))}
-                            type="Risk Category"
-                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.AANCScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.AANCScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.AANCScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.AANCScore))}
-                            type="Risk Category"
-                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.MACScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.MACScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.MACScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.MACScore))}
-                            type="Risk Category"
-                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Score:
-                          </span>
-                          <span className="font-bold">
-                            {Math.round(Number(patient.AVLCScore))}
+                            Score:{" "}
+                            <b className="text-black">
+                              {Math.round(Number(patient.AVCScore))}
+                            </b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Risk Category:
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={getCalcificationRiskCategory(
+                                Number(patient.AVCScore)
+                              )}
+                              type="Risk Category"
+                            />
                           </span>
-                          <StatusPill
-                            status={getCalcificationRiskCategory(Number(patient.AVLCScore))}
-                            type="Risk Category"
-                          />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span>{patient.cardiothoracicRatio}</span>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
+                          <span className="block text-xs text-gray-500">
+                            Score:{" "}
+                            <b className="text-black">
+                              {patient.cardiothoracicRatio}
+                            </b>
+                          </span>
+                          <span className="block text-xs text-gray-500 mt-1">
+                            Risk Category:{" "}
+                            <StatusPill
+                              status={
+                                patient.cardiothoracicRatio < 0.5
+                                  ? "Normal"
+                                  : patient.cardiothoracicRatio >= 0.5 &&
+                                    patient.cardiothoracicRatio < 0.56
+                                  ? "Borderline"
+                                  : "High"
+                              }
+                              type="ct_ratio"
+                            />
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {/* <StatusPill status={patient.highRiskLevel} type="risk" /> */}
                           <span className="text-sm font-medium">
                             {(() => {
                               const highRiskAbbrs = [
-                                getCalcificationRiskCategory(Number(patient.CACScore)) === "High" && "CAC",
-                                getCalcificationRiskCategory(Number(patient.AACScore)) === "High" && "AAC",
-                                getCalcificationRiskCategory(Number(patient.TACScore)) === "High" && "TAC",
-                                getCalcificationRiskCategory(Number(patient.AANCScore)) === "High" && "AAnC",
-                                getCalcificationRiskCategory(Number(patient.MACScore)) === "High" && "MAnC",
-                                getCalcificationRiskCategory(Number(patient.AVLCScore)) === "High" && "AVLC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.CACScore)
+                                ) === "High" && "CAC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.AACScore)
+                                ) === "High" && "AAC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.TACScore)
+                                ) === "High" && "TAC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.AANCScore)
+                                ) === "High" && "AAnC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.MACScore)
+                                ) === "High" && "MAnC",
+                                getCalcificationRiskCategory(
+                                  Number(patient.AVCScore)
+                                ) === "High" && "AVC",
                               ].filter(Boolean);
 
                               const abbrToFull = {
@@ -443,7 +535,7 @@ export function DemoDashboard() {
                                 TAC: "Thoracic Aorta Calcium",
                                 AANC: "Aortic Annulus Calcium",
                                 MAC: "Mitral Annulus Calcium",
-                                AVLC: "Aortic Valve Leaflet Calcium",
+                                AVC: "Aortic Valve Calcium",
                               };
 
                               if (highRiskAbbrs.length === 0) return "-";
@@ -476,7 +568,10 @@ export function DemoDashboard() {
                           <span>{patient.knownCVD}</span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <StatusPill status={patient.crmStatus} type="crm" />
+                          <StatusPill
+                            status={patient.careStatus}
+                            type="careStatus"
+                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
@@ -515,7 +610,7 @@ export function DemoDashboard() {
                 </div>
 
                 {/* Category Filter */}
-                <select
+                {/* <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -525,7 +620,7 @@ export function DemoDashboard() {
                   <option value="Mild">Mild</option>
                   <option value="Moderate">Moderate</option>
                   <option value="Severe">Severe</option>
-                </select>
+                </select> */}
 
                 {/* Status Filter */}
                 <select
@@ -566,7 +661,7 @@ export function DemoDashboard() {
                           key: "coronary",
                           label: "Liver Attenuation",
                         },
-                        { key: "abdominal", label: "Bone Density at L1" },
+                        { key: "abdominal", label: "L1 Bone Attenuation" },
                         { key: "thoracic", label: "Abdominal Muscle" },
                         {
                           key: "aorticAnnulus",
@@ -580,13 +675,7 @@ export function DemoDashboard() {
                           key: "aorticValveLeaflets",
                           label: "Abdominal Circumference at L1",
                         },
-                        {
-                          key: "Cardiothoracic Ratio",
-                          label: "Cardiothoracic Ratio",
-                        },
-                        { key: "highRiskLevel", label: "High Risk" },
-                        { key: "knownCVD", label: "Known CVD" },
-                        { key: "crmStatus", label: "Status" },
+                        { key: "careStatus", label: "Care Status" },
                       ].map((column) => (
                         <th
                           key={column.key}
@@ -611,7 +700,7 @@ export function DemoDashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {bodyCompositionData.map((patient) => (
+                    {filteredAndSortedBodyComposition.map((patient) => (
                       <tr key={patient.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {patient.id}
@@ -625,93 +714,64 @@ export function DemoDashboard() {
                         {/* For each new column, show labeled Agatston Score and Band */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500 mt-1">
-                            Area(cm^2):
-                          </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.liverAttenuation}
+                            HU:
+                            <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                              {patient.liverAttenuation}
+                            </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500 mt-1">
-                            Area(cm^2):
-                          </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.boneDensity}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                          <span className="block text-xs text-gray-500">
-                            Area(cm^2):
-                          </span>
-                          <span className="font-bold">
-                            {patient.abdominalMuscleArea}
-                          </span>
-                          <span className="block text-xs text-gray-500 mt-1">
-                            Quality(HU):
-                          </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.abdominalMuscleQuality}
+                            HU:
+                            <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                              {patient.boneDensity}
+                            </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Area(cm^2):
-                          </span>
-                          <span className="font-bold">
-                            {patient.abdominalMuscleFatArea}
+                            Area(cm²): <b className="text-black">{patient.abdominalMuscleArea}</b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Quality(HU):
+                            Attenuation(HU):
+                            <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                              {patient.abdominalMuscleQuality}
+                            </span>
                           </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
+                          <span className="block text-xs text-gray-500">
+                            Area(cm²): <b className="text-black">{patient.abdominalMuscleFatArea}</b>
+                          </span>
+                          <span className="block text-xs text-gray-500 mt-1">
+                            Attenuation(HU): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
                             {patient.abdominalMuscleFatQuality}
                           </span>
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Area(cm^2):
-                          </span>
-                          <span className="font-bold">
-                            {patient.abdominalSubcutaneousFatArea}
+                            Area(cm²): <b className="text-black">{patient.abdominalSubcutaneousFatArea}</b>
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
-                            Quality(HU):
-                          </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                            Attenuation(HU): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
                             {patient.abdominalSubcutaneousFatQuality}
+                          </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                            Area(cm^2):
-                          </span>
-                          <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                              Length(cm): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
                             {patient.abdominalCircumferenceAtL1}
                           </span>
+                          </span>
                         </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <StatusPill
-                            status={
-                              patient.cardiothoracicRatio < 0.5
-                                ? "Low"
-                                : patient.cardiothoracicRatio < 0.56
-                                ? "Medium"
-                                : "High"
-                            }
-                            type="Risk Category"
+                            status={patient.careStatus}
+                            type="careStatus"
                           />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <StatusPill
-                            status={patient.highRiskLevel}
-                            type="risk"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span>{patient.knownCVD}</span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <StatusPill status={patient.crmStatus} type="crm" />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">

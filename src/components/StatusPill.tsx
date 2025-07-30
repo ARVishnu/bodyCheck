@@ -1,6 +1,6 @@
 interface StatusPillProps {
   status: 'Minimal' | 'Mild' | 'Moderate' | 'Severe' | 'Low' | 'Moderate' | 'High' | 'Very High' | string;
-  type?: 'Risk Category' | 'risk' | 'crm';
+  type?: 'Risk Category' | 'risk' | 'careStatus' | 'ct_ratio';
 }
 
 export function StatusPill({ status, type = 'Risk Category' }: StatusPillProps) {
@@ -31,7 +31,7 @@ export function StatusPill({ status, type = 'Risk Category' }: StatusPillProps) 
           return 'bg-jacarta text-bright-turquoise border-calypso';
       }
     }
-     else if (type === 'crm') {
+     else if (type === 'careStatus') {
       switch (status) {
         case 'Needs Review':
           return 'bg-yellow-500 text-white';
@@ -41,6 +41,15 @@ export function StatusPill({ status, type = 'Risk Category' }: StatusPillProps) 
           return 'bg-red-500 text-white';
         case 'Appointment Scheduled':
           return 'bg-green-500 text-white';
+      }
+    }else if (type === 'ct_ratio') {
+      switch (status) {
+        case 'Normal':
+          return 'bg-green-500 text-white';
+        case 'Borderline':
+          return 'bg-yellow-500 text-white';
+        case 'High':
+          return 'bg-red-500 text-white';
       }
     }
   };

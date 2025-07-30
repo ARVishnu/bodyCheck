@@ -15,14 +15,29 @@ export interface Patient {
   cardiothoracicRatio: number;
   highRiskLevel: 'Low' | 'Moderate' | 'High' | 'Very High';
   knownCVD: 'Yes' | 'No';
-  crmStatus: 'Needs Review' | 'No Review Needed' | 'PCP and Patient Notified' | 'Appointment Scheduled';
+  careStatus: 'Needs Review' | 'No Review Needed' | 'PCP and Patient Notified' | 'Appointment Scheduled';
   notes?: string;
   CACScore:number;
   AACScore:number;
   TACScore:number;
   AANCScore:number;
   MACScore:number;
-  AVLCScore:number;
+  AVCScore:number;
+}
+export interface BodyCompositionData {
+  id: string;
+  name: string;
+  examDate: string;
+  careStatus: 'Needs Review' | 'No Review Needed' | 'PCP and Patient Notified' | 'Appointment Scheduled';
+  liverAttenuation: number;
+  boneDensity: number;
+  abdominalMuscleArea: number;
+  abdominalMuscleQuality: number;
+  abdominalMuscleFatArea: number;
+  abdominalMuscleFatQuality: number;
+  abdominalSubcutaneousFatArea: number;
+  abdominalSubcutaneousFatQuality: number;
+  abdominalCircumferenceAtL1: number;
 }
 
 export interface Report {

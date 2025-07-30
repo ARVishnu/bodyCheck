@@ -8,12 +8,15 @@ import { LoginPage } from './pages/LoginPage';
 import { Dashboard } from './pages/Dashboard';
 import { DemoDashboard } from './pages/DemoDashboard';
 import { ReportPage } from './pages/ReportPage';
-import { SampleReport } from './pages/SampleReport';
 import { UploadPage } from './pages/UploadPage';
 import { AIPipelinePage } from './pages/AIPipelinePage';
 import { DocumentationPage } from './pages/DocumentationPage';
 import { ContactPage } from './pages/ContactPage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { ProvidersPage } from './pages/ProvidersPage';
+import { PatientsPage } from './pages/PatientsPage';
+import { ResearchersPage } from './pages/ResearchersPage';
+import { SampleReport } from './pages/SampleReport';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -37,6 +40,9 @@ function AppContent() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<PrivacyPage />} />
           <Route path="/disclaimer" element={<PrivacyPage />} />
+          <Route path="/providers" element={<ProvidersPage />} />
+          <Route path="/patients" element={<PatientsPage />} />
+          <Route path="/researchers" element={<ResearchersPage />} />
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={
