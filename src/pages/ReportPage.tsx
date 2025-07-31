@@ -132,11 +132,11 @@ export function ReportPage() {
                         <th className="text-left py-2 font-medium text-gray-900">Full Name</th>
                         {/* Replace with new columns and labels */}
                         <th className="text-right py-2 font-medium text-gray-900">Coronary Arteries Calcification</th>
-                        <th className="text-right py-2 font-medium text-gray-900">Abdominal Aortic Calcium</th>
-                        <th className="text-right py-2 font-medium text-gray-900">Thoracic Aortic Calcium</th>
-                        <th className="text-right py-2 font-medium text-gray-900">Aortic Annulus Calcium</th>
-                        <th className="text-right py-2 font-medium text-gray-900">Mitral Annulus Calcium</th>
-                        <th className="text-right py-2 font-medium text-gray-900">Aortic Valve Leaflets Calcium</th>
+                        <th className="text-right py-2 font-medium text-gray-900">Abdominal Aortic Calcification</th>
+                        <th className="text-right py-2 font-medium text-gray-900">Thoracic Aortic Calcification</th>
+                        <th className="text-right py-2 font-medium text-gray-900">Aortic Annulus Calcification</th>
+                        <th className="text-right py-2 font-medium text-gray-900">Mitral Annulus Calcification</th>
+                        <th className="text-right py-2 font-medium text-gray-900">Aortic Valve Leaflets Calcification</th>
                         <th className="text-right py-2 font-medium text-gray-900">Percentage</th>
                       </tr>
                     </thead>

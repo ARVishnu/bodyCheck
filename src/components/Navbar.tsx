@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Heart, Menu, X, User, LogOut, Shield, Stethoscope, UserCog } from 'lucide-react';
+import { bodyCheckLogoDark } from '../assets/images';
 
 export function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -26,6 +27,7 @@ export function Navbar() {
 
   const publicLinks = [
     { to: '/', label: 'Home' },
+    { to: '/homeV2', label: 'Home V2' },
     { to: '/demo-dashboard', label: 'Demo Dashboard' },
     { to: '/sample-report', label: 'Sample Report' },
     // { to: '/ai-pipeline', label: 'AI Pipeline' },
@@ -51,7 +53,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 text-bright-turquoise font-bold text-xl">
-           <img style={{width:'250px'}} src="/Images/BodyCheck_Dark.svg" alt="BodyCheck Logo" />
+           <img style={{width:'250px'}} src={bodyCheckLogoDark} alt="BodyCheck Logo" />
           </Link>
 
           {/* Desktop Navigation */}

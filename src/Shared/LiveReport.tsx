@@ -1,8 +1,6 @@
 import { Play, Heart, Activity } from "lucide-react";
 import { useState } from "react";
-import video1 from "../Videos/case141_original.mp4";
-import video2 from "../Videos/case141_seg.mp4";
-import video3 from "../Videos/case141_segBody.mp4";
+  import { case141_original, case141_seg, case141_segBody } from "../assets";
 
 
 
@@ -13,37 +11,37 @@ const LiveReport = () => {
   const calciumScores = [
     {
       name: "CAC",
-      region: "Coronary Arteries Calcium",
+      region: "Coronary Arteries Calcification",
       agatstonScore: 366.684048,
       band: 3,
     },
     {
       name: "AAC",
-      region: "Abdominal Aortic Calcium",
+      region: "Abdominal Aortic Calcification",
       agatstonScore: 222.041725,
       band: 3,
     },
     {
       name: "TAC",
-      region: "Thoracic Aortic Calcium",
+      region: "Thoracic Aortic Calcification",
       agatstonScore: 2410.938858,
       band: 4,
     },
     {
       name: "AAC",
-      region: "Aortic Annulus Calcium",
+      region: "Aortic Annulus Calcification",
       agatstonScore: 1036.311459,
       band: 4,
     },
     {
       name: "MAC",
-      region: "Mitral Annulus Calcium",
+      region: "Mitral Annulus Calcification",
       agatstonScore: 287.883751,
       band: 3,
     },
     {
       name: "AVLC",
-      region: "Aortic Valve Leaflets Calcium",
+      region: "Aortic Valve Calcification",
       agatstonScore: 558.256325,
       band: 4,
     },
@@ -77,7 +75,7 @@ const LiveReport = () => {
       <section className="py-16 bg-[#F5F7FA]">
         <div className=" mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-jacarta mb-4">
+            <h2 className="text-4xl lg:text-5xl font-bold text-jacarta mb-6">
               Live Report & Dashboard Preview
             </h2>
             <p className="text-xl text-gray-600">
@@ -124,13 +122,13 @@ const LiveReport = () => {
                       title: "Raw CT Scan",
                       description:
                         "Original cardiac CT slice showing coronary arteries",
-                      video: video1,
+                      video: case141_original,
                     },
                     {
                       title: "AI Detection",
                       description:
                         "Automated Coronary Arteries and Aortic calcium identification and segmentation",
-                      video: video2,
+                      video: case141_seg,
                     },
                   ].map((item, index) => (
                     <div
@@ -266,13 +264,13 @@ const LiveReport = () => {
                       title: "Original CT Slice",
                       description:
                         "Axial CT image at L3 used as the anatomical reference for body composition assessment.",
-                      video: video1,
+                      video: case141_original,
                     },
                     {
                       title: "AI-Segmented Output",
                       description:
                         "Automated segmentation of muscle and fat compartments for accurate metabolic pro",
-                      video: video3,
+                      video: case141_segBody,
                     },
                   ].map((item, index) => (
                     <div

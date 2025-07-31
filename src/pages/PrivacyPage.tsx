@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Shield, Lock, Eye, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 export function PrivacyPage() {

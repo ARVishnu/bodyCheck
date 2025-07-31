@@ -12,11 +12,13 @@ import {
 } from "lucide-react";
 import { mockPatients, mokeBodyCompositionData } from "../data/mockData";
 import { StatusPill } from "../components/StatusPill";
-import img1 from "/Images/main.png";
-import img2 from "/Images/liver_roi.png";
-import img3 from "/Images/abdominal_region.png";
-import ctr from "/Images/ctr.png";
-import ctr2 from "/Images/ctr2.png";
+import {
+  abdominal_region,
+  ctr,
+  ctr2,
+  elliptical_trabecular_region,
+  liver_roi,
+} from "../assets/images";
 
 // Utility function for calcification risk category
 function getCardiovascularRiskCategory(
@@ -36,9 +38,7 @@ function getBodyCompositionRiskCategory(
   if (score >= 75) return "High";
   return "High";
 }
-function getBodyCompositionArea(
-  score: number
-): "Low" | "Medium" | "High" {
+function getBodyCompositionArea(score: number): "Low" | "Medium" | "High" {
   if (score < 100) return "Low";
   if (score < 250) return "Medium";
   if (score >= 250) return "High";
@@ -51,6 +51,107 @@ export function SampleReport() {
   const patient = mockPatients[0]; // Use first patient as sample
   const bodyCompositionData = mokeBodyCompositionData[0];
   const [activeReport, setActiveReport] = useState("cardiac");
+
+  // Reference ranges array structure
+  const referenceRanges = {
+    cardiac: [
+      {
+        title: "Cardiothoracic Ratio",
+        ranges: [
+          { label: "Normal", range: "< 0.521", color: "bg-green-500" },
+          {
+            label: "Borderline",
+            range: "0.521 - 0.561",
+            color: "bg-yellow-400",
+          },
+          { label: "High", range: "≥ 0.561", color: "bg-red-500" },
+        ],
+      },
+      {
+        title: "Calcification Scores",
+        ranges: [
+          { label: "Low", range: "< 100", color: "bg-green-500" },
+          { label: "Medium", range: "100 - 400", color: "bg-yellow-400" },
+          { label: "High", range: "> 400", color: "bg-red-500" },
+        ],
+      },
+    ],
+    body: [
+      {
+        title: "Liver Attenuation",
+        ranges: [
+          { label: "Low", range: "< 40", color: "bg-red-500" },
+          { label: "Medium", range: "40 - 49", color: "bg-yellow-400" },
+          { label: "High", range: "≥ 50", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "L1 Bone Attenuation",
+        ranges: [
+          { label: "Low", range: "< 120", color: "bg-red-500" },
+          { label: "Medium", range: "120 - 160", color: "bg-yellow-400" },
+          { label: "High", range: "≥ 160", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Muscle Area",
+        ranges: [
+          { label: "Low", range: "< 100", color: "bg-red-500" },
+          { label: "Medium", range: "100 - 150", color: "bg-yellow-400" },
+          { label: "High", range: "> 150", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Muscle Attenuation",
+        ranges: [
+          { label: "Low", range: "< 30", color: "bg-red-500" },
+          { label: "Medium", range: "30 - 40", color: "bg-yellow-400" },
+          { label: "High", range: "≥ 40", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Muscle Fat Area",
+        ranges: [
+          { label: "High", range: "> 45", color: "bg-red-500" },
+          { label: "Medium", range: "25 - 45", color: "bg-yellow-400" },
+          { label: "Low", range: "< 45", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Muscle Fat Attenuation",
+        ranges: [
+          { label: "Low", range: "< -100", color: "bg-red-500" },
+          { label: "Medium", range: "-100 - -50", color: "bg-yellow-400" },
+          { label: "High", range: "≥ -50", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Subcutaneous Fat Area",
+        ranges: [
+          { label: "Low", range: "< 100", color: "bg-red-500" },
+          { label: "Medium", range: "100 - 200", color: "bg-yellow-400" },
+          { label: "High", range: "> 200", color: "bg-green-500" },
+        ],
+      },
+      {
+        title: "Abdominal Subcutaneous Fat Attenuation",
+        ranges: [
+          { label: "Low", range: "< -110", color: "bg-green-500" },
+          { label: "Medium", range: "-100 - -90", color: "bg-yellow-400" },
+          { label: "High", range: "≥ -90", color: "bg-red-500" },
+        ],
+      },
+      {
+        title: "Abdominal Circumference at L1",
+        ranges: [
+          { label: "Low", range: "< 85", color: "bg-green-500" },
+          { label: "Medium", range: "85 - 95", color: "bg-yellow-400" },
+          { label: "High", range: "> 95", color: "bg-red-500" },
+        ],
+      },
+    ],
+  };
+
   const tabs = [
     { id: "overview", label: "Overview", icon: <Eye className="w-4 h-4" /> },
     {
@@ -71,32 +172,32 @@ export function SampleReport() {
   ];
   const cardiovascularReport = [
     {
-      biomarker: "Coronary Arteries Calcium",
+      biomarker: "Coronary Arteries Calcifications",
       agatstonScore: patient.CACScore,
       Risk: getCardiovascularRiskCategory(Number(patient.CACScore)),
     },
     {
-      biomarker: "Abdominal Aortic Calcium",
+      biomarker: "Abdominal Aortic Calcifications",
       agatstonScore: patient.AACScore,
       Risk: getCardiovascularRiskCategory(Number(patient.AACScore)),
     },
     {
-      biomarker: "Thoracic Aortic Calcium",
+      biomarker: "Thoracic Aortic Calcifications",
       agatstonScore: patient.TACScore,
       Risk: getCardiovascularRiskCategory(Number(patient.TACScore)),
     },
     {
-      biomarker: "Aortic Annulus Calcium",
+      biomarker: "Aortic Annulus Calcifications",
       agatstonScore: patient.AANCScore,
       Risk: getCardiovascularRiskCategory(Number(patient.AANCScore)),
     },
     {
-      biomarker: "Mitral Annulus Calcium",
+      biomarker: "Mitral Annulus Calcifications",
       agatstonScore: patient.MACScore,
       Risk: getCardiovascularRiskCategory(Number(patient.MACScore)),
     },
     {
-      biomarker: "Aortic Valve Leaflets Calcium",
+      biomarker: "Aortic Valve Calcifications",
       agatstonScore: patient.AVCScore,
       Risk: getCardiovascularRiskCategory(Number(patient.AVCScore)),
     },
@@ -105,7 +206,9 @@ export function SampleReport() {
     {
       biomarker: "Liver Attenuation",
       agatstonScore: bodyCompositionData.liverAttenuation,
-      Risk: getBodyCompositionArea(Number(bodyCompositionData.liverAttenuation)),
+      Risk: getBodyCompositionArea(
+        Number(bodyCompositionData.liverAttenuation)
+      ),
       units: "HU",
     },
     {
@@ -117,43 +220,60 @@ export function SampleReport() {
     {
       biomarker: "Abdominal Muscle Area",
       agatstonScore: bodyCompositionData.abdominalMuscleArea,
-      Risk: getBodyCompositionArea(Number(bodyCompositionData.abdominalMuscleArea)),
+      Risk: getBodyCompositionArea(
+        Number(bodyCompositionData.abdominalMuscleArea)
+      ),
       units: "cm²",
     },
     {
       biomarker: "Abdominal Muscle Attenuation",
       agatstonScore: bodyCompositionData.abdominalMuscleQuality,
-      Risk: getBodyCompositionRiskCategory(Number(bodyCompositionData.abdominalMuscleQuality)),
+      Risk: getBodyCompositionRiskCategory(
+        Number(bodyCompositionData.abdominalMuscleQuality)
+      ),
       units: "HU",
     },
     {
       biomarker: "Abdominal Muscle Fat Area",
       agatstonScore: bodyCompositionData.abdominalMuscleFatArea,
-      Risk: getBodyCompositionArea(Number(bodyCompositionData.abdominalMuscleFatArea)),
+      Risk: getBodyCompositionArea(
+        Number(bodyCompositionData.abdominalMuscleFatArea)
+      ),
       units: "cm²",
     },
     {
       biomarker: "Abdominal Muscle Fat Attenuation",
       agatstonScore: bodyCompositionData.abdominalMuscleFatQuality,
-      Risk: getBodyCompositionRiskCategory(Number(bodyCompositionData.abdominalMuscleFatQuality)),
+      Risk: getBodyCompositionRiskCategory(
+        Number(bodyCompositionData.abdominalMuscleFatQuality)
+      ),
       units: "HU",
     },
     {
       biomarker: "Abdominal Subcutaneous Fat Area",
       agatstonScore: bodyCompositionData.abdominalSubcutaneousFatArea,
-      Risk: getBodyCompositionArea(Number(bodyCompositionData.abdominalSubcutaneousFatArea)),
+      Risk: getBodyCompositionArea(
+        Number(bodyCompositionData.abdominalSubcutaneousFatArea)
+      ),
       units: "cm²",
     },
     {
       biomarker: "Abdominal Subcutaneous Fat Attenuation",
       agatstonScore: bodyCompositionData.abdominalSubcutaneousFatQuality,
-      Risk: getBodyCompositionRiskCategory(Number(bodyCompositionData.abdominalSubcutaneousFatQuality)),
+      Risk: getBodyCompositionRiskCategory(
+        Number(bodyCompositionData.abdominalSubcutaneousFatQuality)
+      ),
       units: "HU",
     },
     {
       biomarker: "Abdominal Circumference at L1",
       agatstonScore: bodyCompositionData.abdominalCircumferenceAtL1,
-      Risk: bodyCompositionData.abdominalCircumferenceAtL1 < 94 ? "Low" : bodyCompositionData.abdominalCircumferenceAtL1 < 110 ? "Medium" : "High",
+      Risk:
+        bodyCompositionData.abdominalCircumferenceAtL1 < 94
+          ? "Low"
+          : bodyCompositionData.abdominalCircumferenceAtL1 < 110
+          ? "Medium"
+          : "High",
       units: "cm",
     },
   ];
@@ -172,7 +292,9 @@ export function SampleReport() {
               </Link>
               <div className="h-6 border-l border-gray-300"></div>
               <h1 className="text-3xl font-bold text-gray-900">
-                {activeReport === "cardiac" ? "Sample Cardiovascular Report" : "Sample Body Composition Report"}
+                {activeReport === "cardiac"
+                  ? "Sample Cardiovascular Report"
+                  : "Sample Body Composition Report"}
               </h1>
             </div>
             <div className="flex items-center space-x-3">
@@ -279,54 +401,17 @@ export function SampleReport() {
         <div className="space-y-6">
           {activeTab === "overview" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* AI Summary */}
-              {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  AI Summary
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {report.aiSummary}
-                </p>
-              </div> */}
-
-              {/* Key Metrics */}
-              {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Key Metrics
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Agatston Score</span>
-                    <span className="text-2xl font-bold text-gray-900">
-                      {patient.agatstonScore}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Category</span>
-                    <StatusPill status={patient.highRiskLevel} type="risk" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Risk Level</span>
-                    <StatusPill status={patient.highRiskLevel} type="risk" />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Risk Band</span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {report.riskBand}
-                    </span>
-                  </div>
-                </div>
-              </div> */}
-
               {/* Agatston Breakdown */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {activeReport === "cardiac" ? "Agatston Score Breakdown" : "Body Composition Breakdown"}
+                  {activeReport === "cardiac"
+                    ? "Agatston Score Breakdown"
+                    : "Body Composition Breakdown"}
                 </h3>
                 <div className="overflow-x-auto">
                   {activeReport === "cardiac" ? (
                     <>
-                    {/* Cardiac table */}
+                      {/* Cardiac table */}
                       <table className="min-w-full">
                         <thead>
                           <tr className="border-t-2 border-gray-300">
@@ -386,7 +471,7 @@ export function SampleReport() {
                         <thead>
                           <tr className="border-t-2 border-gray-300">
                             <th className="py-3 text-bold text-start">
-                              Biomarker
+                              Metrices
                             </th>
                             <th className="py-3 text-bold">Result</th>
                             <th className="py-3 text-bold">Units</th>
@@ -432,68 +517,31 @@ export function SampleReport() {
                 </button>
                 {openReference && (
                   <div className="p-6">
-                    <div className="flex flex-col md:flex-row gap-20">
-                      {/* Cardiothoracic Ratio */}
-                      <div>
-                        <h2 className="font-semibold mb-2">
-                          {activeReport === "cardiac" ? "Cardiothoracic Ratio" : "Attenuation"}
-                        </h2>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-green-500"></span>
-                            {activeReport === "cardiac" ? <span>Normal: &lt; 0.521</span> : <span>Low: &lt; 50</span>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
-                            {activeReport === "cardiac" ? <span>Borderline: 0.521 - 0.561</span> : <span>Medium: 50 - 75</span>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-red-500"></span>
-                            {activeReport === "cardiac" ? <span>High: ≥ 0.561</span> : <span>High: ≥ 75</span>}
-                          </div>
-                        </div>
-                      </div>
-                      {/* Calcification Scores */}
-                      <div>
-                        <h2 className="font-semibold mb-2">
-                          {activeReport === "cardiac" ? "Calcification Scores" : "Area"}
-                        </h2>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-green-500"></span>
-                            {activeReport === "cardiac" ? <span>Low: &lt; 100</span> : <span>Low: &lt; 100</span>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
-                            {activeReport === "cardiac" ? <span>Intermediate: 100 - 400</span> : <span>Medium: 100 - 250</span>}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-red-500"></span>
-                            {activeReport === "cardiac" ? <span>High: &gt; 400</span> : <span>High: &gt; 250</span>}
-                          </div>
-                        </div>
-                      </div>
-                      {/* Length */}
-                      {activeReport === "body" && (
-                        <div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {referenceRanges[
+                        activeReport as keyof typeof referenceRanges
+                      ].map((section, index) => (
+                        <div key={index}>
                           <h2 className="font-semibold mb-2">
-                            Length
-                        </h2>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-green-500"></span>
-                            <span>Low: &lt; 94</span> 
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
-                             <span>Medium: 94 - 110</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="inline-block w-3 h-3 rounded-full bg-red-500"></span>
-                             <span>High: &gt; 110</span> 
+                            {section.title}
+                          </h2>
+                          <div className="flex flex-col gap-1">
+                            {section.ranges.map((range, rangeIndex) => (
+                              <div
+                                key={rangeIndex}
+                                className="flex items-center gap-2"
+                              >
+                                <span
+                                  className={`inline-block w-3 h-3 rounded-full ${range.color}`}
+                                ></span>
+                                <span>
+                                  {range.label}: {range.range}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      </div>)}
+                      ))}
                     </div>
                   </div>
                 )}
@@ -502,7 +550,7 @@ export function SampleReport() {
           )}
 
           {activeTab === "3d-model" && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 ">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
                   3D Heart Model Viewer
@@ -513,7 +561,7 @@ export function SampleReport() {
                 src={
                   activeReport === "cardiac"
                     ? "/3Dheart/case141.html"
-                    : "/3Dheart/case141.html"
+                    : "/3Dheart/case005.html"
                 }
                 scrolling="no"
                 style={{
@@ -524,6 +572,53 @@ export function SampleReport() {
                 }}
                 className="dark:bg-cloud-burst"
               ></iframe>
+                {(() => {
+                  // Define legend arrays for each report type
+                  const legends = {
+                    body: [
+                      { color: "purple", label: "Liver" },
+                      { color: "green", label: "Spleen" },
+                      { color: "cyan", label: "Pancreas" },
+                      { color: "yellow", label: "Visceral Fat" },
+                      { color: "red", label: "Abdominal Muscle" },
+                      { color: "blue", label: "Subcutaneous Fat" },
+                    ],
+                    cardiac: [
+                      { color: "#AC5353", label: "Heart" }, 
+                      { color: "#b3d1ff", label: "Pulmonary Artery" }, 
+                      { color: "#d1b3ff", label: "Aortic Root" }, 
+                      { color: "red", label: "RCA" }, 
+                      { color: "#0080ff", label: "LAD" }, 
+                      { color: "#00ff00", label: "LCX" }, 
+                      { color: "#ffff00", label: "LM" },  
+                      { color: "#8000ff", label: "AA" },  
+                      { color: "#ff8000", label: "AVC" }, 
+                      { color: "#00ffff", label: "MA" },  
+                    ],
+                  };
+                  const currentLegend =
+                    activeReport === "body"
+                      ? legends.body
+                      : legends.cardiac;
+                  return (
+                    <div className="flex justify-center gap-4 mt-2" >
+                      {currentLegend.map((item, idx) => (
+                        <div key={idx} className="flex items-center">
+                          <span
+                            style={{
+                              color: item.color,
+                              fontSize: "20px",
+                              marginRight: "5px",
+                            }}
+                          >
+                            &#9679;
+                          </span>
+                          <b>{item.label}</b>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
             </div>
           )}
 
@@ -533,7 +628,13 @@ export function SampleReport() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   CT Slice Analysis
                 </h3>
-                <div className={`grid grid-cols-1 ${activeReport === "cardiac" ? "md:grid-cols-2" : "md:grid-cols-3"} gap-6`}>
+                <div
+                  className={`grid grid-cols-1 ${
+                    activeReport === "cardiac"
+                      ? "md:grid-cols-2"
+                      : "md:grid-cols-3"
+                  } gap-6`}
+                >
                   {activeReport === "cardiac" ? (
                     <>
                       {[
@@ -557,12 +658,8 @@ export function SampleReport() {
                             />
                           </div>
                           <p className="text-sm text-gray-600">
-                            {index === 0 &&
-                              "Proximal LAD calcium deposits identified"}
-                            {index === 1 &&
-                              "RCA calcification visible in mid-vessel"}
-                            {index === 2 &&
-                              "LCX minimal calcium burden detected"}
+                            {index === 0 && "3D Reconstruction"}
+                            {index === 1 && "Key CTR Slice"}
                           </p>
                         </div>
                       ))}
@@ -570,9 +667,9 @@ export function SampleReport() {
                   ) : (
                     <>
                       {[
-                        { bodyImg: img1 },
-                        { bodyImg: img2 },
-                        { bodyImg: img3 },
+                        { bodyImg: liver_roi },
+                        { bodyImg: elliptical_trabecular_region },
+                        { bodyImg: abdominal_region },
                       ].map((images, index) => (
                         <div key={index} className="text-center">
                           <div
@@ -586,16 +683,17 @@ export function SampleReport() {
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "contain",
+                                borderRadius: "10px",
                               }}
                             />
                           </div>
                           <p className="text-sm text-gray-600">
                             {index === 0 &&
-                              "Proximal LAD calcium deposits identified"}
+                              "Axial slice and the three ROIs (violet circles) selected to calculate the liver attenuation."}
                             {index === 1 &&
-                              "RCA calcification visible in mid-vessel"}
+                              "Axial slice used to calculate the Bone Attenuation at L1."}
                             {index === 2 &&
-                              "LCX minimal calcium burden detected"}
+                              "Axial slice used to calculate the fat and muscle metrics."}
                           </p>
                         </div>
                       ))}

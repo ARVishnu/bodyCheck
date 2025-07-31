@@ -321,21 +321,21 @@ export function DemoDashboard() {
                         // Remove Agatston Score column, keep new columns
                         {
                           key: "coronary",
-                          label: "Coronary Artery Calcium",
+                          label: "Coronary Artery Calcification",
                         },
-                        { key: "abdominal", label: "Abdominal Aortic Calcium" },
-                        { key: "thoracic", label: "Thoracic Aortic Calcium" },
+                        { key: "abdominal", label: "Abdominal Aortic Calcifications" },
+                        { key: "thoracic", label: "Thoracic Aortic Calcifications" },
                         {
                           key: "aorticAnnulus",
-                          label: "Aortic Annulus Calcium",
+                          label: "Aortic Annulus Calcifications",
                         },
                         {
                           key: "mitralAnnulus",
-                          label: "Mitral Annulus Calcium",
+                          label: "Mitral Annulus Calcifications",
                         },
                         {
                           key: "aorticValveLeaflets",
-                          label: "Aortic Valve Calcium",
+                          label: "Aortic Valve Calcifications",
                         },
                         {
                           key: "Cardiothoracic Ratio",
@@ -530,12 +530,12 @@ export function DemoDashboard() {
                               ].filter(Boolean);
 
                               const abbrToFull = {
-                                CAC: "Coronary Arteries Calcium",
-                                AAC: "Abdominal Aorta Calcium",
-                                TAC: "Thoracic Aorta Calcium",
-                                AANC: "Aortic Annulus Calcium",
-                                MAC: "Mitral Annulus Calcium",
-                                AVC: "Aortic Valve Calcium",
+                                CAC: "Coronary Arteries Calcification",
+                                AAC: "Abdominal Aorta Calcification",
+                                TAC: "Thoracic Aorta Calcification",
+                                AANC: "Aortic Annulus Calcification",
+                                MAC: "Mitral Annulus Calcification",
+                                AVC: "Aortic Valve Calcification",
                               };
 
                               if (highRiskAbbrs.length === 0) return "-";

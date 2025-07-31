@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import {  MapPin, Phone, Mail } from 'lucide-react';
+import { bodyCheckLogoLight } from '../assets/images';
 
 export function Footer() {
   return (
@@ -10,7 +11,7 @@ export function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-             <img style={{width:'250px'}} src="/Images/BodyCheck_Light.svg" alt="" />
+             <img style={{width:'250px'}} src={bodyCheckLogoLight} alt="" />
             </div>
             <p className="text-white mb-4 max-w-md">
               Advanced AI-driven cardiovascular diagnostics platform providing 
