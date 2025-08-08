@@ -10,15 +10,16 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { mockPatients, mokeBodyCompositionData } from "../data/mockData";
-import { StatusPill } from "../components/StatusPill";
+import { mockPatients, mokeBodyCompositionData } from "../../data/mockData";
+import { StatusPill } from "../../components/StatusPill";
 import {
-  abdominal_region,
-  ctr,
+  ctr1,
   ctr2,
-  elliptical_trabecular_region,
-  liver_roi,
-} from "../assets/images";
+  body1,
+  body2,
+  body3,
+  body4,
+} from "../../assets/images";
 
 // Utility function for calcification risk category
 function getCardiovascularRiskCategory(
@@ -638,7 +639,7 @@ export function SampleReport() {
                   {activeReport === "cardiac" ? (
                     <>
                       {[
-                        { cardioImg: ctr },
+                        { cardioImg: ctr1 },
                         { cardioImg: ctr2 },
                         // { cardioImg: ctr3 },
                       ].map((images, index) => (
@@ -667,9 +668,10 @@ export function SampleReport() {
                   ) : (
                     <>
                       {[
-                        { bodyImg: liver_roi },
-                        { bodyImg: elliptical_trabecular_region },
-                        { bodyImg: abdominal_region },
+                        { bodyImg: body1 },
+                        { bodyImg: body2 },
+                        { bodyImg: body3 },
+                        { bodyImg: body4 },
                       ].map((images, index) => (
                         <div key={index} className="text-center">
                           <div

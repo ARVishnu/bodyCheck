@@ -123,12 +123,12 @@ const BeforeAfter = () => {
 
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Before BodyCheck.ai */}
+            {/* Before BodyCheck */}
             <div className={`space-y-8 transition-all duration-1000 ${
               scrollProgress < 0.5 ? 'opacity-100 transform translate-x-0' : 'opacity-50 transform -translate-x-8'
             }`}>
               <div className="text-center lg:text-left">
-                <h3 className="text-3xl font-bold text-red-400 mb-4">Before BodyCheck.ai</h3>
+                <h3 className="text-3xl font-bold text-red-400 mb-4">Before BodyCheck</h3>
                 <p className="text-gray-300 text-lg">Healthcare gaps leaving patients at risk</p>
               </div>
 
@@ -167,12 +167,12 @@ const BeforeAfter = () => {
               </div>
             </div>
 
-            {/* After BodyCheck.ai */}
+            {/* After BodyCheck */}
             <div className={`space-y-8 transition-all duration-1000 ${
               scrollProgress > 0.5 ? 'opacity-100 transform translate-x-0' : 'opacity-50 transform translate-x-8'
             }`}>
               <div className="text-center lg:text-left">
-                <h3 className="text-3xl font-bold text-teal-400 mb-4">After BodyCheck.ai</h3>
+                <h3 className="text-3xl font-bold text-teal-400 mb-4">After BodyCheck</h3>
                 <p className="text-gray-100 text-lg">Proactive care with AI-powered insights</p>
               </div>
 

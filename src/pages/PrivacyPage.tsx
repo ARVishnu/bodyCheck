@@ -143,7 +143,7 @@ export function PrivacyPage() {
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Acceptance of Terms</h3>
                       <p className="text-gray-700">
-                        By accessing BodyCheck.ai, you agree to these Terms of Use and acknowledge that 
+                        By accessing BodyCheck, you agree to these Terms of Use and acknowledge that 
                         you are a qualified healthcare professional authorized to view medical imaging data.
                       </p>
                     </section>
@@ -184,7 +184,7 @@ export function PrivacyPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Intellectual Property</h3>
                       <p className="text-gray-700">
                         All AI models, algorithms, software, and generated reports remain the intellectual 
-                        property of BodyCheck.ai. Users retain ownership of their original medical data.
+                        property of BodyCheck. Users retain ownership of their original medical data.
                       </p>
                     </section>
                   </div>
@@ -201,7 +201,7 @@ export function PrivacyPage() {
                       <div>
                         <h3 className="font-bold text-red-900 mb-2">CRITICAL MEDICAL NOTICE</h3>
                         <p className="text-red-800 font-medium">
-                          BodyCheck.ai is a diagnostic assistance tool and is NOT intended for primary diagnosis. 
+                          BodyCheck is a diagnostic assistance tool and is NOT intended for primary diagnosis. 
                           All AI-generated results must be reviewed and interpreted by qualified healthcare professionals.
                         </p>
                       </div>
@@ -278,7 +278,7 @@ export function PrivacyPage() {
                       <div>
                         <h3 className="font-bold text-green-900 mb-2">HIPAA COMPLIANT PLATFORM</h3>
                         <p className="text-green-800">
-                          BodyCheck.ai is designed to meet or exceed HIPAA requirements for protected 
+                          BodyCheck is designed to meet or exceed HIPAA requirements for protected 
                           health information (PHI) handling and security.
                         </p>
                       </div>
@@ -289,7 +289,7 @@ export function PrivacyPage() {
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">Business Associate Agreement</h3>
                       <p className="text-gray-700 mb-3">
-                        BodyCheck.ai operates under Business Associate Agreements (BAAs) with covered entities, 
+                        BodyCheck operates under Business Associate Agreements (BAAs) with covered entities, 
                         ensuring proper handling of PHI according to HIPAA regulations.
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -364,7 +364,7 @@ export function PrivacyPage() {
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <p className="text-gray-700">
                           <strong>HIPAA Compliance Officer:</strong><br />
-                          Email: compliance@bodycheck.ai<br />
+                          Email: compliance@bodycheck<br />
                           Phone: +1 (555) 123-4567<br />
                           Address: 123 Medical Center Drive, San Francisco, CA 94110
                         </p>

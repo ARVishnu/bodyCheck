@@ -1,6 +1,8 @@
-
-import { PatientsPage } from "./PatientsPage";
+import { PatientsPage } from "./Patient/PatientsPage";
 import { ProvidersPage } from "./ProvidersPage";
-import { ResearchersPage } from "./ResearchersPage";
+import { ResearcherPage } from "./Researcher/ResearcherPage";
+import { PatientsPageV2 } from "./Patient/PatientsPageV2";
+import { ResearcherPageV2 } from "./Researcher/ResearcherPageV2";
+import { ResearcherPageV3 } from "./Researcher/ResearcherPageV3";
 
-export { PatientsPage, ProvidersPage, ResearchersPage };
+export { PatientsPage, ProvidersPage, ResearcherPage, PatientsPageV2, ResearcherPageV2, ResearcherPageV3 };

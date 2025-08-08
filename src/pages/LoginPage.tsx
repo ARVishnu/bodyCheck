@@ -1,71 +1,62 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Eye, EyeOff, Shield, Stethoscope, UserCog } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 
 export function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'admin' | 'physician' | 'nurse'>('admin');
+  const [role, setRole] = useState<'admin' | 'provider' | 'nurse' | 'user'>('user');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
+  const [name, setName] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/dashboard';
-
+  const from = location.state?.from?.pathname || '/';
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    if (!isLogin && !acceptedTerms) {
+      setIsLoading(false);
+      setError('Please accept the Terms of Use and Privacy Policy to continue.');
+      return;
+    }
+    // Persist attempted email immediately (optional)
+    try {
+      localStorage.setItem('auth_email', email);
+      localStorage.setItem('auth_password', password);
+      localStorage.setItem('auth_role', role);
+    } catch {}
 
     try {
-      await login(email, password, role);
+      if (isLogin) {
+        await login(email, password, role);
+      } else {
+        await signup(name, email, password, role);
+      }
+      // Mark authenticated flag for simple guards or analytics
+      try {
+        localStorage.setItem('auth_isAuthenticated', 'true');
+        if (!isLogin) {
+          localStorage.setItem('auth_termsAccepted', String(acceptedTerms));
+        }
+      } catch {}
       navigate(from, { replace: true });
-    } catch (err) {
-      setError('Invalid credentials. Try: admin@bodycheck.ai, physician@bodycheck.ai, or nurse@bodycheck.ai');
+    } catch (err: any) {
+      setError(err?.message || 'Authentication failed');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDemoLogin = async (demoRole: 'admin' | 'physician' | 'nurse') => {
-    setIsLoading(true);
-    setError('');
-    
-    const demoCredentials = {
-      admin: 'admin@bodycheck.ai',
-      physician: 'physician@bodycheck.ai',
-      nurse: 'nurse@bodycheck.ai'
-    };
-
-    try {
-      await login(demoCredentials[demoRole], 'demo', demoRole);
-      navigate(from, { replace: true });
-    } catch (err) {
-      setError('Demo login failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getRoleInfo = (roleType: string) => {
-    switch (roleType) {
-      case 'admin':
-        return { icon: <Shield className="w-5 h-5" />, label: 'Administrator', desc: 'Full system access' };
-      case 'physician':
-        return { icon: <Stethoscope className="w-5 h-5" />, label: 'Physician', desc: 'Clinical dashboard access' };
-      case 'nurse':
-        return { icon: <UserCog className="w-5 h-5" />, label: 'Nurse', desc: 'Patient monitoring access' };
-      default:
-        return { icon: <UserCog className="w-5 h-5" />, label: 'User', desc: 'Standard access' };
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -90,7 +81,7 @@ export function LoginPage() {
               Login
             </button>
             <button
-              onClick={() => setIsLogin(false)}
+              onClick={() => { setIsLogin(false); setRole('user'); }}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 !isLogin ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
               }`}
@@ -107,35 +98,24 @@ export function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-              <div className="grid grid-cols-1 gap-2">
-                {(['admin', 'physician', 'nurse'] as const).map((roleType) => {
-                  const roleInfo = getRoleInfo(roleType);
-                  return (
-                    <button
-                      key={roleType}
-                      type="button"
-                      onClick={() => setRole(roleType)}
-                      className={`flex items-center space-x-3 p-3 rounded-lg border transition-colors ${
-                        role === roleType
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className={role === roleType ? 'text-blue-600' : 'text-gray-400'}>
-                        {roleInfo.icon}
-                      </div>
-                      <div className="text-left">
-                        <div className="font-medium">{roleInfo.label}</div>
-                        <div className="text-xs text-gray-500">{roleInfo.desc}</div>
-                      </div>
-                    </button>
-                  );
-                })}
+            {!isLogin && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your name"
+                  required
+                />
               </div>
-            </div>
+            )}
+            {/* Account Type (hidden fixed to user) */}
+            <input type="hidden" value={role} readOnly />
 
             {/* Email */}
             <div>
@@ -178,40 +158,41 @@ export function LoginPage() {
               </div>
             </div>
 
+            {/* Terms & Conditions for Signup */}
+            {!isLogin && (
+              <div className="space-y-2">
+                <p className="text-xs text-gray-600">
+                  By creating an account, you confirm that you have read and agree to our
+                  <Link to="/terms" className="text-blue-600 hover:text-blue-800 mx-1">Terms of Use</Link>
+                  and
+                  <Link to="/privacy" className="text-blue-600 hover:text-blue-800 mx-1">Privacy Policy</Link>.
+                </p>
+                <label className="flex items-start space-x-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    required
+                  />
+                  <span>I agree to the Terms of Use and Privacy Policy</span>
+                </label>
+              </div>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || (!isLogin && role !== 'user')}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             >
               {isLoading ? (
                 <LoadingSpinner size="sm" />
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                isLogin ? 'Sign In' : (role === 'user' ? 'Create Account' : 'Contact Us to Request Access')
               )}
             </button>
           </form>
-
-          {/* Demo Logins */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600 text-center mb-3">Quick Demo Access:</p>
-            <div className="space-y-2">
-              {(['admin', 'physician', 'nurse'] as const).map((demoRole) => {
-                const roleInfo = getRoleInfo(demoRole);
-                return (
-                  <button
-                    key={demoRole}
-                    onClick={() => handleDemoLogin(demoRole)}
-                    disabled={isLoading}
-                    className="w-full flex items-center justify-center space-x-2 py-2 px-4 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                  >
-                    {roleInfo.icon}
-                    <span>Demo {roleInfo.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
 
           {/* Additional Options */}
           {isLogin && (

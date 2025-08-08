@@ -44,7 +44,7 @@ import {
   Info
 } from 'lucide-react';
 
-export function ResearchersPage() {
+export function ResearcherPageV2() {
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [filterOrgan, setFilterOrgan] = useState('all');
   const [filterAnnotation, setFilterAnnotation] = useState('all');

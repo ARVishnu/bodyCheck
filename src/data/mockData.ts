@@ -2,11 +2,11 @@ import { BodyCompositionData, Patient, Report } from "../types";
 
 export const mockPatients: Patient[] = [
   {
-    id: "9658541524",
-    name: "John Smith",
-    age: 65,
-    gender: "Male",
-    examDate: "2024-01-15",
+    id: "Ai037S01ID0034",
+    name: "George",
+    age: 61,
+    gender: "Female",
+    examDate: "December 05, 2022",
     agatstonScore: 245,
     cardiothoracicRatio: 0.411,
     highRiskLevel: "Moderate",
@@ -14,7 +14,7 @@ export const mockPatients: Patient[] = [
     careStatus: "Needs Review",
     notes: "Patient has family history of CAD",
     CACScore: 0,
-    AACScore: 100,
+    AACScore: 523,
     TACScore: 400,
     AANCScore: 50,
     MACScore: 200,

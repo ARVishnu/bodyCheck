@@ -20,8 +20,7 @@ function getCalcificationRiskCategory(
   score: number
 ): "Low" | "Medium" | "High" {
   if (score <= 100) return "Low";
-  if (score <= 200) return "Medium";
-  if (score <= 300) return "High";
+  if (score <= 400) return "Medium";
   return "High";
 }
 
@@ -665,7 +664,7 @@ export function DemoDashboard() {
                         { key: "thoracic", label: "Abdominal Muscle" },
                         {
                           key: "aorticAnnulus",
-                          label: "Abdominal Muscle Fat",
+                          label: "Abdominal Visceral Fat",
                         },
                         {
                           key: "mitralAnnulus",
@@ -673,7 +672,7 @@ export function DemoDashboard() {
                         },
                         {
                           key: "aorticValveLeaflets",
-                          label: "Abdominal Circumference at L1",
+                          label: "Abdominal Circumference",
                         },
                         { key: "careStatus", label: "Care Status" },
                       ].map((column) => (

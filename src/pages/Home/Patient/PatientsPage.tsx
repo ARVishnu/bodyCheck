@@ -24,7 +24,7 @@ import {
   Bone,
   Target,
 } from 'lucide-react';
-import { HowItWorks } from '../../components';
+import { HowItWorks } from '../../../components';
 
 export function PatientsPage() {
   const [activeReportTab, setActiveReportTab] = useState('pdf');

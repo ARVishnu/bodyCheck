@@ -2,7 +2,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'physician' | 'nurse';
+  role: 'admin' | 'provider' | 'nurse' | 'user';
 }
 
 export interface Patient {

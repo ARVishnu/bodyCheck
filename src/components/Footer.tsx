@@ -28,7 +28,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2 hover:text-bright-turquoise">
                 <Mail className="w-4 h-4" />
-                <span>contact@bodycheck.ai</span>
+                <span>contact@bodycheck</span>
               </div>
             </div>
           </div>
@@ -57,7 +57,7 @@ export function Footer() {
         </div>
 
         {/* <div className="border-t border-jacarta mt-8 pt-8 text-center text-sm text-turquoise">
-          <p>&copy; 2024 BodyCheck.ai. All rights reserved. This platform is for research and educational purposes only. Not for diagnostic use.</p>
+          <p>&copy; 2024 BodyCheck . All rights reserved. This platform is for research and educational purposes only. Not for diagnostic use.</p>
         </div> */}
       </div>
     </footer>

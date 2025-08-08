@@ -82,7 +82,7 @@ export function Dashboard() {
     completed: patients.filter(p => p.crmStatus === 'Positive' || p.crmStatus === 'Appointment Scheduled').length
   };
 
-  const canEdit = user?.role === 'admin' || user?.role === 'physician';
+  const canEdit = user?.role === 'admin' || user?.role === 'provider';
 
   return (
     <div className="min-h-screen bg-gray-50">

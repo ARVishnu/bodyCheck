@@ -7,5 +7,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import WhatWeDo from "./WhatWeDo";
 import HowItWorksV2 from "./HowItWorksV2";
 import BeforeAfter from "./BeforeAfter";
+import { ScrollToTop } from "./ScrollToTop";
+import { PageTransitionLoader } from "./PageTransitionLoader";
 
-export { Navbar, Footer, StatusPill, HeartModelViewer, HowItWorks, LoadingSpinner, WhatWeDo, HowItWorksV2, BeforeAfter };
+export { Navbar, Footer, StatusPill, HeartModelViewer, HowItWorks, LoadingSpinner, WhatWeDo, HowItWorksV2, BeforeAfter, ScrollToTop, PageTransitionLoader };
