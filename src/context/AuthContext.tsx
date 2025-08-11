@@ -52,36 +52,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, inputPassword: string, role: User['role']) => {
-    // Mock authentication
-    const allUsers = getAllUsers();
-    let foundUser = allUsers.find(u => u.email === email && u.role === role);
-    // If dynamic user exists without a stored password (legacy), migrate by saving provided password
-    if (foundUser && !foundUser.password && role === 'user') {
-      try {
-        const rawDynamic = localStorage.getItem('auth_users_dynamic');
-        const dynamicUsers: Array<Partial<StoredUser>> = rawDynamic ? JSON.parse(rawDynamic) : [];
-        const idx = dynamicUsers.findIndex(u => u.email === email && u.role === role);
-        if (idx !== -1) {
-          dynamicUsers[idx] = { ...dynamicUsers[idx], password: inputPassword } as StoredUser;
-          localStorage.setItem('auth_users_dynamic', JSON.stringify(dynamicUsers));
-        }
-        // Update in-memory copy
-        foundUser = { ...foundUser, password: inputPassword };
-      } catch {}
-    }
-    if (foundUser && foundUser.password === inputPassword) {
-      // Save public user object without password into state
-      const publicUser: User = { id: foundUser.id, name: foundUser.name, email: foundUser.email, role: foundUser.role };
+    // Check with backend API if user exists
+    try {
+      const response = await fetch('https://7d7a7540cce7.ngrok-free.app/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: inputPassword }),
+      });
+      
+      if (response.status === 404) {
+        throw new Error('USER_NOT_FOUND');
+      }
+      
+      if (!response.ok) {
+        throw new Error('Failed to verify user with server');
+      }
+      
+      // If user exists, create a user object and set it
+      const userData = await response.json();
+      const publicUser: User = { 
+        id: userData.id || String(Date.now()), 
+        name: userData.name || email.split('@')[0], 
+        email, 
+        role: userData.role || role 
+      };
       setUser(publicUser);
       try {
         localStorage.setItem('auth_user', JSON.stringify(publicUser));
       } catch {}
-    } else {
-      throw new Error('Invalid credentials');
+    } catch (err: any) {
+      if (err.message === 'USER_NOT_FOUND') {
+        throw new Error('USER_NOT_FOUND');
+      }
+      throw new Error('Network error while checking user');
     }
   };
 
   const signup = async (name: string, email: string, inputPassword: string, role: User['role']) => {
+    // First, send signup data to backend API
+    try {
+      const response = await fetch('https://7d7a7540cce7.ngrok-free.app/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({full_name :name, email, password: inputPassword }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to save user to server');
+      }
+    } catch (err: any) {
+      throw new Error('Network error while saving user');
+    }
     // Only allow public self-signup for basic 'user' role
     if (role !== 'user') {
       throw new Error('Sign up is available only for User accounts. Please contact us for Provider/Nurse/Admin access.');

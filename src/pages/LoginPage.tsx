@@ -51,7 +51,12 @@ export function LoginPage() {
       } catch {}
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err?.message || 'Authentication failed');
+      if (isLogin && err?.message === 'USER_NOT_FOUND') {
+        setIsLogin(false); // Switch to sign up tab
+        setError('No account found for this email. Please sign up.');
+      } else {
+        setError(err?.message || 'Authentication failed');
+      }
     } finally {
       setIsLoading(false);
     }
