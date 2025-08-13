@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Download, Heart, Activity, FileText } from "lucide-react";
 
 import { body1, body2, body3, body4, ctr1, ctr2 } from "../../assets/images";
+import { GeorgeCardiovascularReport, GeorgeMetabolicReport } from "../../assets";
 import { styles } from "./SampleReport.styles";
 import {
   cardiovascularRows,
@@ -132,14 +133,14 @@ export function SampleReportV2() {
                   📋 Sample Data
                 </p>
               </div>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <a href="public/PDF_Report/final.html" target="_blank">
-                  <div style={{ display: "flex" }}>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </div>
-                </a>
-              </button>
+              <a
+                href={activeReport == 'cardiac' ? GeorgeCardiovascularReport : GeorgeMetabolicReport}
+                download={activeReport == 'cardiac' ? "George_Cardiovascular_report.pdf" :"George_Metabolic_report.pdf"}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </a>
             </div>
           </div>
 
@@ -430,6 +431,10 @@ export function SampleReportV2() {
                   {/* Subcutaneous Fat Area */}
                   <TemplateRow
                     data={bodyCompositionRows.subcutaneousFatArea}
+                    key="subcutaneousFatArea"
+                  />
+                  <TemplateRow
+                    data={bodyCompositionRows.visceralSubcutaneousRatio}
                     key="subcutaneousFatArea"
                   />
                   {/* Subcutaneous Fat Density */}

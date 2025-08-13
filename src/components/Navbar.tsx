@@ -1,15 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Menu, X, User, LogOut, Shield, Stethoscope, UserCog, ChevronDown } from 'lucide-react';
-import { bodyCheckLogoDark } from '../assets/images';
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Shield,
+  Stethoscope,
+  UserCog,
+  ChevronDown,
+} from "lucide-react";
+import { bodyCheckLogoDark } from "../assets/images";
 
 export function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSampleReportDropdownOpen, setIsSampleReportDropdownOpen] = useState(false);
+  const [isSampleReportDropdownOpen, setIsSampleReportDropdownOpen] =
+    useState(false);
   const [isHomeDropdownOpen, setIsHomeDropdownOpen] = useState(false);
 
   // Refs for dropdown containers
@@ -21,17 +31,23 @@ export function Navbar() {
     const handleClickOutside = (event: MouseEvent) => {
       // If mobile menu is open, skip outside-close behavior for dropdowns
       if (isMenuOpen) return;
-      if (homeDropdownRef.current && !homeDropdownRef.current.contains(event.target as Node)) {
+      if (
+        homeDropdownRef.current &&
+        !homeDropdownRef.current.contains(event.target as Node)
+      ) {
         setIsHomeDropdownOpen(false);
       }
-      if (sampleReportDropdownRef.current && !sampleReportDropdownRef.current.contains(event.target as Node)) {
+      if (
+        sampleReportDropdownRef.current &&
+        !sampleReportDropdownRef.current.contains(event.target as Node)
+      ) {
         setIsSampleReportDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
 
@@ -47,61 +63,80 @@ export function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
     setIsMenuOpen(false);
   };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'admin': return <Shield className="w-4 h-4" />;
-      case 'provider': return <Stethoscope className="w-4 h-4" />;
-      case 'nurse': return <UserCog className="w-4 h-4" />;
-      case 'user': return <User className="w-4 h-4" />;
-      default: return <User className="w-4 h-4" />;
+      case "admin":
+        return <Shield className="w-4 h-4" />;
+      case "provider":
+        return <Stethoscope className="w-4 h-4" />;
+      case "nurse":
+        return <UserCog className="w-4 h-4" />;
+      case "user":
+        return <User className="w-4 h-4" />;
+      default:
+        return <User className="w-4 h-4" />;
     }
   };
 
   const publicLinks = [
-    { to: '/demo-dashboard', label: 'Demo Dashboard' },
+    { to: "/demo-dashboard", label: "Demo Dashboard" },
     // { to: '/documentation', label: 'Documentation' },
-    { to: '/contact', label: 'Contact' },
+    { to: "/contact", label: "Contact" },
   ];
 
   // Build secure links per role
   let secureLinks = [
-    { to: '/dashboard', label: 'Dashboard' },
-    { to: '/ai-pipeline', label: 'AI Pipeline' },
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/ai-pipeline", label: "AI Pipeline" },
     // { to: '/documentation', label: 'Documentation' },
   ];
 
-  if (user?.role === 'admin') {
-    secureLinks.splice(1, 0, { to: '/upload', label: 'Upload Scans' });
+  if (user?.role === "admin") {
+    secureLinks.splice(1, 0, { to: "/upload", label: "Upload Scans" });
   }
 
-  if (user?.role === 'user') {
+  if (user?.role === "user") {
     // Basic users should see Demo Dashboard instead of Dashboard
     secureLinks = [
-      { to: '/demo-dashboard', label: 'Demo Dashboard' },
-      { to: '/contact', label: 'Contact' },
+      { to: "/demo-dashboard", label: "Demo Dashboard" },
+      { to: "/contact", label: "Contact" },
     ];
   }
 
   const currentLinks = isAuthenticated ? secureLinks : publicLinks;
-
+  const isProd = import.meta.env.PROD;
   const homeDropdownItems = [
-    { to: '/', label: 'HomeV1' },
-    { to: '/homeV2', label: 'Home V2' },
-    { to: '/homeV3', label: 'Home V3' },
-    { to: '/researchersV3', label: 'Researchers' },
-    // { to: '/researchersV2', label: 'Researchers V2' },
-    // { to: '/researchersV3', label: 'Researchers V3' },
-    { to: '/patientsV2', label: 'Patients' },
-    { to: '/providers', label: 'Providers' },
+    ...(isProd
+      ? [
+          { to: "/", label: "Home" },
+          { to: "/researchersV3", label: "Researchers" },
+          { to: "/patientsV2", label: "Patients" },
+          { to: "/providers", label: "Providers" },
+        ]
+      : [
+          { to: "/", label: "HomeV1" },
+          { to: "/homeV2", label: "Home V2" },
+          { to: "/homeV3", label: "Home V3" },
+          { to: "/researchersV3", label: "Researchers" },
+          // { to: '/researchersV2', label: 'Researchers V2' },
+          // { to: '/researchersV3', label: 'Researchers V3' },
+          { to: "/patientsV3", label: "Patients" },
+          { to: "/patientsV2", label: "Patients V2" },
+          { to: "/providers", label: "Providers" },
+        ]),
   ];
 
   const sampleReportDropdownItems = [
-    { to: '/sample-report', label: 'Sample Report V1' },
-    { to: '/sample-reportV2', label: 'Sample Report V2' },
+    ...(isProd
+      ? [{ to: "/sample-reportV2", label: "Sample Report" }]
+      : [
+          { to: "/sample-report", label: "Sample Report V1" },
+          { to: "/sample-reportV2", label: "Sample Report V2" },
+        ]),
   ];
 
   return (
@@ -109,8 +144,15 @@ export function Navbar() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 text-bright-turquoise font-bold text-xl">
-           <img style={{width:'250px'}} src={bodyCheckLogoDark} alt="BodyCheck Logo" />
+          <Link
+            to="/"
+            className="flex items-center space-x-2 text-bright-turquoise font-bold text-xl"
+          >
+            <img
+              style={{ width: "250px" }}
+              src={bodyCheckLogoDark}
+              alt="BodyCheck Logo"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -120,22 +162,30 @@ export function Navbar() {
               <button
                 onClick={handleHomeDropdownToggle}
                 className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
-                  homeDropdownItems.some(item => location.pathname === item.to)
-                    ? 'text-turquoise border-b-2 border-turquoise pb-1'
-                    : 'text-cloud-burst'
+                  homeDropdownItems.some(
+                    (item) => location.pathname === item.to
+                  )
+                    ? "text-turquoise border-b-2 border-turquoise pb-1"
+                    : "text-cloud-burst"
                 }`}
               >
                 <span>Home</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isHomeDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    isHomeDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
               </button>
-                {isHomeDropdownOpen && (
+              {isHomeDropdownOpen && (
                 <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
                   {homeDropdownItems.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
                       className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                        location.pathname === item.to ? 'text-turquoise bg-gray-50' : 'text-cloud-burst'
+                        location.pathname === item.to
+                          ? "text-turquoise bg-gray-50"
+                          : "text-cloud-burst"
                       }`}
                       onClick={() => setIsHomeDropdownOpen(false)}
                     >
@@ -147,35 +197,58 @@ export function Navbar() {
             </div>
 
             {/* Sample Report Dropdown */}
-            <div className="relative" ref={sampleReportDropdownRef}>
-              <button
-                onClick={handleSampleReportDropdownToggle}
-                className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
-                  sampleReportDropdownItems.some(item => location.pathname === item.to)
-                    ? 'text-turquoise border-b-2 border-turquoise pb-1'
-                    : 'text-cloud-burst'
-                }`}
-              >
-                <span>Sample Report</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isSampleReportDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-               {isSampleReportDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  {sampleReportDropdownItems.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                        location.pathname === item.to ? 'text-turquoise bg-gray-50' : 'text-cloud-burst'
-                      }`}
-                      onClick={() => setIsSampleReportDropdownOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {sampleReportDropdownItems.length > 1 ? (
+              <div className="relative" ref={sampleReportDropdownRef}>
+                <button
+                  onClick={handleSampleReportDropdownToggle}
+                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
+                    sampleReportDropdownItems.some(
+                      (item) => location.pathname === item.to
+                    )
+                      ? "text-turquoise border-b-2 border-turquoise pb-1"
+                      : "text-cloud-burst"
+                  }`}
+                >
+                  <span>Sample Report</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isSampleReportDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {isSampleReportDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                    {sampleReportDropdownItems.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                          location.pathname === item.to
+                            ? "text-turquoise bg-gray-50"
+                            : "text-cloud-burst"
+                        }`}
+                        onClick={() => setIsSampleReportDropdownOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              sampleReportDropdownItems.length === 1 && (
+                <Link
+                  to={sampleReportDropdownItems[0].to}
+                  className={`text-sm font-medium transition-colors hover:text-turquoise ${
+                    location.pathname === sampleReportDropdownItems[0].to
+                      ? "text-turquoise border-b-2 border-turquoise pb-1"
+                      : "text-cloud-burst"
+                  }`}
+                >
+                  {sampleReportDropdownItems[0].label}
+                </Link>
+              )
+            )}
 
             {/* Regular Links */}
             {currentLinks.map((link) => (
@@ -184,8 +257,8 @@ export function Navbar() {
                 to={link.to}
                 className={`text-sm font-medium transition-colors hover:text-turquoise ${
                   location.pathname === link.to
-                    ? 'text-turquoise border-b-2 border-turquoise pb-1'
-                    : 'text-cloud-burst'
+                    ? "text-turquoise border-b-2 border-turquoise pb-1"
+                    : "text-cloud-burst"
                 }`}
               >
                 {link.label}
@@ -212,13 +285,13 @@ export function Navbar() {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
-                  to="/login"
+                  to="/login?screen=login"
                   className="text-sm font-medium text-cloud-burst hover:text-turquoise transition-colors"
                 >
                   Login
                 </Link>
                 <Link
-                  to="/login"
+                  to="/login?screen=signup"
                   className="bg-turquoise text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-bright-turquoise transition-colors"
                 >
                   Sign Up
@@ -233,7 +306,11 @@ export function Navbar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -249,7 +326,11 @@ export function Navbar() {
                   className="flex items-center justify-between w-full text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <span>Home</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isHomeDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isHomeDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
                 {isHomeDropdownOpen && (
                   <div className="ml-4 mt-2 space-y-2">
@@ -262,7 +343,9 @@ export function Navbar() {
                           setIsHomeDropdownOpen(false);
                         }}
                         className={`block text-sm transition-colors hover:text-blue-600 ${
-                          location.pathname === item.to ? 'text-blue-600' : 'text-gray-600'
+                          location.pathname === item.to
+                            ? "text-blue-600"
+                            : "text-gray-600"
                         }`}
                       >
                         {item.label}
@@ -279,7 +362,11 @@ export function Navbar() {
                   className="flex items-center justify-between w-full text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <span>Sample Report</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isSampleReportDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isSampleReportDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
                 {isSampleReportDropdownOpen && (
                   <div className="ml-4 mt-2 space-y-2">
@@ -292,7 +379,9 @@ export function Navbar() {
                           setIsSampleReportDropdownOpen(false);
                         }}
                         className={`block text-sm transition-colors hover:text-blue-600 ${
-                          location.pathname === item.to ? 'text-blue-600' : 'text-gray-600'
+                          location.pathname === item.to
+                            ? "text-blue-600"
+                            : "text-gray-600"
                         }`}
                       >
                         {item.label}
@@ -309,13 +398,15 @@ export function Navbar() {
                   to={link.to}
                   onClick={() => setIsMenuOpen(false)}
                   className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                    location.pathname === link.to ? 'text-blue-600' : 'text-gray-700'
+                    location.pathname === link.to
+                      ? "text-blue-600"
+                      : "text-gray-700"
                   }`}
                 >
                   {link.label}
                 </Link>
               ))}
-              
+
               {isAuthenticated && user ? (
                 <div className="pt-3 border-t border-gray-200">
                   <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
@@ -333,14 +424,14 @@ export function Navbar() {
               ) : (
                 <div className="pt-3 border-t border-gray-200 flex flex-col space-y-2">
                   <Link
-                    to="/login"
+                    to="/login?screen=login"
                     onClick={() => setIsMenuOpen(false)}
                     className="text-sm font-medium text-gray-700"
                   >
                     Login
                   </Link>
                   <Link
-                    to="/login"
+                    to="/login?screen=signup"
                     onClick={() => setIsMenuOpen(false)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center"
                   >

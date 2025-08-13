@@ -17,7 +17,7 @@ export function Footer() {
               Advanced AI-driven cardiovascular diagnostics platform providing 
               accurate, fast, and comprehensive cardiac CT analysis for healthcare professionals.
             </p>
-            <div className="space-y-2 text-sm text-white ">
+            {/* <div className="space-y-2 text-sm text-white ">
               <div className="flex items-center space-x-2 hover:text-bright-turquoise">
                 <MapPin className="w-4 h-4" />
                 <span>123 Medical Center Drive, San Francisco, CA 94110</span>
@@ -30,7 +30,7 @@ export function Footer() {
                 <Mail className="w-4 h-4" />
                 <span>contact@bodycheck</span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Quick Links */}
@@ -39,8 +39,8 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-white">
               <li><Link to="/demo-dashboard" className="hover:text-bright-turquoise transition-colors">Demo Dashboard</Link></li>
               <li><Link to="/sample-report" className="hover:text-bright-turquoise transition-colors">Sample Report</Link></li>
-              <li><Link to="/ai-pipeline" className="hover:text-bright-turquoise transition-colors">AI Pipeline</Link></li>
-              <li><Link to="/documentation" className="hover:text-bright-turquoise transition-colors">Documentation</Link></li>
+              {/* <li><Link to="/ai-pipeline" className="hover:text-bright-turquoise transition-colors">AI Pipeline</Link></li>
+              <li><Link to="/documentation" className="hover:text-bright-turquoise transition-colors">Documentation</Link></li> */}
               <li><Link to="/contact" className="hover:text-bright-turquoise transition-colors">Contact Us</Link></li>
             </ul>
           </div>

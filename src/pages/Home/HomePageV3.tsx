@@ -100,10 +100,10 @@ export const HomePageV3: React.FC = () => {
               <Award className="w-5 h-5 text-blue-600 mr-2" />
               <span className="text-sm text-gray-600">FDA Cleared</span>
             </div>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <Users className="w-5 h-5 text-purple-600 mr-2" />
               <span className="text-sm text-gray-600">50,000+ Scans</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

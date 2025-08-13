@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Heart, FileText, Brain, Users, Shield, CheckCircle, Mail, Bell } from 'lucide-react';
 import { LoadingSpinner } from '../../../components/LoadingSpinner';
 
-export function PatientsPageV2() {
+export function PatientsPageV3() {
   const [email, setEmail] = useState('');
   const [earlyTesting, setEarlyTesting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

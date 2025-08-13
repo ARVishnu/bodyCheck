@@ -180,7 +180,7 @@ export const cardiovascularRows = {
 // Body Composition Rows based on the image
 export const bodyCompositionRows = {
   visceralFatArea: {
-    title: "Visceral Fat Area at L3",
+    title: "Visceral Fat Area (VFA) at L3",
     unit: "cm²",
     value: 186.3,
     handlePosition: "70%",
@@ -195,7 +195,7 @@ export const bodyCompositionRows = {
     ],
   },
   subcutaneousFatArea: {
-    title: "Abdominal Subcutaneous Fat Area at L3",
+    title: "Subcutaneous Fat Area (SFA) at L3",
     unit: "cm²",
     value: 290.0,
     handlePosition: "68%",
@@ -209,8 +209,24 @@ export const bodyCompositionRows = {
       { color: "#ff0000", label: "", value: "250", right: "800" },
     ],
   },
+  visceralSubcutaneousRatio: {
+    title: "Visceral to Subcutaneous Ratio (VSR)",
+    unit: "Ratio",
+    value: 0.6,
+    handlePosition: "54%",
+    handleColor: "#ffd700",
+    handleTextColor: "#000",
+    indicatorColor: "#fff",
+    indicatorBorder: "2px solid #000",
+    sliderType: "linear",
+    ranges: [
+      { color: "#118a0f", label: "", value: "0", right: "" },
+      { color: "#ffd700", label: "", value: "0.4", right: "" },
+      { color: "#ff0000", label: "", value: "0.9", right: "1.5" },
+    ],
+  },
   subcutaneousFatDensity: {
-    title: "Abdominal Subcutaneous Fat Density at L3",
+    title: "Subcutaneous Fat Density (SFD) at L3",
     unit: "HU",
     value: -99.3,
     handlePosition: "56%",
@@ -240,7 +256,7 @@ export const bodyCompositionRows = {
     ],
   },
   liverAttenuation: {
-    title: "Liver Attenuation",
+    title: "Liver Attenuation (LA)",
     unit: "HU",
     value: 70.8,
     handlePosition: "63.5%",
@@ -255,7 +271,7 @@ export const bodyCompositionRows = {
     ],
   },
   boneAttenuation: {
-    title: "Bone Attenuation at L1",
+    title: "Bone Attenuation (BA) at L3",
     unit: "HU",
     value: 109.1,
     handlePosition: "33%",
@@ -270,7 +286,7 @@ export const bodyCompositionRows = {
     ],
   },
   abdominalMuscleArea: {
-    title: "Abdominal Muscle Area at L3",
+    title: "Skeletal Muscle Area (SMA) at L3",
     unit: "cm²",
     value: 143.8,
     handlePosition: "63.5%",
@@ -285,7 +301,7 @@ export const bodyCompositionRows = {
     ],
   },
   abdominalMuscleQuality: {
-    title: "Abdominal Muscle Quality at L3",
+    title: "Skeletal Muscle Density (SMD) at L3",
     unit: "HU",
     value: 23.9,
     handlePosition: "27%",

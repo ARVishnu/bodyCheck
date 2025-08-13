@@ -289,7 +289,7 @@ export function DemoDashboard() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="all">All Statuses</option>
+                  <option value="all">All Status</option>
                   <option value="Needs Review">Needs Review</option>
                   <option value="No Review Needed">No Review Needed</option>
                   <option value="PCP and Patient Notified">
