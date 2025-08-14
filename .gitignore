@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Ignore large 3D heart HTML exports
+public/3Dheart/case005.html
+public/3Dheart/case141.html
