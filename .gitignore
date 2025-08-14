@@ -27,3 +27,7 @@ dist-ssr
 # Ignore large 3D heart HTML exports
 public/3Dheart/case005.html
 public/3Dheart/case141.html
+
+# Ignore large 3D heart HTML exports in BodyCheckUi
+BodyCheckUi/public/3Dheart/case005.html
+BodyCheckUi/public/3Dheart/case141.html
