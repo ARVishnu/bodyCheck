@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Check with backend API if user exists
     try {
-      const response = await fetch('https://7d7a7540cce7.ngrok-free.app/login', {
+      const response = await fetch('https://057cdc10e13d.ngrok-free.app/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: inputPassword }),
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // First, send signup data to backend API
     try {
-      const response = await fetch('https://7d7a7540cce7.ngrok-free.app/signup', {
+      const response = await fetch('https://057cdc10e13d.ngrok-free.app/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({full_name :name, email, password: inputPassword }),

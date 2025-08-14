@@ -49,7 +49,7 @@ export function VerificationModal({
   initialName = '',
   initialPassword = '',
   onSuccess,
-  baseUrl = 'https://7d7a7540cce7.ngrok-free.app'
+  baseUrl = 'https://057cdc10e13d.ngrok-free.app'
 }: VerificationModalProps) {
   const [step, setStep] = useState<'email' | 'otp' | 'password' | 'success'>('email');
   const [email, setEmail] = useState(initialEmail);
