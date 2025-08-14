@@ -49,7 +49,7 @@ export function VerificationModal({
   initialName = '',
   initialPassword = '',
   onSuccess,
-  baseUrl = 'http://127.0.0.1:8000'
+  baseUrl = '/api'
 }: VerificationModalProps) {
   const [step, setStep] = useState<'email' | 'otp' | 'password' | 'success'>('email');
   const [email, setEmail] = useState(initialEmail);
