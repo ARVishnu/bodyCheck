@@ -310,7 +310,7 @@ export function ContactPage() {
               </div>
             </div>
             {/* Demo Scheduling */}
-            {/* <div className="bg-gradient-to-br from-[#002F6C]/5 to-[#00B8A9]/5 border border-[#00B8A9]/20 rounded-2xl p-8">
+            <div className="bg-gradient-to-br from-[#002F6C]/5 to-[#00B8A9]/5 border border-[#00B8A9]/20 rounded-2xl p-8">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#002F6C] to-[#00B8A9] rounded-xl flex items-center justify-center mr-4">
                   <Users className="w-6 h-6 text-white" />
@@ -334,7 +334,7 @@ export function ContactPage() {
                   </button>
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
 
