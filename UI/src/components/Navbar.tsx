@@ -108,14 +108,16 @@ export function Navbar() {
   }
 
   const currentLinks = isAuthenticated ? secureLinks : publicLinks;
-  const isProd = import.meta.env.PROD;
+  const isProd =
+    typeof window !== "undefined" &&
+    window.location.hostname === "ec2-34-205-44-169.compute-1.amazonaws.com";
   const homeDropdownItems = [
     ...(isProd
       ? [
           { to: "/", label: "Home" },
-          { to: "/researchersV3", label: "Researchers" },
-          { to: "/patientsV2", label: "Patients" },
-          { to: "/providers", label: "Providers" },
+          // { to: "/researchersV3", label: "Researchers" },
+          // { to: "/patientsV2", label: "Patients" },
+          // { to: "/providers", label: "Providers" },
         ]
       : [
           { to: "/", label: "HomeV1" },
@@ -158,43 +160,58 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {/* Home Dropdown */}
-            <div className="relative" ref={homeDropdownRef}>
-              <button
-                onClick={handleHomeDropdownToggle}
-                className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
-                  homeDropdownItems.some(
-                    (item) => location.pathname === item.to
-                  )
-                    ? "text-turquoise border-b-2 border-turquoise pb-1"
-                    : "text-cloud-burst"
-                }`}
-              >
-                <span>Home</span>
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${
-                    isHomeDropdownOpen ? "rotate-180" : ""
+            {homeDropdownItems.length > 1 ? (
+              <div className="relative" ref={homeDropdownRef}>
+                <button
+                  onClick={handleHomeDropdownToggle}
+                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
+                    homeDropdownItems.some(
+                      (item) => location.pathname === item.to
+                    )
+                      ? "text-turquoise border-b-2 border-turquoise pb-1"
+                      : "text-cloud-burst"
                   }`}
-                />
-              </button>
-              {isHomeDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  {homeDropdownItems.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                        location.pathname === item.to
-                          ? "text-turquoise bg-gray-50"
-                          : "text-cloud-burst"
-                      }`}
-                      onClick={() => setIsHomeDropdownOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                >
+                  <span>Home</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${
+                      isHomeDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {isHomeDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                    {homeDropdownItems.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                          location.pathname === item.to
+                            ? "text-turquoise bg-gray-50"
+                            : "text-cloud-burst"
+                        }`}
+                        onClick={() => setIsHomeDropdownOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              homeDropdownItems.length === 1 && (
+                <Link
+                  to={homeDropdownItems[0].to}
+                  className={`text-sm font-medium transition-colors hover:text-turquoise ${
+                    location.pathname === homeDropdownItems[0].to
+                      ? "text-turquoise border-b-2 border-turquoise pb-1"
+                      : "text-cloud-burst"
+                  }`}
+                >
+                  {homeDropdownItems[0].label}
+                </Link>
+              )
+            )}
 
             {/* Sample Report Dropdown */}
             {sampleReportDropdownItems.length > 1 ? (

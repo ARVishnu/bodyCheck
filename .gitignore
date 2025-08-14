@@ -26,8 +26,8 @@ dist-ssr
 
 
 # Ignore large 3D heart HTML exports in BodyCheckUi
-BodyCheckUi/public/3Dheart/case005.html
-BodyCheckUi/public/3Dheart/case141.html
+UI/public/3Dheart/case005.html
+UI/public/3Dheart/case141.html
 
 
 # Backend git Ignore
