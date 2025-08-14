@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 import secrets
 import smtplib
@@ -30,12 +31,31 @@ app.add_middleware(
 # ---------- Google Sheets Auth ----------
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
+# Prefer credentials from environment variables
+# - GOOGLE_SERVICE_ACCOUNT_JSON: full JSON content
+# - GOOGLE_APPLICATION_CREDENTIALS: path to JSON file
+creds = None
+client = None
 try:
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "gen-lang-client-0972324769-f6bac2d207cd.json", scope
-    )
-    client = gspread.authorize(creds)
-    logger.info("Google Sheets authentication successful")
+    service_account_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+    service_account_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+    if service_account_json:
+        creds_dict = json.loads(service_account_json)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    elif service_account_path and os.path.exists(service_account_path):
+        creds = ServiceAccountCredentials.from_json_keyfile_name(service_account_path, scope)
+    elif os.path.exists("gen-lang-client-0972324769-f6bac2d207cd.json"):
+        # Local dev fallback only; file should not be committed
+        creds = ServiceAccountCredentials.from_json_keyfile_name(
+            "gen-lang-client-0972324769-f6bac2d207cd.json", scope
+        )
+
+    if creds is not None:
+        client = gspread.authorize(creds)
+        logger.info("Google Sheets authentication successful")
+    else:
+        raise RuntimeError("No Google service account credentials provided")
 except Exception as e:
     logger.error(f"Google Sheets authentication failed: {e}")
     client = None
