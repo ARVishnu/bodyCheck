@@ -5,10 +5,9 @@ import secrets
 import smtplib
 from email.message import EmailMessage
 from datetime import datetime, timedelta
+import sqlite3
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,109 +27,113 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------- Google Sheets Auth ----------
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+"""
+SQLite storage for user accounts
+Table: users
+  - id INTEGER PRIMARY KEY AUTOINCREMENT
+  - full_name TEXT NOT NULL
+  - email TEXT NOT NULL UNIQUE
+  - password_hash TEXT NOT NULL
+  - created_at TEXT NOT NULL (ISO timestamp UTC)
+  - status TEXT NOT NULL ('pending' | 'active')
+  - otp_code TEXT NULL
+  - otp_expiry TEXT NULL (ISO timestamp UTC)
+"""
 
-# Prefer credentials from environment variables
-# - GOOGLE_SERVICE_ACCOUNT_JSON: full JSON content
-# - GOOGLE_APPLICATION_CREDENTIALS: path to JSON file
-creds = None
-client = None
-try:
-    service_account_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
-    service_account_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+DB_PATH = os.environ.get("SQLITE_DB_PATH")
+if not DB_PATH:
+    DB_PATH = os.path.join(os.path.dirname(__file__), "logins.db")
 
-    if service_account_json:
-        creds_dict = json.loads(service_account_json)
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-    elif service_account_path and os.path.exists(service_account_path):
-        creds = ServiceAccountCredentials.from_json_keyfile_name(service_account_path, scope)
-    elif os.path.exists("gen-lang-client-0972324769-f6bac2d207cd.json"):
-        # Local dev fallback only; file should not be committed
-        creds = ServiceAccountCredentials.from_json_keyfile_name(
-            "gen-lang-client-0972324769-f6bac2d207cd.json", scope
+conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+conn.row_factory = sqlite3.Row
+
+def init_db():
+    try:
+        with conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    full_name TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    otp_code TEXT,
+                    otp_expiry TEXT
+                )
+                """
+            )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS login_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    user_email TEXT NOT NULL,
+                    login_at TEXT NOT NULL,
+                    success INTEGER NOT NULL,
+                    ip_address TEXT,
+                    user_agent TEXT,
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                )
+                """
+            )
+        logger.info(f"SQLite initialized at {DB_PATH}")
+    except Exception as e:
+        logger.error(f"Failed to initialize SQLite DB: {e}")
+
+def get_user_by_email(email: str):
+    cur = conn.execute("SELECT * FROM users WHERE email = ?", (email,))
+    row = cur.fetchone()
+    return dict(row) if row else None
+
+def create_user_pending(full_name: str, email: str, password_hash: str, otp_code: str, otp_expiry: str):
+    created_at = datetime.utcnow().isoformat()
+    with conn:
+        conn.execute(
+            """
+            INSERT INTO users (full_name, email, password_hash, created_at, status, otp_code, otp_expiry)
+            VALUES (?, ?, ?, ?, 'pending', ?, ?)
+            """,
+            (full_name, email, password_hash, created_at, otp_code, otp_expiry),
         )
 
-    if creds is not None:
-        client = gspread.authorize(creds)
-        logger.info("Google Sheets authentication successful")
-    else:
-        raise RuntimeError("No Google service account credentials provided")
-except Exception as e:
-    logger.error(f"Google Sheets authentication failed: {e}")
-    client = None
+def set_user_status(email: str, status: str):
+    with conn:
+        conn.execute("UPDATE users SET status = ? WHERE email = ?", (status, email))
 
-# ---------- Open Sheet ----------
-SHEET_ID = "1lMTiOU1Oa_7-41nTQOgBKWRTeUKHGyLAYBXb-c0rNyg"
-sheet = None
-headers = []
-try:
-    if client:
-        sh = client.open_by_key(SHEET_ID)
-        sheet = sh.get_worksheet(0)  # first worksheet
-        headers = sheet.row_values(1)
-        logger.info(f"Opened sheet; headers: {headers}")
-    else:
-        logger.error("Client is None; cannot open sheet")
-except Exception as e:
-    logger.error(f"Failed to open sheet: {e}")
-    sheet = None
-    headers = []
+def set_user_otp(email: str, otp_code: str, otp_expiry: str):
+    with conn:
+        conn.execute("UPDATE users SET otp_code = ?, otp_expiry = ? WHERE email = ?", (otp_code, otp_expiry, email))
 
-# ---------- Helper utilities for sheet operations ----------
-def refresh_headers():
-    global headers
-    try:
-        headers = sheet.row_values(1)
-    except Exception as e:
-        logger.error(f"Error refreshing headers: {e}")
+def clear_user_otp(email: str):
+    with conn:
+        conn.execute("UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = ?", (email,))
 
-def col_index(col_name: str):
-    """
-    Return 1-based column index for a header name. If column missing, return None.
-    """
-    try:
-        refresh_headers()
-        idx = headers.index(col_name) + 1
-        return idx
-    except ValueError:
-        return None
+def update_user_password(email: str, new_password_hash: str):
+    with conn:
+        conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_password_hash, email))
 
-def find_row_by_email(email: str):
-    """
-    Return row number (1-based) for the first occurrence of email in the Email column.
-    If not found, returns None.
-    """
-    try:
-        email_col = col_index("Email")
-        if email_col is None:
-            logger.error("Email column not found in sheet headers")
-            return None
-        cell = sheet.find(email, in_column=email_col)
-        if cell:
-            return cell.row
-    except Exception:
-        # sheet.find raises if not found -> handle silently
-        return None
-    return None
+# ---------- Login event logging ----------
+def log_login_event(user_id: int | None, user_email: str, success: bool, ip_address: str | None, user_agent: str | None):
+    with conn:
+        conn.execute(
+            """
+            INSERT INTO login_events (user_id, user_email, login_at, success, ip_address, user_agent)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                user_id,
+                user_email,
+                datetime.utcnow().isoformat(),
+                1 if success else 0,
+                ip_address,
+                user_agent,
+            ),
+        )
 
-def get_row_record(row: int):
-    """
-    Return dict mapping header->value for the given 1-based row number.
-    """
-    row_values = sheet.row_values(row)
-    # ensure list length equals headers length for mapping
-    values = row_values + [""] * (len(headers) - len(row_values))
-    return dict(zip(headers, values))
-
-def update_cell(row: int, col_name: str, value):
-    ci = col_index(col_name)
-    if ci is None:
-        # if column doesn't exist, append it to headers and update sheet header row
-        headers.append(col_name)
-        sheet.update_cell(1, len(headers), col_name)
-        ci = len(headers)
-    sheet.update_cell(row, ci, value)
+# Initialize database on startup
+init_db()
 
 # ---------- Email (SMTP) utility ----------
 try:
@@ -211,19 +214,77 @@ class ResetRequest(BaseModel):
     otp: str
     new_password: str
 
+# ---------- Admin utilities and endpoints ----------
+def _get_admin_emails():
+    raw = os.environ.get("ADMIN_EMAILS", "")
+    return {e.strip().lower() for e in raw.split(",") if e.strip()}
+
+def _require_admin_from_headers(request: Request):
+    admin_email = request.headers.get("X-Admin-Email")
+    admin_password = request.headers.get("X-Admin-Password")
+    # hardcoded admin for testing
+    if admin_email == "vishnu@example.com" and admin_password == "123":
+        return {"email": admin_email, "status": "active"}
+    if not admin_email or not admin_password:
+        raise HTTPException(status_code=401, detail="Missing admin credentials")
+    admin_email_lc = admin_email.strip().lower()
+    allowed = _get_admin_emails()
+    if allowed and admin_email_lc not in allowed:
+        raise HTTPException(status_code=403, detail="Not an admin account")
+    user = get_user_by_email(admin_email_lc)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    if user.get("status") != "active":
+        raise HTTPException(status_code=403, detail="Admin account not active")
+    stored_pw = user.get("password_hash") or ""
+    if not bcrypt.verify(admin_password, stored_pw):
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    return user
+
+def _list_users(limit: int | None = None):
+    query = "SELECT id, full_name, email, created_at, status FROM users ORDER BY datetime(created_at) DESC"
+    if limit is not None:
+        cur = conn.execute(query + " LIMIT ?", (int(limit),))
+    else:
+        cur = conn.execute(query)
+    return [dict(r) for r in cur.fetchall()]
+
+def _list_login_events(limit: int | None = None):
+    query = (
+        "SELECT id, user_id, user_email, login_at, success, ip_address, user_agent "
+        "FROM login_events ORDER BY datetime(login_at) DESC"
+    )
+    if limit is not None:
+        cur = conn.execute(query + " LIMIT ?", (int(limit),))
+    else:
+        cur = conn.execute(query)
+    rows = [dict(r) for r in cur.fetchall()]
+    for r in rows:
+        r["success"] = bool(r.get("success"))
+    return rows
+
+@app.get("/admin/data")
+async def admin_all_data(request: Request, users_limit: int | None = None, events_limit: int | None = None):
+    _require_admin_from_headers(request)
+    users = _list_users(users_limit)
+    events = _list_login_events(events_limit)
+    totals = _list_users()
+    total_events = _list_login_events()
+    stats = {
+        "total_users": len(totals),
+        "total_events": len(total_events),
+        "active_users": sum(1 for u in totals if u.get("status") == "active"),
+        "pending_users": sum(1 for u in totals if u.get("status") == "pending"),
+    }
+    return {"users": users, "login_events": events, "stats": stats}
+
 # ---------- Signup with OTP verification ----------
 @app.post("/signup")
 async def signup(data: SignupData):
-    if sheet is None:
-        logger.error("Sheet is None in signup")
-        raise HTTPException(status_code=500, detail="Google Sheet not available")
     try:
-        # check existing
-        all_data = sheet.get_all_records()
-        for row in all_data:
-            # tolerate header capitalization: check keys for "Email" or "email"
-            if (row.get("Email") or row.get("email")) == data.email:
-                raise HTTPException(status_code=400, detail="Email already registered")
+        existing = get_user_by_email(data.email)
+        # if existing:
+        #     raise HTTPException(status_code=400, detail="Email already registered")
         
         # generate 6-digit OTP
         otp_code = f"{secrets.randbelow(10**6):06d}"
@@ -231,10 +292,10 @@ async def signup(data: SignupData):
         
         # store signup data temporarily with OTP
         password_hash = bcrypt.hash(data.password)
-        current_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Append row with temporary status
-        sheet.append_row([data.full_name, data.email, password_hash, current_date, "pending", otp_code, expiry])
+        try:
+            create_user_pending(data.full_name, data.email, password_hash, otp_code, expiry)
+        except sqlite3.IntegrityError:
+            raise HTTPException(status_code=400, detail="Email already registered")
         logger.info(f"Signup initiated for: {data.email}")
         
         # send OTP email
@@ -252,33 +313,16 @@ async def signup(data: SignupData):
 
 @app.post("/signup-verify")
 async def signup_verify(data: SignupVerifyData):
-    if sheet is None:
-        logger.error("Sheet is None in signup-verify")
-        raise HTTPException(status_code=500, detail="Google Sheet not available")
     try:
-        row_num = find_row_by_email(data.email)
-        if not row_num:
+        user = get_user_by_email(data.email)
+        if not user:
             raise HTTPException(status_code=404, detail="Signup request not found")
-        
-        record = get_row_record(row_num)
-        status = record.get("Status", "")
-        
-        # If Status column doesn't exist, check if this is a new signup with OTP
-        if not status:
-            # Check if OTP_Code exists and is not empty
-            otp_stored = record.get("OTP_Code", "")
-            if otp_stored:
-                # This is a pending signup, treat as pending
-                status = "pending"
-            else:
-                # This is an old account without Status column, treat as active
-                status = "active"
-        
+        status = user.get("status", "")
         if status != "pending":
             raise HTTPException(status_code=400, detail="Invalid signup status")
         
-        otp_stored = record.get("OTP_Code", "")
-        otp_expiry = record.get("OTP_Expiry", "")
+        otp_stored = user.get("otp_code", "")
+        otp_expiry = user.get("otp_expiry", "")
         
         if not otp_stored:
             raise HTTPException(status_code=400, detail="No OTP found for this signup")
@@ -309,9 +353,8 @@ async def signup_verify(data: SignupVerifyData):
             raise HTTPException(status_code=401, detail="Invalid OTP")
         
         # activate account
-        update_cell(row_num, "Status", "active")
-        update_cell(row_num, "OTP_Code", "")
-        update_cell(row_num, "OTP_Expiry", "")
+        set_user_status(data.email, "active")
+        clear_user_otp(data.email)
         
         logger.info(f"Signup verified successfully for: {data.email}")
         return {"message": "Signup verified successfully! You can now login."}
@@ -324,56 +367,38 @@ async def signup_verify(data: SignupVerifyData):
 
 # ---------- Login (updated to check for active status) ----------
 @app.post("/login")
-async def login(data: LoginData):
+async def login(data: LoginData, request: Request):
     logger.info(f"Login attempt for: {data.email}")
-    if sheet is None:
-        logger.error("Sheet is None in login")
-        raise HTTPException(status_code=500, detail="Google Sheet not available")
     try:
-        row_num = find_row_by_email(data.email)
-        if not row_num:
+        user = get_user_by_email(data.email)
+        if not user:
             logger.warning(f"User not found: {data.email}")
+            # record failed attempt
+            ip = request.client.host if request and request.client else None
+            ua = request.headers.get("user-agent") if request else None
+            log_login_event(None, data.email, False, ip, ua)
             raise HTTPException(status_code=404, detail="User not found")
         
-        record = get_row_record(row_num)
-        status = record.get("Status", "")
-        
-        # Handle missing Status column for backward compatibility
-        if not status:
-            # Check if OTP_Code exists and is not empty
-            otp_stored = record.get("OTP_Code", "")
-            if otp_stored:
-                # This is a pending signup
-                status = "pending"
-            else:
-                # This is an old account without Status column, treat as active
-                status = "active"
+        status = user.get("status", "")
         
         # check if account is active
         if status == "pending":
+            ip = request.client.host if request and request.client else None
+            ua = request.headers.get("user-agent") if request else None
+            log_login_event(user.get("id"), data.email, False, ip, ua)
             raise HTTPException(status_code=401, detail="Account not verified. Please check your email for OTP.")
         
-        stored_pw = record.get("Password") or record.get("password") or ""
-        # Determine if stored_pw is a bcrypt hash
-        if stored_pw.startswith("$2b$") or stored_pw.startswith("$2a$"):
-            # hashed
-            if bcrypt.verify(data.password, stored_pw):
-                logger.info(f"Login success (hashed) for {data.email}")
-                return {"message": "Login successful","full_name":record.get("Full Name")}
-            else:
-                logger.warning(f"Invalid password for {data.email}")
-                raise HTTPException(status_code=401, detail="Invalid password")
+        stored_pw = user.get("password_hash") or ""
+        ip = request.client.host if request and request.client else None
+        ua = request.headers.get("user-agent") if request else None
+        if bcrypt.verify(data.password, stored_pw):
+            logger.info(f"Login success for {data.email}")
+            log_login_event(user.get("id"), data.email, True, ip, ua)
+            return {"message": "Login successful", "full_name": user.get("full_name")}
         else:
-            # stored as plaintext (migration support)
-            if str(stored_pw) == str(data.password):
-                # re-hash and update sheet
-                new_hash = bcrypt.hash(data.password)
-                update_cell(row_num, "Password", new_hash)
-                logger.info(f"Login success (plaintext migrated->hashed) for {data.email}")
-                return {"message": "Login successful; password migrated"}
-            else:
-                logger.warning(f"Invalid password (plaintext) for {data.email}")
-                raise HTTPException(status_code=401, detail="Invalid password")
+            logger.warning(f"Invalid password for {data.email}")
+            log_login_event(user.get("id"), data.email, False, ip, ua)
+            raise HTTPException(status_code=401, detail="Invalid password")
     except HTTPException:
         raise
     except Exception as e:
@@ -384,21 +409,17 @@ async def login(data: LoginData):
 
 @app.post("/forgot-password")
 async def forgot_password(req: ForgotRequest):
-    if sheet is None:
-        logger.error("Sheet is None in forgot-password")
-        raise HTTPException(status_code=500, detail="Google Sheet not available")
     try:
-        row_num = find_row_by_email(req.email)
-        if not row_num:
+        user = get_user_by_email(req.email)
+        if not user:
             logger.warning(f"Forgot password requested for unknown email: {req.email}")
             # for security, don't reveal whether email exists; still return success
             return {"message": "If that email exists, an OTP has been sent"}
         # generate 6-digit OTP
         otp_code = f"{secrets.randbelow(10**6):06d}"
         expiry = (datetime.utcnow() + timedelta(minutes=OTP_TTL_MINUTES)).isoformat()
-        # Ensure columns exist and update
-        update_cell(row_num, "OTP_Code", otp_code)
-        update_cell(row_num, "OTP_Expiry", expiry)
+        # update user with OTP
+        set_user_otp(req.email, otp_code, expiry)
         # send email (best-effort)
         sent, err = send_otp_email(req.email, otp_code)
         if not sent:
@@ -413,17 +434,13 @@ async def forgot_password(req: ForgotRequest):
 # ---------- Reset password using OTP ----------
 @app.post("/reset-password")
 async def reset_password(req: ResetRequest):
-    if sheet is None:
-        logger.error("Sheet is None in reset-password")
-        raise HTTPException(status_code=500, detail="Google Sheet not available")
     try:
-        row_num = find_row_by_email(req.email)
-        if not row_num:
+        user = get_user_by_email(req.email)
+        if not user:
             logger.warning(f"Reset attempt for unknown email: {req.email}")
             raise HTTPException(status_code=404, detail="User not found")
-        record = get_row_record(row_num)
-        otp_stored = record.get("OTP_Code", "")
-        otp_expiry = record.get("OTP_Expiry", "")
+        otp_stored = user.get("otp_code", "")
+        otp_expiry = user.get("otp_expiry", "")
         if not otp_stored:
             raise HTTPException(status_code=400, detail="No OTP requested for this account")
         # compare expiry
@@ -449,10 +466,9 @@ async def reset_password(req: ResetRequest):
             raise HTTPException(status_code=401, detail="Invalid OTP")
         # all good -> update password (hash)
         new_hash = bcrypt.hash(req.new_password)
-        update_cell(row_num, "Password", new_hash)
+        update_user_password(req.email, new_hash)
         # clear OTP fields
-        update_cell(row_num, "OTP_Code", "")
-        update_cell(row_num, "OTP_Expiry", "")
+        clear_user_otp(req.email)
         logger.info(f"Password reset successful for: {req.email}")
         return {"message": "Password reset successful"}
     except HTTPException:
@@ -465,10 +481,10 @@ async def reset_password(req: ResetRequest):
 @app.get("/health")
 async def health_check():
     try:
-        if sheet is None:
-            return {"status": "error", "message": "Google Sheet not available"}
-        refresh_headers()
-        return {"status": "healthy", "headers": headers}
+        # Simple DB query to confirm connectivity
+        cur = conn.execute("SELECT COUNT(*) as c FROM users")
+        count = cur.fetchone()[0]
+        return {"status": "healthy", "db_path": DB_PATH, "user_count": count}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 

@@ -1,4 +1,7 @@
+# Data Save to CSV
+
 import os
+import json
 import logging
 import secrets
 import smtplib
@@ -30,12 +33,31 @@ app.add_middleware(
 # ---------- Google Sheets Auth ----------
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
+# Prefer credentials from environment variables
+# - GOOGLE_SERVICE_ACCOUNT_JSON: full JSON content
+# - GOOGLE_APPLICATION_CREDENTIALS: path to JSON file
+creds = None
+client = None
 try:
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "gen-lang-client-0972324769-f6bac2d207cd.json", scope
-    )
-    client = gspread.authorize(creds)
-    logger.info("Google Sheets authentication successful")
+    service_account_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+    service_account_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+
+    if service_account_json:
+        creds_dict = json.loads(service_account_json)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    elif service_account_path and os.path.exists(service_account_path):
+        creds = ServiceAccountCredentials.from_json_keyfile_name(service_account_path, scope)
+    elif os.path.exists("gen-lang-client-0972324769-f6bac2d207cd.json"):
+        # Local dev fallback only; file should not be committed
+        creds = ServiceAccountCredentials.from_json_keyfile_name(
+            "gen-lang-client-0972324769-f6bac2d207cd.json", scope
+        )
+
+    if creds is not None:
+        client = gspread.authorize(creds)
+        logger.info("Google Sheets authentication successful")
+    else:
+        raise RuntimeError("No Google service account credentials provided")
 except Exception as e:
     logger.error(f"Google Sheets authentication failed: {e}")
     client = None
@@ -123,22 +145,47 @@ except ImportError:
     SMTP_PASS = os.environ.get("SMTP_PASS")
     OTP_TTL_MINUTES = int(os.environ.get("OTP_TTL_MINUTES", 15))
 
-def send_otp_email(recipient_email: str, otp_code: str):
+def send_otp_email(recipient_email: str, otp_code: str, purpose: str = "verification"):
     if not SMTP_USER or not SMTP_PASS:
         logger.warning("SMTP credentials not set; skipping sending email (development mode)")
         return False, "SMTP not configured"
     try:
         msg = EmailMessage()
-        msg["Subject"] = "Your OTP code"
+        
+        if purpose == "signup":
+            msg["Subject"] = "Verify your BodyCheck account"
+            content = f"""Welcome to BodyCheck!
+
+Your verification code is: {otp_code}
+
+This code will expire in {OTP_TTL_MINUTES} minutes.
+
+Please enter this code to complete your account registration.
+
+Best regards,
+BodyCheck Team"""
+        else:
+            msg["Subject"] = "Reset your BodyCheck password"
+            content = f"""Password Reset Request
+
+Your OTP code is: {otp_code}
+
+This code will expire in {OTP_TTL_MINUTES} minutes.
+
+If you didn't request this password reset, please ignore this email.
+
+Best regards,
+BodyCheck Team"""
+        
         msg["From"] = SMTP_USER
         msg["To"] = recipient_email
-        msg.set_content(f"Your OTP code is: {otp_code}\nThis code will expire in 15 minutes.")
+        msg.set_content(content)
 
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
             smtp.starttls()
             smtp.login(SMTP_USER, SMTP_PASS)
             smtp.send_message(msg)
-        logger.info(f"Sent OTP email to {recipient_email}")
+        logger.info(f"Sent {purpose} OTP email to {recipient_email}")
         return True, None
     except Exception as e:
         logger.error(f"Failed to send email: {e}")
@@ -149,6 +196,10 @@ class SignupData(BaseModel):
     full_name: str
     email: str
     password: str
+
+class SignupVerifyData(BaseModel):
+    email: str
+    otp: str
 
 class LoginData(BaseModel):
     email: str
@@ -162,7 +213,7 @@ class ResetRequest(BaseModel):
     otp: str
     new_password: str
 
-# ---------- Existing endpoints (signup/login) ----------
+# ---------- Signup with OTP verification ----------
 @app.post("/signup")
 async def signup(data: SignupData):
     if sheet is None:
@@ -175,20 +226,105 @@ async def signup(data: SignupData):
             # tolerate header capitalization: check keys for "Email" or "email"
             if (row.get("Email") or row.get("email")) == data.email:
                 raise HTTPException(status_code=400, detail="Email already registered")
-        # store password hashed
+        
+        # generate 6-digit OTP
+        otp_code = f"{secrets.randbelow(10**6):06d}"
+        expiry = (datetime.utcnow() + timedelta(minutes=OTP_TTL_MINUTES)).isoformat()
+        
+        # store signup data temporarily with OTP
         password_hash = bcrypt.hash(data.password)
-        from datetime import datetime
         current_date = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        # Append row. Ensure your sheet columns order: Full Name, Email, Password, Signup Date, ...
-        sheet.append_row([data.full_name, data.email, password_hash, current_date])
-        logger.info(f"Registered new user: {data.email}")
-        return {"message": "Signup successful"}
+        
+        # Append row with temporary status
+        sheet.append_row([data.full_name, data.email, password_hash, current_date, "pending", otp_code, expiry])
+        logger.info(f"Signup initiated for: {data.email}")
+        
+        # send OTP email
+        sent, err = send_otp_email(data.email, otp_code, "signup")
+        if not sent:
+            logger.error(f"Failed to send signup OTP email: {err}")
+            return {"message": "Signup initiated. Please check your email for OTP verification."}
+        
+        return {"message": "Signup initiated. Please check your email for OTP verification."}
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Signup error: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to save data: {e}")
 
+@app.post("/signup-verify")
+async def signup_verify(data: SignupVerifyData):
+    if sheet is None:
+        logger.error("Sheet is None in signup-verify")
+        raise HTTPException(status_code=500, detail="Google Sheet not available")
+    try:
+        row_num = find_row_by_email(data.email)
+        if not row_num:
+            raise HTTPException(status_code=404, detail="Signup request not found")
+        
+        record = get_row_record(row_num)
+        status = record.get("Status", "")
+        
+        # If Status column doesn't exist, check if this is a new signup with OTP
+        if not status:
+            # Check if OTP_Code exists and is not empty
+            otp_stored = record.get("OTP_Code", "")
+            if otp_stored:
+                # This is a pending signup, treat as pending
+                status = "pending"
+            else:
+                # This is an old account without Status column, treat as active
+                status = "active"
+        
+        if status != "pending":
+            raise HTTPException(status_code=400, detail="Invalid signup status")
+        
+        otp_stored = record.get("OTP_Code", "")
+        otp_expiry = record.get("OTP_Expiry", "")
+        
+        if not otp_stored:
+            raise HTTPException(status_code=400, detail="No OTP found for this signup")
+        
+        # check expiry
+        try:
+            # Handle different datetime formats
+            if otp_expiry:
+                try:
+                    expiry_dt = datetime.fromisoformat(otp_expiry)
+                except ValueError:
+                    try:
+                        # Try parsing as regular datetime string
+                        expiry_dt = datetime.strptime(otp_expiry, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        # Try parsing without microseconds
+                        expiry_dt = datetime.strptime(otp_expiry.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+            else:
+                raise HTTPException(status_code=400, detail="OTP expired")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid OTP expiry format")
+        
+        if datetime.utcnow() > expiry_dt:
+            raise HTTPException(status_code=400, detail="OTP expired")
+        
+        # verify OTP
+        if str(otp_stored) != str(data.otp):
+            raise HTTPException(status_code=401, detail="Invalid OTP")
+        
+        # activate account
+        update_cell(row_num, "Status", "active")
+        update_cell(row_num, "OTP_Code", "")
+        update_cell(row_num, "OTP_Expiry", "")
+        
+        logger.info(f"Signup verified successfully for: {data.email}")
+        return {"message": "Signup verified successfully! You can now login."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Signup verify error: {e}")
+        raise HTTPException(status_code=500, detail=f"Verification failed: {e}")
+
+# ---------- Login (updated to check for active status) ----------
 @app.post("/login")
 async def login(data: LoginData):
     logger.info(f"Login attempt for: {data.email}")
@@ -200,14 +336,32 @@ async def login(data: LoginData):
         if not row_num:
             logger.warning(f"User not found: {data.email}")
             raise HTTPException(status_code=404, detail="User not found")
+        
         record = get_row_record(row_num)
+        status = record.get("Status", "")
+        
+        # Handle missing Status column for backward compatibility
+        if not status:
+            # Check if OTP_Code exists and is not empty
+            otp_stored = record.get("OTP_Code", "")
+            if otp_stored:
+                # This is a pending signup
+                status = "pending"
+            else:
+                # This is an old account without Status column, treat as active
+                status = "active"
+        
+        # check if account is active
+        if status == "pending":
+            raise HTTPException(status_code=401, detail="Account not verified. Please check your email for OTP.")
+        
         stored_pw = record.get("Password") or record.get("password") or ""
         # Determine if stored_pw is a bcrypt hash
         if stored_pw.startswith("$2b$") or stored_pw.startswith("$2a$"):
             # hashed
             if bcrypt.verify(data.password, stored_pw):
                 logger.info(f"Login success (hashed) for {data.email}")
-                return {"message": "Login successful"}
+                return {"message": "Login successful","full_name":record.get("Full Name")}
             else:
                 logger.warning(f"Invalid password for {data.email}")
                 raise HTTPException(status_code=401, detail="Invalid password")
@@ -276,7 +430,19 @@ async def reset_password(req: ResetRequest):
             raise HTTPException(status_code=400, detail="No OTP requested for this account")
         # compare expiry
         try:
-            expiry_dt = datetime.fromisoformat(otp_expiry)
+            # Handle different datetime formats
+            if otp_expiry:
+                try:
+                    expiry_dt = datetime.fromisoformat(otp_expiry)
+                except ValueError:
+                    try:
+                        # Try parsing as regular datetime string
+                        expiry_dt = datetime.strptime(otp_expiry, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        # Try parsing without microseconds
+                        expiry_dt = datetime.strptime(otp_expiry.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+            else:
+                raise HTTPException(status_code=400, detail="OTP expired")
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid OTP expiry format on server")
         if datetime.utcnow() > expiry_dt:
@@ -307,3 +473,5 @@ async def health_check():
         return {"status": "healthy", "headers": headers}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
