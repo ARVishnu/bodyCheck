@@ -110,7 +110,7 @@ export function Navbar() {
   const currentLinks = isAuthenticated ? secureLinks : publicLinks;
   const isProd =
     typeof window !== "undefined" &&
-    window.location.hostname === "http://bodycheck.ai/";
+    window.location.hostname === "bodycheck.ai";
   const homeDropdownItems = [
     ...(isProd
       ? [
@@ -281,6 +281,14 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <a
+              href="https://bodycheck.ai/admin/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium transition-colors hover:text-turquoise text-cloud-burst"
+            >
+              Admin
+            </a>
           </div>
 
           {/* User Menu / Auth Buttons */}
@@ -423,6 +431,14 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <a
+                href="/admin/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-gray-700"
+              >
+                Admin
+              </a>
 
               {isAuthenticated && user ? (
                 <div className="pt-3 border-t border-gray-200">

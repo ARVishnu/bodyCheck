@@ -6,6 +6,7 @@ import smtplib
 from email.message import EmailMessage
 from datetime import datetime, timedelta
 import sqlite3
+import shutil
 
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
@@ -40,17 +41,46 @@ Table: users
   - otp_expiry TEXT NULL (ISO timestamp UTC)
 """
 
-DB_PATH = os.environ.get("SQLITE_DB_PATH")
-if not DB_PATH:
-    DB_PATH = os.path.join(os.path.dirname(__file__), "logins.db")
+DATA_ROOT = os.environ.get("BODYCHECK_DATA_ROOT") or os.path.dirname(__file__)
 
-conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-conn.row_factory = sqlite3.Row
+# Ensure separate folders for users and logins
+USERS_DB_PATH = os.environ.get("USERS_DB_PATH") or os.path.join(DATA_ROOT, "users", "UserData.db")
+LOGINS_DB_PATH = os.environ.get("LOGINS_DB_PATH") or os.path.join(DATA_ROOT, "logins", "logins.db")
 
-def init_db():
+os.makedirs(os.path.dirname(USERS_DB_PATH), exist_ok=True)
+os.makedirs(os.path.dirname(LOGINS_DB_PATH), exist_ok=True)
+
+# Migrate legacy DBs in API root if present and targets don't exist
+try:
+    legacy_users = os.path.join(os.path.dirname(__file__), "UserData.db")
+    if not os.path.exists(USERS_DB_PATH) and os.path.exists(legacy_users):
+        shutil.copy2(legacy_users, USERS_DB_PATH)
+        logger.info(f"Migrated legacy users DB from {legacy_users} -> {USERS_DB_PATH}")
+except Exception as e:
+    logger.warning(f"Users DB migration skipped: {e}")
+
+try:
+    legacy_logins_candidates = [
+        os.path.join(os.path.dirname(__file__), "logins.ds"),
+        os.path.join(os.path.dirname(__file__), "logins.db"),
+    ]
+    legacy_logins = next((p for p in legacy_logins_candidates if os.path.exists(p)), None)
+    if not os.path.exists(LOGINS_DB_PATH) and legacy_logins:
+        shutil.copy2(legacy_logins, LOGINS_DB_PATH)
+        logger.info(f"Migrated legacy login events DB from {legacy_logins} -> {LOGINS_DB_PATH}")
+except Exception as e:
+    logger.warning(f"Login events DB migration skipped: {e}")
+
+users_conn = sqlite3.connect(USERS_DB_PATH, check_same_thread=False)
+users_conn.row_factory = sqlite3.Row
+
+events_conn = sqlite3.connect(LOGINS_DB_PATH, check_same_thread=False)
+events_conn.row_factory = sqlite3.Row
+
+def init_users_db():
     try:
-        with conn:
-            conn.execute(
+        with users_conn:
+            users_conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,7 +94,14 @@ def init_db():
                 )
                 """
             )
-            conn.execute(
+        logger.info(f"Users SQLite initialized at {USERS_DB_PATH}")
+    except Exception as e:
+        logger.error(f"Failed to initialize users SQLite DB: {e}")
+
+def init_logins_db():
+    try:
+        with events_conn:
+            events_conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS login_events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,24 +110,23 @@ def init_db():
                     login_at TEXT NOT NULL,
                     success INTEGER NOT NULL,
                     ip_address TEXT,
-                    user_agent TEXT,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
+                    user_agent TEXT
                 )
                 """
             )
-        logger.info(f"SQLite initialized at {DB_PATH}")
+        logger.info(f"Login events SQLite initialized at {LOGINS_DB_PATH}")
     except Exception as e:
-        logger.error(f"Failed to initialize SQLite DB: {e}")
+        logger.error(f"Failed to initialize login events SQLite DB: {e}")
 
 def get_user_by_email(email: str):
-    cur = conn.execute("SELECT * FROM users WHERE email = ?", (email,))
+    cur = users_conn.execute("SELECT * FROM users WHERE email = ?", (email,))
     row = cur.fetchone()
     return dict(row) if row else None
 
 def create_user_pending(full_name: str, email: str, password_hash: str, otp_code: str, otp_expiry: str):
     created_at = datetime.utcnow().isoformat()
-    with conn:
-        conn.execute(
+    with users_conn:
+        users_conn.execute(
             """
             INSERT INTO users (full_name, email, password_hash, created_at, status, otp_code, otp_expiry)
             VALUES (?, ?, ?, ?, 'pending', ?, ?)
@@ -99,25 +135,25 @@ def create_user_pending(full_name: str, email: str, password_hash: str, otp_code
         )
 
 def set_user_status(email: str, status: str):
-    with conn:
-        conn.execute("UPDATE users SET status = ? WHERE email = ?", (status, email))
+    with users_conn:
+        users_conn.execute("UPDATE users SET status = ? WHERE email = ?", (status, email))
 
 def set_user_otp(email: str, otp_code: str, otp_expiry: str):
-    with conn:
-        conn.execute("UPDATE users SET otp_code = ?, otp_expiry = ? WHERE email = ?", (otp_code, otp_expiry, email))
+    with users_conn:
+        users_conn.execute("UPDATE users SET otp_code = ?, otp_expiry = ? WHERE email = ?", (otp_code, otp_expiry, email))
 
 def clear_user_otp(email: str):
-    with conn:
-        conn.execute("UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = ?", (email,))
+    with users_conn:
+        users_conn.execute("UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = ?", (email,))
 
 def update_user_password(email: str, new_password_hash: str):
-    with conn:
-        conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_password_hash, email))
+    with users_conn:
+        users_conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_password_hash, email))
 
 # ---------- Login event logging ----------
 def log_login_event(user_id: int | None, user_email: str, success: bool, ip_address: str | None, user_agent: str | None):
-    with conn:
-        conn.execute(
+    with events_conn:
+        events_conn.execute(
             """
             INSERT INTO login_events (user_id, user_email, login_at, success, ip_address, user_agent)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -132,8 +168,9 @@ def log_login_event(user_id: int | None, user_email: str, success: bool, ip_addr
             ),
         )
 
-# Initialize database on startup
-init_db()
+# Initialize databases on startup
+init_users_db()
+init_logins_db()
 
 # ---------- Email (SMTP) utility ----------
 try:
@@ -244,9 +281,9 @@ def _require_admin_from_headers(request: Request):
 def _list_users(limit: int | None = None):
     query = "SELECT id, full_name, email, created_at, status FROM users ORDER BY datetime(created_at) DESC"
     if limit is not None:
-        cur = conn.execute(query + " LIMIT ?", (int(limit),))
+        cur = users_conn.execute(query + " LIMIT ?", (int(limit),))
     else:
-        cur = conn.execute(query)
+        cur = users_conn.execute(query)
     return [dict(r) for r in cur.fetchall()]
 
 def _list_login_events(limit: int | None = None):
@@ -255,9 +292,9 @@ def _list_login_events(limit: int | None = None):
         "FROM login_events ORDER BY datetime(login_at) DESC"
     )
     if limit is not None:
-        cur = conn.execute(query + " LIMIT ?", (int(limit),))
+        cur = events_conn.execute(query + " LIMIT ?", (int(limit),))
     else:
-        cur = conn.execute(query)
+        cur = events_conn.execute(query)
     rows = [dict(r) for r in cur.fetchall()]
     for r in rows:
         r["success"] = bool(r.get("success"))
@@ -481,10 +518,16 @@ async def reset_password(req: ResetRequest):
 @app.get("/health")
 async def health_check():
     try:
-        # Simple DB query to confirm connectivity
-        cur = conn.execute("SELECT COUNT(*) as c FROM users")
-        count = cur.fetchone()[0]
-        return {"status": "healthy", "db_path": DB_PATH, "user_count": count}
+        # Simple DB queries to confirm connectivity
+        users_count = users_conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        events_count = events_conn.execute("SELECT COUNT(*) FROM login_events").fetchone()[0]
+        return {
+            "status": "healthy",
+            "users_db_path": USERS_DB_PATH,
+            "logins_db_path": LOGINS_DB_PATH,
+            "user_count": users_count,
+            "login_events_count": events_count,
+        }
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
