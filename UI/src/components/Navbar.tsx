@@ -110,7 +110,7 @@ export function Navbar() {
   const currentLinks = isAuthenticated ? secureLinks : publicLinks;
   const isProd =
     typeof window !== "undefined" &&
-    window.location.hostname === "ec2-34-205-44-169.compute-1.amazonaws.com";
+    window.location.hostname === "http://bodycheck.ai/";
   const homeDropdownItems = [
     ...(isProd
       ? [
