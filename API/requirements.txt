@@ -1,6 +1,7 @@
 annotated-types==0.7.0
 anyio==4.10.0
 bcrypt==4.3.0
+sendgrid==6.11.0
 cachetools==5.5.2
 certifi==2025.8.3
 charset-normalizer==3.4.3

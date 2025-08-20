@@ -2,13 +2,12 @@ import os
 import json
 import logging
 import secrets
-import smtplib
-from email.message import EmailMessage
 from datetime import datetime, timedelta
 import sqlite3
 import shutil
 
 from fastapi import FastAPI, HTTPException, Request
+from typing import Optional
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -118,6 +117,28 @@ def init_logins_db():
     except Exception as e:
         logger.error(f"Failed to initialize login events SQLite DB: {e}")
 
+def init_contact_forms_db():
+    try:
+        with users_conn:
+            users_conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS contact_forms (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    full_name TEXT,
+                    email TEXT NOT NULL,
+                    role TEXT,
+                    organization TEXT,
+                    subject TEXT,
+                    message TEXT,
+                    created_at TEXT NOT NULL,
+                    ip_address TEXT
+                )
+                """
+            )
+        logger.info("Contact forms SQLite table initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize contact forms SQLite table: {e}")
+
 def get_user_by_email(email: str):
     cur = users_conn.execute("SELECT * FROM users WHERE email = ?", (email,))
     row = cur.fetchone()
@@ -151,7 +172,7 @@ def update_user_password(email: str, new_password_hash: str):
         users_conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (new_password_hash, email))
 
 # ---------- Login event logging ----------
-def log_login_event(user_id: int | None, user_email: str, success: bool, ip_address: str | None, user_agent: str | None):
+def log_login_event(user_id: Optional[int], user_email: str, success: bool, ip_address: Optional[str], user_agent: Optional[str]):
     with events_conn:
         events_conn.execute(
             """
@@ -171,28 +192,32 @@ def log_login_event(user_id: int | None, user_email: str, success: bool, ip_addr
 # Initialize databases on startup
 init_users_db()
 init_logins_db()
+init_contact_forms_db()
 
-# ---------- Email (SMTP) utility ----------
+# ---------- Email (SendGrid) utility ----------
 try:
-    from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, OTP_TTL_MINUTES
+    from config import SENDGRID_API_KEY, SENDGRID_FROM_EMAIL, OTP_TTL_MINUTES
 except ImportError:
     # Fallback to environment variables if config.py doesn't exist
-    SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
-    SMTP_USER = os.environ.get("SMTP_USER")
-    SMTP_PASS = os.environ.get("SMTP_PASS")
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+    SENDGRID_FROM_EMAIL = os.environ.get("SENDGRID_FROM_EMAIL")
     OTP_TTL_MINUTES = int(os.environ.get("OTP_TTL_MINUTES", 15))
 
 def send_otp_email(recipient_email: str, otp_code: str, purpose: str = "verification"):
-    if not SMTP_USER or not SMTP_PASS:
-        logger.warning("SMTP credentials not set; skipping sending email (development mode)")
-        return False, "SMTP not configured"
+    if not SENDGRID_API_KEY or not SENDGRID_FROM_EMAIL:
+        logger.warning("SendGrid credentials not set; skipping sending email (development mode)")
+        return False, "SendGrid not configured"
+    
     try:
-        msg = EmailMessage()
+        # Import sendgrid here to avoid dependency issues if not installed
+        import sendgrid
+        from sendgrid.helpers.mail import Mail, Email, To, Content
+        
+        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
         
         if purpose == "signup":
-            msg["Subject"] = "Verify your BodyCheck account"
-            content = f"""Welcome to BodyCheck!
+            subject = "Verify your BodyCheck account"
+            content_text = f"""Welcome to BodyCheck!
 
 Your verification code is: {otp_code}
 
@@ -203,8 +228,8 @@ Please enter this code to complete your account registration.
 Best regards,
 BodyCheck Team"""
         else:
-            msg["Subject"] = "Reset your BodyCheck password"
-            content = f"""Password Reset Request
+            subject = "Reset your BodyCheck password"
+            content_text = f"""Password Reset Request
 
 Your OTP code is: {otp_code}
 
@@ -215,18 +240,25 @@ If you didn't request this password reset, please ignore this email.
 Best regards,
 BodyCheck Team"""
         
-        msg["From"] = SMTP_USER
-        msg["To"] = recipient_email
-        msg.set_content(content)
-
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
-            smtp.starttls()
-            smtp.login(SMTP_USER, SMTP_PASS)
-            smtp.send_message(msg)
-        logger.info(f"Sent {purpose} OTP email to {recipient_email}")
-        return True, None
+        from_email = Email(SENDGRID_FROM_EMAIL)
+        to_email = To(recipient_email)
+        content = Content("text/plain", content_text)
+        mail = Mail(from_email, to_email, subject, content)
+        
+        response = sg.send(mail)
+        
+        if response.status_code in [200, 201, 202]:
+            logger.info(f"Sent {purpose} OTP email to {recipient_email}")
+            return True, None
+        else:
+            logger.error(f"SendGrid API error: {response.status_code} - {response.body}")
+            return False, f"SendGrid API error: {response.status_code}"
+            
+    except ImportError:
+        logger.error("SendGrid library not installed. Please install with: pip install sendgrid")
+        return False, "SendGrid library not installed"
     except Exception as e:
-        logger.error(f"Failed to send email: {e}")
+        logger.error(f"Failed to send email via SendGrid: {e}")
         return False, str(e)
 
 # ---------- Pydantic models ----------
@@ -250,6 +282,14 @@ class ResetRequest(BaseModel):
     email: str
     otp: str
     new_password: str
+
+class ContactFormData(BaseModel):
+    name: Optional[str] = None
+    email: str
+    role: Optional[str] = None
+    organization: Optional[str] = None
+    message: str
+    subject: Optional[str] = None
 
 # ---------- Admin utilities and endpoints ----------
 def _get_admin_emails():
@@ -278,7 +318,7 @@ def _require_admin_from_headers(request: Request):
         raise HTTPException(status_code=401, detail="Invalid admin credentials")
     return user
 
-def _list_users(limit: int | None = None):
+def _list_users(limit: Optional[int] = None):
     query = "SELECT id, full_name, email, created_at, status FROM users ORDER BY datetime(created_at) DESC"
     if limit is not None:
         cur = users_conn.execute(query + " LIMIT ?", (int(limit),))
@@ -286,7 +326,7 @@ def _list_users(limit: int | None = None):
         cur = users_conn.execute(query)
     return [dict(r) for r in cur.fetchall()]
 
-def _list_login_events(limit: int | None = None):
+def _list_login_events(limit: Optional[int] = None):
     query = (
         "SELECT id, user_id, user_email, login_at, success, ip_address, user_agent "
         "FROM login_events ORDER BY datetime(login_at) DESC"
@@ -300,8 +340,19 @@ def _list_login_events(limit: int | None = None):
         r["success"] = bool(r.get("success"))
     return rows
 
+def _list_contact_forms(limit: Optional[int] = None):
+    query = (
+        "SELECT id, full_name, email, role, organization, subject, message, created_at, ip_address "
+        "FROM contact_forms ORDER BY datetime(created_at) DESC"
+    )
+    if limit is not None:
+        cur = users_conn.execute(query + " LIMIT ?", (int(limit),))
+    else:
+        cur = users_conn.execute(query)
+    return [dict(r) for r in cur.fetchall()]
+
 @app.get("/admin/data")
-async def admin_all_data(request: Request, users_limit: int | None = None, events_limit: int | None = None):
+async def admin_all_data(request: Request, users_limit: Optional[int] = None, events_limit: Optional[int] = None):
     _require_admin_from_headers(request)
     users = _list_users(users_limit)
     events = _list_login_events(events_limit)
@@ -314,6 +365,12 @@ async def admin_all_data(request: Request, users_limit: int | None = None, event
         "pending_users": sum(1 for u in totals if u.get("status") == "pending"),
     }
     return {"users": users, "login_events": events, "stats": stats}
+
+@app.get("/admin/contact_forms")
+async def admin_contact_forms(request: Request, limit: Optional[int] = None):
+    _require_admin_from_headers(request)
+    rows = _list_contact_forms(limit)
+    return {"contact_forms": rows}
 
 # ---------- Signup with OTP verification ----------
 @app.post("/signup")
@@ -513,6 +570,35 @@ async def reset_password(req: ResetRequest):
     except Exception as e:
         logger.error(f"reset-password error: {e}")
         raise HTTPException(status_code=500, detail=f"Reset failed: {e}")
+
+# ---------- Contact form ----------
+@app.post("/contact")
+async def contact_submit(data: ContactFormData, request: Request):
+    try:
+        created_at = datetime.utcnow().isoformat()
+        ip = request.client.host if request and request.client else None
+        with users_conn:
+            users_conn.execute(
+                """
+                INSERT INTO contact_forms (full_name, email, role, organization, subject, message, created_at, ip_address)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    data.name or None,
+                    data.email,
+                    data.role or None,
+                    data.organization or None,
+                    data.subject or None,
+                    data.message,
+                    created_at,
+                    ip,
+                ),
+            )
+        logger.info(f"Contact form submitted by {data.email}")
+        return {"message": "Thanks for reaching out. Our team will contact you soon."}
+    except Exception as e:
+        logger.error(f"contact submit error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to submit contact form: {e}")
 
 # ---------- Health check ----------
 @app.get("/health")

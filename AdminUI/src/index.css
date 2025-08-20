@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dodger-blue: 51 108 243;
+  --turquoise: 42 215 197;
+  --cloud-burst: 36 44 100;
+  --bright-turquoise: 44 244 180;
+  --jacarta: 40 44 100;
+  --calypso: 44 96 136;
+  --bay-of-many: 44 44 140;
+}
+
+/* Tailwind v3 setup uses theme mapping in tailwind.config.js */
+
+
