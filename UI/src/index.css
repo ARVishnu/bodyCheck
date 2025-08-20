@@ -1,11 +1,11 @@
 :root {
-  --dodger-blue: #336cf3;
-  --turquoise: #2ad7c5;
-  --cloud-burst: #242c64;
-  --bright-turquoise: #2cf4b4;
-  --jacarta: #282c64;
-  --calypso: #2c6088;
-  --bay-of-many: #2c2c8c;
+  --dodger-blue: 51 108 243;
+  --turquoise: 42 215 197;
+  --cloud-burst: 36 44 100;
+  --bright-turquoise: 44 244 180;
+  --jacarta: 40 44 100;
+  --calypso: 44 96 136;
+  --bay-of-many: 44 44 140;
 }
 
 @tailwind base;

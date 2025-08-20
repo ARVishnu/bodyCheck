@@ -4,13 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        'dodger-blue': 'var(--dodger-blue)',
-        'turquoise': 'var(--turquoise)',
-        'cloud-burst': 'var(--cloud-burst)',
-        'bright-turquoise': 'var(--bright-turquoise)',
-        'jacarta': 'var(--jacarta)',
-        'calypso': 'var(--calypso)',
-        'bay-of-many': 'var(--bay-of-many)',
+        'dodger-blue': 'rgb(var(--dodger-blue) / <alpha-value>)',
+        'turquoise': 'rgb(var(--turquoise) / <alpha-value>)',
+        'cloud-burst': 'rgb(var(--cloud-burst) / <alpha-value>)',
+        'bright-turquoise': 'rgb(var(--bright-turquoise) / <alpha-value>)',
+        'jacarta': 'rgb(var(--jacarta) / <alpha-value>)',
+        'calypso': 'rgb(var(--calypso) / <alpha-value>)',
+        'bay-of-many': 'rgb(var(--bay-of-many) / <alpha-value>)',
       },
     },
   },
