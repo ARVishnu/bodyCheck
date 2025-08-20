@@ -24,6 +24,9 @@ dist-ssr
 *.sw?
 .env
 
+# Python cache
+API/__pycache__/
+
 
 # Ignore large 3D heart HTML exports in BodyCheckUi
 UI/public/3Dheart/case005.html
