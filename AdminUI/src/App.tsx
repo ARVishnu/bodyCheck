@@ -87,7 +87,9 @@ export function App(): JSX.Element {
       setContactLoading(false)
     }
   }
-
+  async function handleRefresh() {
+    await fetchAdminData() // this will re-fetch data and update state
+  }
   if (!isLoggedIn) {
     return (
       <Routes>
@@ -107,7 +109,7 @@ export function App(): JSX.Element {
         element={<AdminLayout onLogout={() => { setIsLoggedIn(false); setData(null); setContactForms(null) }} />}
       >
         <Route index element={<Navigate to="/home" replace />} />
-        <Route path="home" element={data ? <HomePage data={data} /> : <div>Loading…</div>} />
+        <Route path="home" element={data ? <HomePage data={data} refreshGrid={handleRefresh} /> : <div>Loading…</div>} />
         <Route path="logins" element={data ? <RecentLoginsPage events={data.login_events} /> : <div>Loading…</div>} />
         <Route
           path="contact_forms"

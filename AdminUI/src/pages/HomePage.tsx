@@ -3,8 +3,8 @@ import { AdminData } from '../types'
 import { StatCard } from '../components/StatCard'
 import { UsersTable } from '../components/UsersTable'
 
-export function HomePage(props: { data: AdminData }): JSX.Element {
-  const { data } = props
+export function HomePage(props: { data: AdminData; refreshGrid: () => void }): JSX.Element {
+  const { data, refreshGrid } = props
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -15,8 +15,8 @@ export function HomePage(props: { data: AdminData }): JSX.Element {
       </div>
 
       <section className="mt-6">
-        <h3 className="text-lg mb-2 font-medium">Users</h3>
-        <UsersTable rows={data.users} />
+
+        <UsersTable rows={data.users} refreshTable={refreshGrid} />
       </section>
     </>
   )

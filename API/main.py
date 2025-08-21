@@ -12,10 +12,22 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 from passlib.hash import bcrypt
+from dotenv import load_dotenv, find_dotenv
 
 # ---------- logging ----------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Load environment variables from a .env file in this dir or any parent
+try:
+    dotenv_path = find_dotenv(usecwd=True)
+    if dotenv_path:
+        load_dotenv(dotenv_path)
+        logger.info(f"Loaded environment from {dotenv_path}")
+    else:
+        logger.info("No .env file found")
+except Exception as e:
+    logger.warning(f"dotenv load skipped: {e}")
 
 # ---------- FastAPI + CORS ----------
 app = FastAPI()
@@ -207,58 +219,96 @@ def send_otp_email(recipient_email: str, otp_code: str, purpose: str = "verifica
     if not SENDGRID_API_KEY or not SENDGRID_FROM_EMAIL:
         logger.warning("SendGrid credentials not set; skipping sending email (development mode)")
         return False, "SendGrid not configured"
-    
     try:
         # Import sendgrid here to avoid dependency issues if not installed
         import sendgrid
         from sendgrid.helpers.mail import Mail, Email, To, Content
-        
+
         sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
-        
+
         if purpose == "signup":
-            subject = "Verify your BodyCheck account"
-            content_text = f"""Welcome to BodyCheck!
-
-Your verification code is: {otp_code}
-
-This code will expire in {OTP_TTL_MINUTES} minutes.
-
-Please enter this code to complete your account registration.
-
-Best regards,
-BodyCheck Team"""
-        else:
-            subject = "Reset your BodyCheck password"
-            content_text = f"""Password Reset Request
-
-Your OTP code is: {otp_code}
-
-This code will expire in {OTP_TTL_MINUTES} minutes.
-
-If you didn't request this password reset, please ignore this email.
-
-Best regards,
-BodyCheck Team"""
+            subject = "Verify Your BodyCheck Account"
+            content_text = f"""Hello,
         
+        Welcome to BodyCheck! 🎉
+        
+        To complete your registration, please verify your account using the code below:
+        
+        🔑 Verification Code: {otp_code}
+        
+        ⚠️ Note: This code will expire in {OTP_TTL_MINUTES} minutes.
+        
+        If you did not sign up for BodyCheck, you can safely ignore this email.
+        
+        Best regards,  
+        The BodyCheck Team
+        """
+        else:
+            subject = "Reset Your BodyCheck Password"
+            content_text = f"""Hello,
+        
+        We received a request to reset your BodyCheck password.  
+        Use the code below to proceed:
+        
+        🔑 OTP Code: {otp_code}
+        
+        ⚠️ Note: This code will expire in {OTP_TTL_MINUTES} minutes.
+        
+        If you did not request a password reset, please ignore this email.
+        
+        Best regards,  
+        BodyCheck Team"""
+
         from_email = Email(SENDGRID_FROM_EMAIL)
         to_email = To(recipient_email)
         content = Content("text/plain", content_text)
         mail = Mail(from_email, to_email, subject, content)
-        
+
         response = sg.send(mail)
-        
+
         if response.status_code in [200, 201, 202]:
             logger.info(f"Sent {purpose} OTP email to {recipient_email}")
             return True, None
         else:
             logger.error(f"SendGrid API error: {response.status_code} - {response.body}")
             return False, f"SendGrid API error: {response.status_code}"
-            
     except ImportError:
         logger.error("SendGrid library not installed. Please install with: pip install sendgrid")
         return False, "SendGrid library not installed"
     except Exception as e:
         logger.error(f"Failed to send email via SendGrid: {e}")
+        return False, str(e)
+def send_admin_notification_email(subject: str, content_text: str):
+    """
+    Send an email notification to admin(s) when a new user signs up or a contact form is submitted.
+    For testing, always send to diptisharma@enestit.com.
+    """
+    if not SENDGRID_API_KEY:
+        logger.warning("SendGrid credentials not set; skipping admin notification email (development mode)")
+        return False, "SendGrid not configured"
+    if not SENDGRID_FROM_EMAIL:
+        logger.warning("SENDGRID_FROM_EMAIL not set; using default sender")
+    try:
+        import sendgrid
+        from sendgrid.helpers.mail import Mail, Email, To, Content
+
+        admin_email = "jack.smith@bodycheck.ai"  # Replace with your admin email
+        from_email = Email(SENDGRID_FROM_EMAIL or admin_email)
+        to_email = To(admin_email)
+        content = Content("text/plain", content_text)
+        mail = Mail(from_email, to_email, subject, content)
+        sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        response = sg.send(mail)
+        if response.status_code not in [200, 201, 202]:
+            logger.error(f"SendGrid admin notification error: {response.status_code} - {response.body}")
+            return False, f"SendGrid API error: {response.status_code}"
+        logger.info(f"Sent admin notification email to {admin_email}")
+        return True, None
+    except ImportError:
+        logger.error("SendGrid library not installed. Please install with: pip install sendgrid")
+        return False, "SendGrid library not installed"
+    except Exception as e:
+        logger.error(f"Failed to send admin notification email: {e}")
         return False, str(e)
 
 # ---------- Pydantic models ----------
@@ -379,11 +429,11 @@ async def signup(data: SignupData):
         existing = get_user_by_email(data.email)
         # if existing:
         #     raise HTTPException(status_code=400, detail="Email already registered")
-        
+
         # generate 6-digit OTP
         otp_code = f"{secrets.randbelow(10**6):06d}"
         expiry = (datetime.utcnow() + timedelta(minutes=OTP_TTL_MINUTES)).isoformat()
-        
+
         # store signup data temporarily with OTP
         password_hash = bcrypt.hash(data.password)
         try:
@@ -391,13 +441,12 @@ async def signup(data: SignupData):
         except sqlite3.IntegrityError:
             raise HTTPException(status_code=400, detail="Email already registered")
         logger.info(f"Signup initiated for: {data.email}")
-        
+
         # send OTP email
         sent, err = send_otp_email(data.email, otp_code, "signup")
         if not sent:
             logger.error(f"Failed to send signup OTP email: {err}")
-            return {"message": "Signup initiated. Please check your email for OTP verification."}
-        
+
         return {"message": "Signup initiated. Please check your email for OTP verification."}
     except HTTPException:
         raise
@@ -414,13 +463,14 @@ async def signup_verify(data: SignupVerifyData):
         status = user.get("status", "")
         if status != "pending":
             raise HTTPException(status_code=400, detail="Invalid signup status")
-        
+
         otp_stored = user.get("otp_code", "")
         otp_expiry = user.get("otp_expiry", "")
-        
+
+
         if not otp_stored:
             raise HTTPException(status_code=400, detail="No OTP found for this signup")
-        
+
         # check expiry
         try:
             # Handle different datetime formats
@@ -438,21 +488,36 @@ async def signup_verify(data: SignupVerifyData):
                 raise HTTPException(status_code=400, detail="OTP expired")
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid OTP expiry format")
-        
+
         if datetime.utcnow() > expiry_dt:
             raise HTTPException(status_code=400, detail="OTP expired")
-        
+
         # verify OTP
-        if str(otp_stored) != str(data.otp):
+        if str(otp_stored).strip() != str(data.otp).strip():
             raise HTTPException(status_code=401, detail="Invalid OTP")
-        
+
         # activate account
         set_user_status(data.email, "active")
         clear_user_otp(data.email)
+
+        # send admin notification now that user is active
+        admin_subject = "[BodyCheck] New User Signup Notification"
         
+        admin_content = (
+            "Hello Admin,\n\n"
+            "A new user has successfully signed up on BodyCheck.\n\n"
+            f"📧 Email Address : {data.email}\n"
+            f"👤 Full Name     : {user.get('full_name', 'N/A')}\n"
+            f"🕒 Signup Time   : {datetime.utcnow().isoformat()} UTC\n\n"
+            "You may review this account in the admin dashboard.\n\n"
+            "— BodyCheck System Notification"
+        )
+        
+        send_admin_notification_email(admin_subject, admin_content)
+
         logger.info(f"Signup verified successfully for: {data.email}")
         return {"message": "Signup verified successfully! You can now login."}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -595,6 +660,24 @@ async def contact_submit(data: ContactFormData, request: Request):
                 ),
             )
         logger.info(f"Contact form submitted by {data.email}")
+
+        # send admin notification
+        admin_subject = "[BodyCheck] New Contact Form Submission"
+        
+        admin_content = (
+            "Hello Admin,\n\n"
+            "A new contact form has been submitted on BodyCheck.\n\n"
+            f"👤 Name         : {data.name or 'N/A'}\n"
+            f"📧 Email        : {data.email}\n"
+            f"🏷️ Role         : {data.role or 'N/A'}\n"
+            f"🏢 Organization : {data.organization or 'N/A'}\n"
+            f"💬 Message      : {data.message}\n"
+            f"🕒 Submitted At : {created_at}\n\n"
+            "Please review and follow up accordingly.\n\n"
+            "— BodyCheck System Notification"
+        )
+        send_admin_notification_email(admin_subject, admin_content)
+
         return {"message": "Thanks for reaching out. Our team will contact you soon."}
     except Exception as e:
         logger.error(f"contact submit error: {e}")
