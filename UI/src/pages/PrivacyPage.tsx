@@ -7,8 +7,8 @@ export function PrivacyPage() {
   const sections = [
     { id: 'privacy', title: 'Privacy Policy', icon: <Shield className="w-4 h-4" /> },
     { id: 'terms', title: 'Terms of Use', icon: <FileText className="w-4 h-4" /> },
-    { id: 'disclaimer', title: 'AI Disclaimer', icon: <AlertCircle className="w-4 h-4" /> },
-    { id: 'hipaa', title: 'HIPAA Compliance', icon: <Lock className="w-4 h-4" /> }
+    // { id: 'disclaimer', title: 'AI Disclaimer', icon: <AlertCircle className="w-4 h-4" /> },
+    // { id: 'hipaa', title: 'HIPAA Compliance', icon: <Lock className="w-4 h-4" /> }
   ];
 
   return (

@@ -1,283 +1,112 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Download,
-  Eye,
-  Heart,
-  Activity,
-  TrendingUp,
-  FileText,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { mockPatients, mokeBodyCompositionData } from "../../data/mockData";
-import { StatusPill } from "../../components/StatusPill";
-import {
-  ctr1,
-  ctr2,
-  body1,
-  body2,
-  body3,
-  body4,
-} from "../../assets/images";
+import { Download, Heart, Activity, FileText } from "lucide-react";
 
-// Utility function for calcification risk category
-function getCardiovascularRiskCategory(
-  score: number
-): "Low" | "Medium" | "High" {
-  if (score < 100) return "Low";
-  if (score < 400) return "Medium";
-  if (score >= 400) return "High";
-  return "High";
-}
-// Utility function for calcification risk category
-function getBodyCompositionRiskCategory(
-  score: number
-): "Low" | "Medium" | "High" {
-  if (score < 50) return "Low";
-  if (score < 75) return "Medium";
-  if (score >= 75) return "High";
-  return "High";
-}
-function getBodyCompositionArea(score: number): "Low" | "Medium" | "High" {
-  if (score < 100) return "Low";
-  if (score < 250) return "Medium";
-  if (score >= 250) return "High";
-  return "High";
-}
-
+import { body1, body2, body3, body4, ctr1, ctr2 } from "../../assets/images";
+import { GeorgeCardiovascularReport, GeorgeMetabolicReport } from "../../assets";
+import { styles } from "./SampleReport.styles";
+import {
+  cardiovascularRows,
+  bodyCompositionRows,
+  ctrKeyLegend,
+  legendOrder1,
+  legendOrder2,
+  simpleLegendItems,
+} from "./data";
+import { mockPatients } from "../../data/mockData";
 export function SampleReport() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [openReference, setOpenReference] = useState(true);
   const patient = mockPatients[0]; // Use first patient as sample
-  const bodyCompositionData = mokeBodyCompositionData[0];
+
   const [activeReport, setActiveReport] = useState("cardiac");
 
-  // Reference ranges array structure
-  const referenceRanges = {
-    cardiac: [
-      {
-        title: "Cardiothoracic Ratio",
-        ranges: [
-          { label: "Normal", range: "< 0.521", color: "bg-green-500" },
-          {
-            label: "Borderline",
-            range: "0.521 - 0.561",
-            color: "bg-yellow-400",
-          },
-          { label: "High", range: "≥ 0.561", color: "bg-red-500" },
-        ],
-      },
-      {
-        title: "Calcification Scores",
-        ranges: [
-          { label: "Low", range: "< 100", color: "bg-green-500" },
-          { label: "Medium", range: "100 - 400", color: "bg-yellow-400" },
-          { label: "High", range: "> 400", color: "bg-red-500" },
-        ],
-      },
-    ],
-    body: [
-      {
-        title: "Liver Attenuation",
-        ranges: [
-          { label: "Low", range: "< 40", color: "bg-red-500" },
-          { label: "Medium", range: "40 - 49", color: "bg-yellow-400" },
-          { label: "High", range: "≥ 50", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "L1 Bone Attenuation",
-        ranges: [
-          { label: "Low", range: "< 120", color: "bg-red-500" },
-          { label: "Medium", range: "120 - 160", color: "bg-yellow-400" },
-          { label: "High", range: "≥ 160", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Muscle Area",
-        ranges: [
-          { label: "Low", range: "< 100", color: "bg-red-500" },
-          { label: "Medium", range: "100 - 150", color: "bg-yellow-400" },
-          { label: "High", range: "> 150", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Muscle Attenuation",
-        ranges: [
-          { label: "Low", range: "< 30", color: "bg-red-500" },
-          { label: "Medium", range: "30 - 40", color: "bg-yellow-400" },
-          { label: "High", range: "≥ 40", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Muscle Fat Area",
-        ranges: [
-          { label: "High", range: "> 45", color: "bg-red-500" },
-          { label: "Medium", range: "25 - 45", color: "bg-yellow-400" },
-          { label: "Low", range: "< 45", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Muscle Fat Attenuation",
-        ranges: [
-          { label: "Low", range: "< -100", color: "bg-red-500" },
-          { label: "Medium", range: "-100 - -50", color: "bg-yellow-400" },
-          { label: "High", range: "≥ -50", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Subcutaneous Fat Area",
-        ranges: [
-          { label: "Low", range: "< 100", color: "bg-red-500" },
-          { label: "Medium", range: "100 - 200", color: "bg-yellow-400" },
-          { label: "High", range: "> 200", color: "bg-green-500" },
-        ],
-      },
-      {
-        title: "Abdominal Subcutaneous Fat Attenuation",
-        ranges: [
-          { label: "Low", range: "< -110", color: "bg-green-500" },
-          { label: "Medium", range: "-100 - -90", color: "bg-yellow-400" },
-          { label: "High", range: "≥ -90", color: "bg-red-500" },
-        ],
-      },
-      {
-        title: "Abdominal Circumference at L1",
-        ranges: [
-          { label: "Low", range: "< 85", color: "bg-green-500" },
-          { label: "Medium", range: "85 - 95", color: "bg-yellow-400" },
-          { label: "High", range: "> 95", color: "bg-red-500" },
-        ],
-      },
-    ],
-  };
-
-  const tabs = [
-    { id: "overview", label: "Overview", icon: <Eye className="w-4 h-4" /> },
-    {
-      id: "3d-model",
-      label: activeReport === "cardiac" ? "3D Heart Model" : "3D Body Model",
-      icon: <Heart className="w-4 h-4" />,
-    },
-    {
-      id: "ct-slices",
-      label: "CT Analysis",
-      icon: <Activity className="w-4 h-4" />,
-    },
-    // {
-    //   id: "Recommendations",
-    //   label: "Recommendations",
-    //   icon: <TrendingUp className="w-4 h-4" />,
-    // },
-  ];
-  const cardiovascularReport = [
-    {
-      biomarker: "Coronary Arteries Calcifications",
-      agatstonScore: patient.CACScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.CACScore)),
-    },
-    {
-      biomarker: "Abdominal Aortic Calcifications",
-      agatstonScore: patient.AACScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.AACScore)),
-    },
-    {
-      biomarker: "Thoracic Aortic Calcifications",
-      agatstonScore: patient.TACScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.TACScore)),
-    },
-    {
-      biomarker: "Aortic Annulus Calcifications",
-      agatstonScore: patient.AANCScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.AANCScore)),
-    },
-    {
-      biomarker: "Mitral Annulus Calcifications",
-      agatstonScore: patient.MACScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.MACScore)),
-    },
-    {
-      biomarker: "Aortic Valve Calcifications",
-      agatstonScore: patient.AVCScore,
-      Risk: getCardiovascularRiskCategory(Number(patient.AVCScore)),
-    },
-  ];
-  const bodyCompositionReport = [
-    {
-      biomarker: "Liver Attenuation",
-      agatstonScore: bodyCompositionData.liverAttenuation,
-      Risk: getBodyCompositionArea(
-        Number(bodyCompositionData.liverAttenuation)
-      ),
-      units: "HU",
-    },
-    {
-      biomarker: "L1 Bone Attenuation",
-      agatstonScore: bodyCompositionData.boneDensity,
-      Risk: getBodyCompositionArea(Number(bodyCompositionData.boneDensity)),
-      units: "HU",
-    },
-    {
-      biomarker: "Abdominal Muscle Area",
-      agatstonScore: bodyCompositionData.abdominalMuscleArea,
-      Risk: getBodyCompositionArea(
-        Number(bodyCompositionData.abdominalMuscleArea)
-      ),
-      units: "cm²",
-    },
-    {
-      biomarker: "Abdominal Muscle Attenuation",
-      agatstonScore: bodyCompositionData.abdominalMuscleQuality,
-      Risk: getBodyCompositionRiskCategory(
-        Number(bodyCompositionData.abdominalMuscleQuality)
-      ),
-      units: "HU",
-    },
-    {
-      biomarker: "Abdominal Muscle Fat Area",
-      agatstonScore: bodyCompositionData.abdominalMuscleFatArea,
-      Risk: getBodyCompositionArea(
-        Number(bodyCompositionData.abdominalMuscleFatArea)
-      ),
-      units: "cm²",
-    },
-    {
-      biomarker: "Abdominal Muscle Fat Attenuation",
-      agatstonScore: bodyCompositionData.abdominalMuscleFatQuality,
-      Risk: getBodyCompositionRiskCategory(
-        Number(bodyCompositionData.abdominalMuscleFatQuality)
-      ),
-      units: "HU",
-    },
-    {
-      biomarker: "Abdominal Subcutaneous Fat Area",
-      agatstonScore: bodyCompositionData.abdominalSubcutaneousFatArea,
-      Risk: getBodyCompositionArea(
-        Number(bodyCompositionData.abdominalSubcutaneousFatArea)
-      ),
-      units: "cm²",
-    },
-    {
-      biomarker: "Abdominal Subcutaneous Fat Attenuation",
-      agatstonScore: bodyCompositionData.abdominalSubcutaneousFatQuality,
-      Risk: getBodyCompositionRiskCategory(
-        Number(bodyCompositionData.abdominalSubcutaneousFatQuality)
-      ),
-      units: "HU",
-    },
-    {
-      biomarker: "Abdominal Circumference at L1",
-      agatstonScore: bodyCompositionData.abdominalCircumferenceAtL1,
-      Risk:
-        bodyCompositionData.abdominalCircumferenceAtL1 < 94
-          ? "Low"
-          : bodyCompositionData.abdominalCircumferenceAtL1 < 110
-          ? "Medium"
-          : "High",
-      units: "cm",
-    },
-  ];
+  const reportStyles = styles;
+  // Reusable cardiovascularRow component with limited div tags
+  const TemplateRow = ({ data, key }: { data: any; key: string }) => (
+    <div className="flex items-center mb-4 gap-4">
+      {/* Title */}
+      <div className="flex items-center " style={reportStyles.compositionTitle}>
+        <div
+          style={{
+            backgroundColor: data.indicatorColor,
+            height: 12,
+            width: 12,
+            borderRadius: "50%",
+            border: data.indicatorBorder || "none",
+            marginRight: 8,
+          }}
+        />
+        <span>{data.title}</span>
+      </div>
+      {/* Unit */}
+      <div style={reportStyles.compositionValue as any}>{data.unit}</div>
+      {/* Slider */}
+      <div style={reportStyles.sliderTd}>
+        <div style={{ position: "relative" }}>
+          {/* Slider Handle */}
+          <div
+            style={{
+              ...reportStyles.sliderHandle,
+              left: data.handlePosition,
+              backgroundColor: data.handleColor,
+              color: data.handleTextColor,
+            }}
+          >
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  top: "19px",
+                  color: data.handleTextColor,
+                }}
+              >
+                <span
+                  style={{
+                    color: "black",
+                    fontSize: "17px",
+                    position: "absolute",
+                  }}
+                >
+                  &#9661;
+                </span>
+                <span style={{ color: data.handleColor, fontSize: "14px" }}>
+                  &#9660;
+                </span>
+              </div>
+            </div>
+            {data.value}
+          </div>
+          {/* Slider Ranges */}
+          <div style={{ display: "flex", width: "100%" }}>
+            {data.ranges.map((range: any, idx: number) => (
+              <div
+                key={range.label}
+                style={{
+                  ...reportStyles.sliderBox,
+                  backgroundColor: range.color,
+                }}
+              >
+                <div style={reportStyles.sliderValue as any}>
+                  <div className="flex w-full justify-between">
+                    <div style={{ width: "33.33%", textAlign: "left" }}>
+                      {range.value}
+                    </div>
+                    <div className=" text-center" style={{ width: "33.33%" }}>
+                      {range.label}
+                    </div>
+                    <div style={{ width: "33.33%", textAlign: "right" }}>
+                      {range.right}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -304,14 +133,14 @@ export function SampleReport() {
                   📋 Sample Data
                 </p>
               </div>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <a href="public/PDF_Report/final.html" target="_blank">
-                  <div style={{ display: "flex" }}>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </div>
-                </a>
-              </button>
+              <a
+                href={activeReport == 'cardiac' ? GeorgeCardiovascularReport : GeorgeMetabolicReport}
+                download={activeReport == 'cardiac' ? "George_Cardiovascular_report.pdf" : "George_Metabolic_report.pdf"}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </a>
             </div>
           </div>
 
@@ -340,7 +169,8 @@ export function SampleReport() {
                   Scan Date
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
-                  {new Date(patient.examDate).toLocaleDateString()}
+                  {/* {new Date(patient.examDate).toLocaleDateString()} */}
+                  {patient.examDate}
                 </p>
               </div>
             </div>
@@ -353,11 +183,10 @@ export function SampleReport() {
             <button
               style={{ width: "100%" }}
               onClick={() => setActiveReport("cardiac")}
-              className={`px-6 py-3 rounded-md font-semibold transition-all ${
-                activeReport === "cardiac"
+              className={`px-6 py-3 rounded-md font-semibold transition-all ${activeReport === "cardiac"
                   ? "bg-[#002F6C] text-white shadow-lg"
                   : "text-jacarta hover:bg-white/50"
-              }`}
+                }`}
             >
               <Heart className="w-5 h-5 inline mr-2" />
               Cardiovascular Report
@@ -365,11 +194,10 @@ export function SampleReport() {
             <button
               style={{ width: "100%" }}
               onClick={() => setActiveReport("body")}
-              className={`px-6 py-3 rounded-md font-semibold transition-all ${
-                activeReport === "body"
+              className={`px-6 py-3 rounded-md font-semibold transition-all ${activeReport === "body"
                   ? "bg-[#002F6C] text-white shadow-lg"
                   : "text-jacarta hover:bg-white/50"
-              }`}
+                }`}
             >
               <Activity className="w-5 h-5 inline mr-2" />
               Body Composition Report
@@ -377,389 +205,502 @@ export function SampleReport() {
           </div>
         </div>
 
-        {/* Inner Tabs */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
-                    activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
         {/* Inner Tabs Content */}
         <div className="space-y-6">
-          {activeTab === "overview" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Agatston Breakdown */}
+          {activeReport === "cardiac" && (
+            <>
+              {/* <!-- PDF Template --> */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {activeReport === "cardiac"
-                    ? "Agatston Score Breakdown"
-                    : "Body Composition Breakdown"}
-                </h3>
-                <div className="overflow-x-auto">
-                  {activeReport === "cardiac" ? (
-                    <>
-                      {/* Cardiac table */}
-                      <table className="min-w-full">
-                        <thead>
-                          <tr className="border-t-2 border-gray-300">
-                            <th className="py-3 text-bold text-start">
-                              Biomarker
-                            </th>
-                            <th className="py-3 text-bold">Result</th>
-                            <th className="py-3 text-bold">Units</th>
-                            <th className="py-3 text-bold">Risk</th>
-                          </tr>
-                        </thead>
-                        {cardiovascularReport.map((items) => (
-                          <tr className="border-t-2 border-gray-300">
-                            <td className="py-3 text-bold">
-                              {items.biomarker}
-                            </td>
-                            <td className="py-3 text-center">
-                              {Math.round(Number(items.agatstonScore))}
-                            </td>
-                            <td className="py-3 text-center">Agatston Score</td>
-                            <td className="py-3 text-center">
-                              <StatusPill
-                                status={items.Risk}
-                                type="Risk Category"
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                        <tr className="border-t-2 border-gray-300">
-                          <td className="py-3 text-bold">
-                            Cardiothoracic Ratio
-                          </td>
-                          <td className="py-3 text-center">
-                            {patient.cardiothoracicRatio}
-                          </td>
-                          <td className="py-3 text-center">Ratio</td>
-                          <td className="py-3 text-center">
-                            <StatusPill
-                              status={
-                                patient.cardiothoracicRatio < 0.5
-                                  ? "Normal"
-                                  : patient.cardiothoracicRatio >= 0.5 &&
-                                    patient.cardiothoracicRatio < 0.56
-                                  ? "Borderline"
-                                  : "High"
-                              }
-                              type="ct_ratio"
-                            />
-                          </td>
-                        </tr>
-                      </table>
-                    </>
-                  ) : (
-                    <>
-                      {/* Body table */}
-                      <table className="min-w-full">
-                        <thead>
-                          <tr className="border-t-2 border-gray-300">
-                            <th className="py-3 text-bold text-start">
-                              Metrices
-                            </th>
-                            <th className="py-3 text-bold">Result</th>
-                            <th className="py-3 text-bold">Units</th>
-                            <th className="py-3 text-bold">Risk</th>
-                          </tr>
-                        </thead>
-                        {bodyCompositionReport.map((items) => (
-                          <tr className="border-t-2 border-gray-300">
-                            <td className="py-3 text-bold">
-                              {items.biomarker}
-                            </td>
-                            <td className="py-3 text-center">
-                              {Math.round(Number(items.agatstonScore))}
-                            </td>
-                            <td className="py-3 text-center">{items.units}</td>
-                            <td className="py-3 text-center">
-                              <StatusPill
-                                status={items.Risk}
-                                type="Risk Category"
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </table>
-                    </>
-                  )}
-                </div>
-              </div>
-              {/* Risk Category Reference Ranges */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-0 lg:col-span-2 mb-4">
-                <button
-                  onClick={() => setOpenReference((v) => !v)}
-                  className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors rounded-t-lg"
-                >
-                  <h3 className="text-lg font-semibold">
-                    Risk Category Reference Ranges
-                  </h3>
-                  {openReference ? (
-                    <ChevronDown className="w-6 h-6 text-gray-400" />
-                  ) : (
-                    <ChevronUp className="w-6 h-6 text-gray-400" />
-                  )}
-                </button>
-                {openReference && (
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {referenceRanges[
-                        activeReport as keyof typeof referenceRanges
-                      ].map((section, index) => (
-                        <div key={index}>
-                          <h2 className="font-semibold mb-2">
-                            {section.title}
-                          </h2>
-                          <div className="flex flex-col gap-1">
-                            {section.ranges.map((range, rangeIndex) => (
-                              <div
-                                key={rangeIndex}
-                                className="flex items-center gap-2"
-                              >
-                                <span
-                                  className={`inline-block w-3 h-3 rounded-full ${range.color}`}
-                                ></span>
-                                <span>
-                                  {range.label}: {range.range}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                {/* Body */}
+                <div>
+                  {/* CTR */}
+                  <TemplateRow data={cardiovascularRows.ctr} key="ctr" />
+                  {/* Heart Length */}
+                  <TemplateRow
+                    data={cardiovascularRows.heartLength}
+                    key="heartLength"
+                  />
+                  {/* Inner Chest Length */}
+                  <TemplateRow
+                    data={cardiovascularRows.innerChestLength}
+                    key="innerChestLength"
+                  />
+                  {/* Structural Report Divider */}
+                  <div className="my-4">
+                    <div
+                      style={{
+                        height: 10,
+                        backgroundColor: "#ddd",
+                      }}
+                    ></div>
                   </div>
-                )}
-              </div>
-            </div>
-          )}
+                  {/* CAC */}
+                  <TemplateRow data={cardiovascularRows.cac} key="cac" />
+                  {/* TAC */}
+                  <TemplateRow data={cardiovascularRows.tac} key="tac" />
+                  {/* AAC */}
+                  <TemplateRow data={cardiovascularRows.aac} key="aac" />
+                  {/* AVC */}
+                  <TemplateRow data={cardiovascularRows.avc} key="avc" />
+                  {/* AAnC */}
+                  <TemplateRow data={cardiovascularRows.aanc} key="aanc" />
+                  {/* MAnC */}
+                  <TemplateRow data={cardiovascularRows.manc} key="manc" />
+                </div>
+                {/* Image */}
+                <div className="flex justify-center gap-6">
+                  <div className="w-1/3">
+                    <h3 style={{ margin: "10px 0", textAlign: "center", fontWeight: "bold" }}>
+                      CTR Key Image
+                    </h3>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        textAlign: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: "400px",
+                          backgroundColor: "#000",
+                        }}
+                      >
+                        <img
+                          src={ctr1}
+                          alt="key_ctr_slice_img"
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                            margin: "auto",
+                          }}
+                        />
+                      </div>
 
-          {activeTab === "3d-model" && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 ">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  3D Heart Model Viewer
-                </h3>
-              </div>
-
-              <iframe
-                src={
-                  activeReport === "cardiac"
-                    ? "/3Dheart/case141.html"
-                    : "/3Dheart/case005.html"
-                }
-                scrolling="no"
-                style={{
-                  height: "500px",
-                  width: "100%",
-                  borderRadius: "10px",
-                  background: "white",
-                }}
-                className="dark:bg-cloud-burst"
-              ></iframe>
-                {(() => {
-                  // Define legend arrays for each report type
-                  const legends = {
-                    body: [
-                      { color: "purple", label: "Liver" },
-                      { color: "green", label: "Spleen" },
-                      { color: "cyan", label: "Pancreas" },
-                      { color: "yellow", label: "Visceral Fat" },
-                      { color: "red", label: "Abdominal Muscle" },
-                      { color: "blue", label: "Subcutaneous Fat" },
-                    ],
-                    cardiac: [
-                      { color: "#AC5353", label: "Heart" }, 
-                      { color: "#b3d1ff", label: "Pulmonary Artery" }, 
-                      { color: "#d1b3ff", label: "Aortic Root" }, 
-                      { color: "red", label: "RCA" }, 
-                      { color: "#0080ff", label: "LAD" }, 
-                      { color: "#00ff00", label: "LCX" }, 
-                      { color: "#ffff00", label: "LM" },  
-                      { color: "#8000ff", label: "AA" },  
-                      { color: "#ff8000", label: "AVC" }, 
-                      { color: "#00ffff", label: "MA" },  
-                    ],
-                  };
-                  const currentLegend =
-                    activeReport === "body"
-                      ? legends.body
-                      : legends.cardiac;
-                  return (
-                    <div className="flex justify-center gap-4 mt-2" >
-                      {currentLegend.map((item, idx) => (
-                        <div key={idx} className="flex items-center">
+                      {simpleLegendItems.map((item, idx) => (
+                        <span key={idx} style={{ marginRight: "10px" }}>
                           <span
                             style={{
                               color: item.color,
-                              fontSize: "20px",
-                              marginRight: "5px",
+                              fontSize: "14px",
+                              marginRight: "4px",
                             }}
                           >
                             &#9679;
                           </span>
-                          <b>{item.label}</b>
+                          {item.label && <b>{item.label}</b>}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-2/3">
+                    <h3 style={{ margin: "10px 0", textAlign: "center", fontWeight: "bold" }}>
+                      Cardiovascular 3D Image
+                    </h3>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        textAlign: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: "400px",
+                          backgroundColor: "#000",
+                        }}
+                      >
+                        <img
+                          src={ctr2}
+                          alt="three_d_reconstruction_img"
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                            margin: "auto",
+                          }}
+                        />
+                      </div>
+                      {/* Legend */}
+                      {(() => {
+                        const renderLegendRow = (order: string[]) => (
+                          <div>
+                            {order.map((label) => {
+                              const entry = ctrKeyLegend[label];
+                              return (
+                                <span
+                                  key={label}
+                                  style={{ marginRight: "10px" }}
+                                >
+                                  {entry.isDiv ? (
+                                    <div style={entry.customStyle}></div>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        color: entry.color,
+                                        fontSize: entry.fontSize,
+                                        marginRight: "4px",
+                                      }}
+                                    >
+                                      &#9679;
+                                    </span>
+                                  )}
+                                  <b>{label}</b>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        );
+
+                        return (
+                          <>
+                            {renderLegendRow(legendOrder1)}
+                            {renderLegendRow(legendOrder2)}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
+                {/* Disclaimer */}
+                <div className="rounded-lg" style={{ backgroundColor: "#b9c9f9", padding: "10px 20px", marginTop: "20px" }}>
+                <b>Disclaimer: </b>BodyCheck results are for research purposes only and not intended for clinical diagnosis.
+                </div>
+              </div>
+              {/* 3D Model */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      3D Heart Model Viewer
+                    </h3>
+                  </div>
+
+                  <iframe
+                    src={"/3Dheart/case141.html"}
+                    scrolling="no"
+                    style={{
+                      height: "500px",
+                      width: "100%",
+                      borderRadius: "10px",
+                      background: "white",
+                    }}
+                    className="dark:bg-cloud-burst"
+                  ></iframe>
+                  {(() => {
+                    // Define legend arrays for each report type
+                    const cardiacLegends = [
+                      { color: "#AC5353", label: "Heart" },
+                      { color: "#b3d1ff", label: "Pulmonary Artery" },
+                      { color: "#d1b3ff", label: "Aortic Root" },
+                      { color: "red", label: "RCA" },
+                      { color: "#0080ff", label: "LAD" },
+                      { color: "#00ff00", label: "LCX" },
+                      { color: "#ffff00", label: "LM" },
+                      { color: "#8000ff", label: "AA" },
+                      { color: "#ff8000", label: "AVC" },
+                      { color: "#00ffff", label: "MA" },
+                    ];
+                    return (
+                      <div className="flex justify-center gap-4 mt-2">
+                        {cardiacLegends.map((item, idx) => (
+                          <div key={idx} className="flex items-center">
+                            <span
+                              style={{
+                                color: item.color,
+                                fontSize: "20px",
+                                marginRight: "5px",
+                              }}
+                            >
+                              &#9679;
+                            </span>
+                            <b>{item.label}</b>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </>
+          )}
+          {activeReport === "body" && (
+            <>
+              {/* <!-- PDF Template --> */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
+                {/* Body */}
+                <div>
+                  {/* Visceral Fat Area */}
+                  <TemplateRow
+                    data={bodyCompositionRows.visceralFatArea}
+                    key="visceralFatArea"
+                  />
+                  {/* Subcutaneous Fat Area */}
+                  <TemplateRow
+                    data={bodyCompositionRows.subcutaneousFatArea}
+                    key="subcutaneousFatArea"
+                  />
+                  <TemplateRow
+                    data={bodyCompositionRows.visceralSubcutaneousRatio}
+                    key="subcutaneousFatArea"
+                  />
+                  {/* Subcutaneous Fat Density */}
+                  <TemplateRow
+                    data={bodyCompositionRows.subcutaneousFatDensity}
+                    key="subcutaneousFatDensity"
+                  />
+                  {/* Abdominal Circumference */}
+                  <TemplateRow
+                    data={bodyCompositionRows.abdominalCircumference}
+                    key="abdominalCircumference"
+                  />
+
+                  {/* Structural Report Divider */}
+                  <div className="my-4">
+                    <div
+                      style={{
+                        height: 10,
+                        backgroundColor: "#ddd",
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Liver Attenuation */}
+                  <TemplateRow
+                    data={bodyCompositionRows.liverAttenuation}
+                    key="liverAttenuation"
+                  />
+                  {/* Bone Attenuation */}
+                  <TemplateRow
+                    data={bodyCompositionRows.boneAttenuation}
+                    key="boneAttenuation"
+                  />
+                  {/* Abdominal Muscle Area */}
+                  <TemplateRow
+                    data={bodyCompositionRows.abdominalMuscleArea}
+                    key="abdominalMuscleArea"
+                  />
+                  {/* Abdominal Muscle Quality */}
+                  <TemplateRow
+                    data={bodyCompositionRows.abdominalMuscleQuality}
+                    key="abdominalMuscleQuality"
+                  />
+                </div>
+                {/* Image */}
+                <div>
+                  {/* Top */}
+                  <div className="flex justify-center" style={{ marginBottom: "5px" }}>
+                    {/* image 1 */}
+                    <div style={{ width: "335px", textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          lineHeight: "14px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        <div style={{ fontSize: "14px" }}>
+                          <b>Liver Key Image</b>
+                        </div>
+                        <span>
+                          <b>Series Name:</b> WITHOUT <b>Contrast:</b> No
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          height: "264px",
+                          width: "264px",
+                          margin: "0 auto",
+                        }}
+                      >
+                        <img
+                          src={body1}
+                          alt="visceralFatArea"
+                          style={{ maxWidth: "100%", maxHeight: "100%" }}
+                        />
+                      </div>
+                    </div>
+                    {/* image 2 */}
+                    <div style={{ width: "335px", textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          lineHeight: "14px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        <div style={{ fontSize: "14px" }}>
+                          <b>L1 Vertebra Key Image</b>
+                        </div>
+                        <span>
+                          <b>Series Name:</b> WITHOUT <b>Contrast:</b> No
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          height: "264px",
+                          width: "264px",
+                          margin: "0 auto",
+                          backgroundColor: "#000",
+                        }}
+                      >
+                        <img
+                          src={body2}
+                          alt="visceralFatArea"
+                          style={{ maxWidth: "100%", maxHeight: "100%" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Bottom */}
+                  <div className="flex justify-center">
+                    {/* image 3 */}
+                    <div style={{ width: "335px", textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          lineHeight: "14px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        <div style={{ fontSize: "14px" }}>
+                          <b>L3 Abdominal Key Image</b>
+                        </div>
+                        <span>
+                          <b>Series Name:</b> WITHOUT <b>Contrast:</b> No
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          height: "264px",
+                          width: "264px",
+                          margin: "0 auto",
+                        }}
+                      >
+                        <img
+                          src={body3}
+                          alt="visceralFatArea"
+                          style={{ maxWidth: "100%", maxHeight: "100%" }}
+                        />
+                      </div>
+                      {/* Legend */}
+                      {[
+                        [
+                          { color: "rgb(58, 255, 28)", label: "Circumference" },
+                          {
+                            color: "rgb(38, 60, 252)",
+                            label: "Subcutaneous Fat",
+                          },
+                        ],
+                        [
+                          { color: "rgb(255, 28, 28)", label: "Muscle" },
+                          { color: "rgb(244, 255, 28)", label: "Visceral Fat" },
+                        ],
+                      ].map((row, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            gap: "12px",
+                            fontSize: "12px",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {row.map((item) => (
+                            <span
+                              key={item.label}
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <span
+                                style={{
+                                  color: item.color,
+                                  fontSize: "14px",
+                                  marginRight: "4px",
+                                }}
+                              >
+                                &#9679;
+                              </span>
+                              <b>{item.label}</b>
+                            </span>
+                          ))}
                         </div>
                       ))}
                     </div>
-                  );
-                })()}
-            </div>
-          )}
-
-          {activeTab === "ct-slices" && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  CT Slice Analysis
-                </h3>
-                <div
-                  className={`grid grid-cols-1 ${
-                    activeReport === "cardiac"
-                      ? "md:grid-cols-2"
-                      : "md:grid-cols-3"
-                  } gap-6`}
-                >
-                  {activeReport === "cardiac" ? (
-                    <>
+                    {/* image 4 */}
+                    <div style={{ width: "335px", textAlign: "center" }}>
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          lineHeight: "14px",
+                          marginBottom: "3px",
+                          height: "28px"
+                        }}
+                      >
+                        <div style={{ paddingTop: "7px" }}>
+                          <b>Metabolic 3D Image</b>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          height: "264px",
+                          width: "264px",
+                          margin: "0 auto",
+                          backgroundColor: "#000",
+                        }}
+                      >
+                        <img
+                          src={body4}
+                          alt="visceralFatArea"
+                          style={{ maxWidth: "100%", maxHeight: "100%" }}
+                        />
+                      </div>
+                      {/* Legend */}
                       {[
-                        { cardioImg: ctr1 },
-                        { cardioImg: ctr2 },
-                        // { cardioImg: ctr3 },
-                      ].map((images, index) => (
-                        <div key={index} className="text-center">
-                          <div
-                            className=" rounded-lg mb-3 flex items-center justify-center"
-                            style={{ height: "24rem" }}
-                          >
-                            <img
-                              src={images.cardioImg}
-                              alt=""
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            {index === 0 && "3D Reconstruction"}
-                            {index === 1 && "Key CTR Slice"}
-                          </p>
+                        [{ color: "rgb(140, 0, 190)", label: "Liver" }],
+                        [
+                          { color: "rgb(255, 28, 28)", label: "T12" },
+                          { color: "rgb(255, 172, 28)", label: "L1" },
+                          { color: "rgb(244, 255, 28)", label: "L2" },
+                          { color: "rgb(58, 255, 28)", label: "L3" },
+                          { color: "rgb(45, 171, 250)", label: "L4" },
+                          { color: "rgb(240, 28, 255)", label: "L5" },
+                        ]
+                      ].map((row, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            gap: "12px",
+                            fontSize: "12px",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {row.map((item) => (
+                            <span
+                              key={item.label}
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <span
+                                style={{
+                                  color: item.color,
+                                  fontSize: "14px",
+                                  marginRight: "4px",
+                                }}
+                              >
+                                &#9679;
+                              </span>
+                              <b>{item.label}</b>
+                            </span>
+                          ))}
                         </div>
                       ))}
-                    </>
-                  ) : (
-                    <>
-                      {[
-                        { bodyImg: body1 },
-                        { bodyImg: body2 },
-                        { bodyImg: body3 },
-                        { bodyImg: body4 },
-                      ].map((images, index) => (
-                        <div key={index} className="text-center">
-                          <div
-                            className=" rounded-lg mb-3 flex items-center justify-center"
-                            style={{ height: "24rem" }}
-                          >
-                            <img
-                              src={images.bodyImg}
-                              alt=""
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                                borderRadius: "10px",
-                              }}
-                            />
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            {index === 0 &&
-                              "Axial slice and the three ROIs (violet circles) selected to calculate the liver attenuation."}
-                            {index === 1 &&
-                              "Axial slice used to calculate the Bone Attenuation at L1."}
-                            {index === 2 &&
-                              "Axial slice used to calculate the fat and muscle metrics."}
-                          </p>
-                        </div>
-                      ))}
-                    </>
-                  )}
+                    </div>
+                  </div>
+                </div>
+                {/* Disclaimer */}
+                <div className="rounded-lg" style={{ backgroundColor: "#b9c9f9", padding: "10px 20px", marginTop: "20px" }}>
+                <b>Disclaimer: </b>BodyCheck results are for research purposes only and not intended for clinical diagnosis.
                 </div>
               </div>
-            </div>
+            </>
           )}
-
-          {/* {activeTab === "Recommendations" && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="prose max-w-none">
-                  <h4 className="text-md font-semibold text-gray-900 mb-2">
-                    Recommendations
-                  </h4>
-                  <ul className="text-gray-700 space-y-1">
-                    <li>
-                      Continue current cardiovascular risk reduction strategies
-                    </li>
-                    <li>
-                      Consider cardiology consultation for comprehensive risk
-                      assessment
-                    </li>
-                    <li>
-                      Lifestyle modifications: diet, exercise, smoking cessation
-                      if applicable
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  AI Model Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Segmentation Model
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      nnU-Net v2.1 - Cardiac CT Segmentation
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Accuracy: 99.2% ± 0.3%
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Calcium Scoring
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      Agatston Algorithm with AI Enhancement
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      FDA 510(k) Cleared
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
         </div>
 
         {/* Sample Notice */}
@@ -774,7 +715,7 @@ export function SampleReport() {
               </h3>
               <div className="mt-2 text-sm text-blue-700">
                 <p>
-                  {activeTab === "Recommendations"
+                  {activeReport === "body"
                     ? "This is a demonstration version with example data. Thresholds for risk categories are configurable and established by the individual practice. Recommendations are customizable and established by practice, based on guidelines, and are specific to the individual patient data."
                     : "This is a demonstration version with example data. Thresholds for risk categories are configurable and established by the individual practice."}
                 </p>

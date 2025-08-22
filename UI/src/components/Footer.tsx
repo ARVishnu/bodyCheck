@@ -14,8 +14,7 @@ export function Footer() {
              <img style={{width:'250px'}} src={bodyCheckLogoLight} alt="" />
             </div>
             <p className="text-white mb-4 max-w-md">
-              Advanced AI-driven cardiovascular diagnostics platform providing 
-              accurate, fast, and comprehensive cardiac CT analysis for healthcare professionals.
+            AI opportunistic screening and care coordination for Cardiovascular and Metabolic diseases
             </p>
             {/* <div className="space-y-2 text-sm text-white ">
               <div className="flex items-center space-x-2 hover:text-bright-turquoise">

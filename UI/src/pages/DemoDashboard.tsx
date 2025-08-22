@@ -693,9 +693,9 @@ export function DemoDashboard() {
                           </div>
                         </th>
                       ))}
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {/* <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -772,7 +772,7 @@ export function DemoDashboard() {
                             type="careStatus"
                           />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
                             <Link
                               to="/sample-report"
@@ -782,7 +782,7 @@ export function DemoDashboard() {
                               View Report
                             </Link>
                           </div>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

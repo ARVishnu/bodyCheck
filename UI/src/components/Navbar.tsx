@@ -18,13 +18,10 @@ export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSampleReportDropdownOpen, setIsSampleReportDropdownOpen] =
-    useState(false);
   const [isHomeDropdownOpen, setIsHomeDropdownOpen] = useState(false);
 
   // Refs for dropdown containers
   const homeDropdownRef = useRef<HTMLDivElement>(null);
-  const sampleReportDropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle clicking outside dropdowns (desktop only)
   useEffect(() => {
@@ -37,12 +34,6 @@ export function Navbar() {
       ) {
         setIsHomeDropdownOpen(false);
       }
-      if (
-        sampleReportDropdownRef.current &&
-        !sampleReportDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsSampleReportDropdownOpen(false);
-      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -53,13 +44,8 @@ export function Navbar() {
 
   const handleHomeDropdownToggle = () => {
     setIsHomeDropdownOpen(!isHomeDropdownOpen);
-    setIsSampleReportDropdownOpen(false);
   };
 
-  const handleSampleReportDropdownToggle = () => {
-    setIsSampleReportDropdownOpen(!isSampleReportDropdownOpen);
-    setIsHomeDropdownOpen(false);
-  };
 
   const handleLogout = () => {
     logout();
@@ -91,7 +77,7 @@ export function Navbar() {
   // Build secure links per role
   let secureLinks = [
     { to: "/dashboard", label: "Dashboard" },
-    { to: "/ai-pipeline", label: "AI Pipeline" },
+    // { to: "/ai-pipeline", label: "AI Pipeline" },
     // { to: '/documentation', label: 'Documentation' },
   ];
 
@@ -102,6 +88,7 @@ export function Navbar() {
   if (user?.role === "user") {
     // Basic users should see Demo Dashboard instead of Dashboard
     secureLinks = [
+      { to: "/sample-report", label: "Sample Report" },
       { to: "/demo-dashboard", label: "Demo Dashboard" },
       { to: "/contact", label: "Contact" },
     ];
@@ -120,24 +107,12 @@ export function Navbar() {
           // { to: "/providers", label: "Providers" },
         ]
       : [
-          { to: "/", label: "HomeV1" },
-          { to: "/homeV2", label: "Home V2" },
-          { to: "/homeV3", label: "Home V3" },
+          { to: "/", label: "Home" },
           { to: "/researchersV3", label: "Researchers" },
           // { to: '/researchersV2', label: 'Researchers V2' },
           // { to: '/researchersV3', label: 'Researchers V3' },
-          { to: "/patientsV3", label: "Patients" },
-          { to: "/patientsV2", label: "Patients V2" },
+          { to: "/patients", label: "Patients" },
           { to: "/providers", label: "Providers" },
-        ]),
-  ];
-
-  const sampleReportDropdownItems = [
-    ...(isProd
-      ? [{ to: "/sample-reportV2", label: "Sample Report" }]
-      : [
-          { to: "/sample-report", label: "Sample Report V1" },
-          { to: "/sample-reportV2", label: "Sample Report V2" },
         ]),
   ];
 
@@ -209,60 +184,6 @@ export function Navbar() {
                   }`}
                 >
                   {homeDropdownItems[0].label}
-                </Link>
-              )
-            )}
-
-            {/* Sample Report Dropdown */}
-            {sampleReportDropdownItems.length > 1 ? (
-              <div className="relative" ref={sampleReportDropdownRef}>
-                <button
-                  onClick={handleSampleReportDropdownToggle}
-                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
-                    sampleReportDropdownItems.some(
-                      (item) => location.pathname === item.to
-                    )
-                      ? "text-turquoise border-b-2 border-turquoise pb-1"
-                      : "text-cloud-burst"
-                  }`}
-                >
-                  <span>Sample Report</span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${
-                      isSampleReportDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {isSampleReportDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                    {sampleReportDropdownItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                          location.pathname === item.to
-                            ? "text-turquoise bg-gray-50"
-                            : "text-cloud-burst"
-                        }`}
-                        onClick={() => setIsSampleReportDropdownOpen(false)}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              sampleReportDropdownItems.length === 1 && (
-                <Link
-                  to={sampleReportDropdownItems[0].to}
-                  className={`text-sm font-medium transition-colors hover:text-turquoise ${
-                    location.pathname === sampleReportDropdownItems[0].to
-                      ? "text-turquoise border-b-2 border-turquoise pb-1"
-                      : "text-cloud-burst"
-                  }`}
-                >
-                  {sampleReportDropdownItems[0].label}
                 </Link>
               )
             )}
@@ -366,42 +287,6 @@ export function Navbar() {
                         onClick={() => {
                           setIsMenuOpen(false);
                           setIsHomeDropdownOpen(false);
-                        }}
-                        className={`block text-sm transition-colors hover:text-blue-600 ${
-                          location.pathname === item.to
-                            ? "text-blue-600"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Sample Report Dropdown */}
-              <div>
-                <button
-                  onClick={handleSampleReportDropdownToggle}
-                  className="flex items-center justify-between w-full text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <span>Sample Report</span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${
-                      isSampleReportDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {isSampleReportDropdownOpen && (
-                  <div className="ml-4 mt-2 space-y-2">
-                    {sampleReportDropdownItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          setIsSampleReportDropdownOpen(false);
                         }}
                         className={`block text-sm transition-colors hover:text-blue-600 ${
                           location.pathname === item.to
