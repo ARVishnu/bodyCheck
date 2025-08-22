@@ -1,7 +1,9 @@
 import React from 'react'
+import LoadingSpinner from './LoadingSpinner'
 import { ContactFormRow } from '../types'
 
-export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row: ContactFormRow) => void }): JSX.Element {
+export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row: ContactFormRow) => void; loading?: boolean }): JSX.Element {
+  const { rows, onRowClick, loading = false } = props;
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl bg-white">
       <table className="w-full border-separate border-spacing-0">
@@ -16,7 +18,15 @@ export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row:
           </tr>
         </thead>
         <tbody>
-        {props.rows.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 5 }).map((_, idx) => (
+            <tr key={idx}>
+              <td className="p-3 border-t border-gray-100" colSpan={5}>
+                <LoadingSpinner size={32} className="mx-auto my-4" />
+              </td>
+            </tr>
+          ))
+        ) : rows.length === 0 ? (
           <tr>
             <td
               colSpan={5}
@@ -27,14 +37,14 @@ export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row:
             </td>
           </tr>
         ) : (
-          props.rows.map((r) => {
+          rows.map((r) => {
             const name = r.full_name || r.name || '-'
             const message = r.message || r.content || '-'
             return (
               <tr
                 key={r.id}
-                onClick={() => props.onRowClick && props.onRowClick(r)}
-                className={props.onRowClick ? 'cursor-pointer hover:bg-gray-100 transition-colors' : ''}
+                onClick={() => onRowClick && onRowClick(r)}
+                className={onRowClick ? 'cursor-pointer hover:bg-gray-100 transition-colors' : ''}
                 title="Click to view details"
               >
                 <td className="p-3 border-t border-gray-100">{name}</td>
@@ -46,7 +56,7 @@ export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row:
                   title="Click to show all user detail"
                 >
                   {message.split(/\s+/).slice(0, 30).join(' ')}
-                  {message.split(/\s+/).length > 30 ? '…' : ''}
+                  {message.split(/\s+/).length > 30 ? '\u2026' : ''}
                 </td>
               </tr>
             )

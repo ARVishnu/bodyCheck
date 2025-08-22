@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AdminAuth, AdminData, ContactFormRow } from './types'
 import { AdminLayout } from './components/AdminLayout'
+import { AdminNavbar } from './components/AdminNavbar'
 import { HomePage } from './pages/HomePage'
 import { RecentLoginsPage } from './pages/RecentLoginsPage'
 import { ContactPage } from './pages/ContactPage'
@@ -88,7 +89,11 @@ export function App(): JSX.Element {
     }
   }
   async function handleRefresh() {
-    await fetchAdminData() // this will re-fetch data and update state
+    setLoading(true)
+    const fetchPromise = fetchAdminData()
+    const timer = new Promise((resolve) => setTimeout(resolve, 2000))
+    await Promise.all([fetchPromise, timer])
+    setLoading(false)
   }
   if (!isLoggedIn) {
     return (
@@ -103,32 +108,35 @@ export function App(): JSX.Element {
   }
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={<AdminLayout onLogout={() => { setIsLoggedIn(false); setData(null); setContactForms(null) }} />}
-      >
-        <Route index element={<Navigate to="/home" replace />} />
-        <Route path="home" element={data ? <HomePage data={data} refreshGrid={handleRefresh} /> : <div>Loading…</div>} />
-        <Route path="logins" element={data ? <RecentLoginsPage events={data.login_events} /> : <div>Loading…</div>} />
+    <>
+      <AdminNavbar onLogout={() => { setIsLoggedIn(false); setData(null); setContactForms(null) }} refreshTable={handleRefresh} />
+      <Routes>
         <Route
-          path="contact_forms"
-          element={
-            <>
-              <ContactPage
-                contacts={contactForms}
-                loading={contactLoading}
-                error={contactError}
-                onRowClick={(row) => setSelectedContact(row)}
-              />
-              {selectedContact && (
-                <ContactDetailsModal contact={selectedContact} onClose={() => setSelectedContact(null)} />
-              )}
-            </>
-          }
-        />
-      </Route>
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+          path="/"
+          element={<AdminLayout />}
+        >
+          <Route index element={<Navigate to="/home" replace />} />
+          <Route path="home" element={data ? <HomePage data={data} loading={loading} /> : <div>Loading…</div>} />
+          <Route path="logins" element={data ? <RecentLoginsPage events={data.login_events} loading={loading} /> : <div>Loading…</div>} />
+          <Route
+            path="contact_forms"
+            element={
+              <>
+                <ContactPage
+                  contacts={contactForms}
+                  loading={contactLoading || loading}
+                  error={contactError}
+                  onRowClick={(row) => setSelectedContact(row)}
+                />
+                {selectedContact && (
+                  <ContactDetailsModal contact={selectedContact} onClose={() => setSelectedContact(null)} />
+                )}
+              </>
+            }
+          />
+        </Route>
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </>
   )
 }

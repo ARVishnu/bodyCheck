@@ -13,11 +13,8 @@ export function ContactPage(props: {
   return (
     <section className="mt-6">
       <h3 className="text-lg mb-2 font-medium">Contact Info</h3>
-      {loading && <div>Loading…</div>}
       {error && <div className="text-red-700">{error}</div>}
-      {!loading && !error && contacts && (
-        <ContactTable rows={contacts} onRowClick={props.onRowClick} />
-      )}
+    <ContactTable rows={contacts || []} onRowClick={props.onRowClick} loading={loading} />
     </section>
   )
 }

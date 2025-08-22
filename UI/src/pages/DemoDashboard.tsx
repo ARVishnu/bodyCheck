@@ -290,14 +290,9 @@ export function DemoDashboard() {
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="all">All Status</option>
-                  <option value="Needs Review">Needs Review</option>
-                  <option value="No Review Needed">No Review Needed</option>
-                  <option value="PCP and Patient Notified">
-                    PCP and Patient Notified
-                  </option>
-                  <option value="Appointment Scheduled">
-                    Appointment Scheduled
-                  </option>
+                  <option value="all">Low</option>
+                  <option value="Needs Review">Medium</option>
+                  <option value="No Review Needed">High</option>
                 </select>
 
                 <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center">
@@ -627,15 +622,10 @@ export function DemoDashboard() {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="all">All Statuses</option>
-                  <option value="Needs Review">Needs Review</option>
-                  <option value="No Review Needed">No Review Needed</option>
-                  <option value="PCP and Patient Notified">
-                    PCP and Patient Notified
-                  </option>
-                  <option value="Appointment Scheduled">
-                    Appointment Scheduled
-                  </option>
+                  <option value="all">All Status</option>
+                  <option value="all">Low</option>
+                  <option value="Needs Review">Medium</option>
+                  <option value="No Review Needed">High</option>
                 </select>
 
                 <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center">
