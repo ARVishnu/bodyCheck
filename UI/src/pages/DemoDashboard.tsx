@@ -1,4 +1,9 @@
 import { useState, useMemo } from "react";
+// ...existing code...
+// ...existing code...
+import { PatientsModal } from "../components/PatientsModal";
+// Modal state
+
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -27,12 +32,23 @@ function getCalcificationRiskCategory(
 export function DemoDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  // statusFilter now represents risk category: all | Low | Medium | High
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortColumn, setSortColumn] = useState<keyof Patient>("examDate");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [activeReport, setActiveReport] = useState<"cardiac" | "body">(
     "cardiac"
   );
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalRiskCategory, setModalRiskCategory] = useState<"Low" | "Medium" | "High" | null>(null);
+  const [modalPatients, setModalPatients] = useState<Patient[]>([]);
+
+  // Handler for filter button click
+  const handleRiskFilterClick = (riskCategory: "Low" | "Medium" | "High") => {
+       setModalPatients(mockPatients);
+    setModalRiskCategory(riskCategory);
+    setModalOpen(true);
+  };
 
   // Filter and sort for mockPatients (cardiac/calcification)
   const filteredAndSortedPatients = useMemo(() => {
@@ -40,12 +56,13 @@ export function DemoDashboard() {
       const matchesSearch =
         patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.id.includes(searchTerm);
-      // Fix: Match categoryFilter to risk level, not exact CACScore number
+      // Category filter (if used)
       const matchesCategory =
-        categoryFilter === "all" ||
-        patient.highRiskLevel === categoryFilter;
+        categoryFilter === "all" || patient.highRiskLevel === categoryFilter;
+      // Status filter now means risk category (Low/Medium/High) for any of the main scores
+      const riskCategory = getCalcificationRiskCategory(Number(patient.CACScore));
       const matchesStatus =
-        statusFilter === "all" || patient.careStatus === statusFilter;
+        statusFilter === "all" || riskCategory === statusFilter;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -61,14 +78,14 @@ export function DemoDashboard() {
         return aValue && bValue && aValue < bValue
           ? -1
           : aValue && bValue && aValue > bValue
-          ? 1
-          : 0;
+            ? 1
+            : 0;
       } else {
         return aValue && bValue && aValue > bValue
           ? -1
           : aValue && bValue && aValue < bValue
-          ? 1
-          : 0;
+            ? 1
+            : 0;
       }
     });
   }, [searchTerm, categoryFilter, statusFilter, sortColumn, sortDirection]);
@@ -99,14 +116,14 @@ export function DemoDashboard() {
         return aValue && bValue && aValue < bValue
           ? -1
           : aValue && bValue && aValue > bValue
-          ? 1
-          : 0;
+            ? 1
+            : 0;
       } else {
         return aValue && bValue && aValue > bValue
           ? -1
           : aValue && bValue && aValue < bValue
-          ? 1
-          : 0;
+            ? 1
+            : 0;
       }
     });
   }, [mokeBodyCompositionData, searchTerm, categoryFilter, statusFilter, sortColumn, sortDirection]);
@@ -230,11 +247,10 @@ export function DemoDashboard() {
             <button
               style={{ width: "100%" }}
               onClick={() => setActiveReport("cardiac")}
-              className={`px-6 py-3 rounded-md font-semibold transition-all ${
-                activeReport === "cardiac"
-                  ? "bg-[#002F6C] text-white shadow-lg"
-                  : "text-jacarta hover:bg-white/50"
-              }`}
+              className={`px-6 py-3 rounded-md font-semibold transition-all ${activeReport === "cardiac"
+                ? "bg-[#002F6C] text-white shadow-lg"
+                : "text-jacarta hover:bg-white/50"
+                }`}
             >
               <Heart className="w-5 h-5 inline mr-2" />
               Cardiovascular Report
@@ -242,22 +258,30 @@ export function DemoDashboard() {
             <button
               style={{ width: "100%" }}
               onClick={() => setActiveReport("body")}
-              className={`px-6 py-3 rounded-md font-semibold transition-all ${
-                activeReport === "body"
-                  ? "bg-[#002F6C] text-white shadow-lg"
-                  : "text-jacarta hover:bg-white/50"
-              }`}
+              className={`px-6 py-3 rounded-md font-semibold transition-all ${activeReport === "body"
+                ? "bg-[#002F6C] text-white shadow-lg"
+                : "text-jacarta hover:bg-white/50"
+                }`}
             >
               <Activity className="w-5 h-5 inline mr-2" />
               Body Composition Report
             </button>
           </div>
         </div>
+
         {activeReport === "cardiac" ? (
           <>
+            {/* Modal for risk filter (always rendered, controls own visibility) */}
+            <PatientsModal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              patients={modalPatients}
+              riskCategory={modalRiskCategory}
+            />
             {/* Cardiac Report */}
             {/* Filters */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+              <p className="mb-2 text-bold">Filters</p>
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Search */}
                 <div className="flex-1 relative">
@@ -270,35 +294,39 @@ export function DemoDashboard() {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-
-                {/* Category Filter */}
+                {/* Modal Buttons */}
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="px-4 py-2 rounded bg-green-500 text-white font-semibold hover:bg-green-600 transition"
+                    onClick={() => handleRiskFilterClick("Low")}
+                  >
+                    Low/Normal
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition"
+                    onClick={() => handleRiskFilterClick("Medium")}
+                  >
+                    Medium
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+                    onClick={() => handleRiskFilterClick("High")}
+                  >
+                    High
+                  </button>
+                </div>
+                {/* Status Filter */}
                 {/* <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="all">All Categories</option>
+                  <option value="all">All Risk Categories</option>
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
                 </select> */}
 
-                {/* Status Filter */}
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All Status</option>
-                  <option value="all">Low</option>
-                  <option value="Needs Review">Medium</option>
-                  <option value="No Review Needed">High</option>
-                </select>
-
-                <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Export
-                </button>
               </div>
             </div>
 
@@ -491,8 +519,8 @@ export function DemoDashboard() {
                                   ? "Normal"
                                   : patient.cardiothoracicRatio >= 0.5 &&
                                     patient.cardiothoracicRatio < 0.56
-                                  ? "Borderline"
-                                  : "High"
+                                    ? "Borderline"
+                                    : "High"
                               }
                               type="ct_ratio"
                             />
@@ -602,36 +630,6 @@ export function DemoDashboard() {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-
-                {/* Category Filter */}
-                {/* <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All Categories</option>
-                  <option value="Minimal">Minimal</option>
-                  <option value="Mild">Mild</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="Severe">Severe</option>
-                </select> */}
-
-                {/* Status Filter */}
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">All Status</option>
-                  <option value="all">Low</option>
-                  <option value="Needs Review">Medium</option>
-                  <option value="No Review Needed">High</option>
-                </select>
-
-                <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Export
-                </button>
               </div>
             </div>
 
@@ -734,8 +732,8 @@ export function DemoDashboard() {
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
                             Attenuation(HU): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.abdominalMuscleFatQuality}
-                          </span>
+                              {patient.abdominalMuscleFatQuality}
+                            </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
@@ -744,15 +742,15 @@ export function DemoDashboard() {
                           </span>
                           <span className="block text-xs text-gray-500 mt-1">
                             Attenuation(HU): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.abdominalSubcutaneousFatQuality}
-                          </span>
+                              {patient.abdominalSubcutaneousFatQuality}
+                            </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
                           <span className="block text-xs text-gray-500">
-                              Length(cm): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
-                            {patient.abdominalCircumferenceAtL1}
-                          </span>
+                            Length(cm): <span className="inline-block text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 align-middle">
+                              {patient.abdominalCircumferenceAtL1}
+                            </span>
                           </span>
                         </td>
 

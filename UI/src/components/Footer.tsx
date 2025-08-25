@@ -48,7 +48,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4 text-turquoise">Legal</h3>
             <ul className="space-y-2 text-sm text-white">
-              {/* <li><Link to="/privacy" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li> */}
+              <li><Link to="/privacy" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-bright-turquoise transition-colors">Terms of Use</Link></li>
               {/* <li><Link to="/disclaimer" className="hover:text-bright-turquoise transition-colors">AI Disclaimer</Link></li> */}
             </ul>
