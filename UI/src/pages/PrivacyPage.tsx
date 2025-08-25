@@ -51,7 +51,7 @@ export function PrivacyPage() {
               {activeSection === 'privacy' && (
                 <div className="prose max-w-none">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Privacy Policy</h2>
-                  <p className="text-sm text-gray-500 mb-6">Last updated: 8/22/20254</p>
+                  <p className="text-sm text-gray-500 mb-6">Last updated: 8/22/2025</p>
 
                   <div className="space-y-6">
                     <section>
@@ -146,7 +146,7 @@ export function PrivacyPage() {
               {activeSection === 'terms' && (
                 <div className="prose max-w-none">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Terms of Use  </h2>
-                  <p className="text-sm text-gray-500 mb-6">Last updated: 8/22/20254</p>
+                  <p className="text-sm text-gray-500 mb-6">Last updated: 8/22/2025</p>
                   <p className="text-gray-700 mb-4">Welcome to bodycheck.ai, operated by Body Check LLC (“Body Check,” “we,” “us,” or “our”). These Terms of Use (“Terms”) govern your use of our public website located at https://bodycheck.ai (the “Website”). Please read them carefully. By accessing or using the Website, you agree to be bound by these Terms. If you do not agree, do not use the Website.</p>
                   <div className="space-y-6">
                     <section>
