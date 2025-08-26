@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { darkLogo } from '../assets'
 
@@ -6,17 +6,30 @@ export function AdminLayout(props: { adminEmail?: string; onLogout?: () => void;
   const [menuOpen, setMenuOpen] = React.useState(false)
   const email = (props.adminEmail || '').trim()
   const avatarLetter = email ? email[0]?.toUpperCase() : 'A'
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
       <div className='px-4 sm:px-6 lg:px-8 bg-white shadow sticky top-0 z-50 flex justify-between items-center'>
         <NavLink to="/">
           <img src={darkLogo} alt="" style={{ width: "250px" }} />
         </NavLink>
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <div
             className="w-10 h-10 rounded-full bg-dodger-blue text-white flex items-center justify-center font-semibold cursor-pointer select-none"
-            onMouseEnter={() => setMenuOpen(true)}
-            onMouseLeave={() => setMenuOpen(false)}
             onClick={() => setMenuOpen((s) => !s)}
             title={email || 'Admin'}
           >
@@ -24,8 +37,6 @@ export function AdminLayout(props: { adminEmail?: string; onLogout?: () => void;
           </div>
           {menuOpen && (
             <div
-              onMouseEnter={() => setMenuOpen(true)}
-              onMouseLeave={() => setMenuOpen(false)}
               className="absolute right-0 w-56 shadow-xl z-50 rounded-lg"
             >
               <div className='bg-white border border-gray-200 rounded-lg mt-2'>
