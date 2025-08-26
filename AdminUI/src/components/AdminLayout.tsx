@@ -26,8 +26,10 @@ export function AdminLayout(props: { adminEmail?: string; onLogout?: () => void;
             <div
               onMouseEnter={() => setMenuOpen(true)}
               onMouseLeave={() => setMenuOpen(false)}
-              className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
+              className="absolute right-0 w-56 shadow-xl z-50 rounded-lg"
             >
+              <div className='bg-white border border-gray-200 rounded-lg mt-2'>
+
               <div className="px-4 py-3 border-b border-gray-100">
                 <div className="text-xs text-gray-500">Signed in as</div>
                 <div className="text-sm font-medium text-gray-800 truncate" title={email}>{email || 'Admin'}</div>
@@ -44,6 +46,7 @@ export function AdminLayout(props: { adminEmail?: string; onLogout?: () => void;
               >
                 Logout
               </button>
+              </div>
             </div>
           )}
         </div>
