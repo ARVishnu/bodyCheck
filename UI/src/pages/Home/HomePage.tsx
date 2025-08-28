@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, Shield, Award } from "lucide-react";
+import { Shield, Award } from "lucide-react";
 import { bodyCheckLogoDark } from "../../assets/images";
 import { Realistic } from "../../assets/videos";
+import { useAuth } from "../../context/AuthContext";
 
 export const HomePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -86,7 +88,7 @@ export const HomePage: React.FC = () => {
               onClick={handleDemoAccess}
               className="bg-gradient-to-r from-[#002F6C] to-[#00B8A9] text-white px-20 py-4 rounded-full text-xl font-semibold hover:from-[#003366] hover:to-[#009B8E] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 min-w-[320px]"
             >
-              Access Demo Dashboard
+              {isAuthenticated ? "Go to Demo Dashboard" : "Access Demo Dashboard"}
             </button>
           </div>
           {/* Trust Indicators */}

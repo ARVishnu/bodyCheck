@@ -112,7 +112,7 @@ export function SampleReport() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <div className="flex items-center space-x-4">
               <Link
                 to="/"
@@ -121,7 +121,7 @@ export function SampleReport() {
                 ← Back to Home
               </Link>
               <div className="h-6 border-l border-gray-300"></div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="sm:text-3xl text-1xl font-bold text-gray-900">
                 {activeReport === "cardiac"
                   ? "Sample Cardiovascular Report"
                   : "Sample Body Composition Report"}
@@ -210,7 +210,8 @@ export function SampleReport() {
           {activeReport === "cardiac" && (
             <>
               {/* <!-- PDF Template --> */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2 overflow-y-auto">
+                <div style={{width:'1165px'}}>
                 {/* Body */}
                 <div>
                   {/* CTR */}
@@ -363,6 +364,7 @@ export function SampleReport() {
                 <div className="rounded-lg" style={{ backgroundColor: "#b9c9f9", padding: "10px 20px", marginTop: "20px" }}>
                 <b>Disclaimer: </b>BodyCheck results are for research purposes only and not intended for clinical diagnosis.
                 </div>
+                </div>
               </div>
               {/* 3D Model */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
@@ -399,7 +401,7 @@ export function SampleReport() {
                       { color: "#00ffff", label: "MA" },
                     ];
                     return (
-                      <div className="flex justify-center gap-4 mt-2">
+                      <div className="flex justify-center gap-4 mt-2 flex-wrap">
                         {cardiacLegends.map((item, idx) => (
                           <div key={idx} className="flex items-center">
                             <span
@@ -424,7 +426,8 @@ export function SampleReport() {
           {activeReport === "body" && (
             <>
               {/* <!-- PDF Template --> */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:col-span-2 overflow-y-auto">
+              <div style={{width:'1165px'}}>
                 {/* Body */}
                 <div>
                   {/* Visceral Fat Area */}
@@ -697,6 +700,7 @@ export function SampleReport() {
                 {/* Disclaimer */}
                 <div className="rounded-lg" style={{ backgroundColor: "#b9c9f9", padding: "10px 20px", marginTop: "20px" }}>
                 <b>Disclaimer: </b>BodyCheck results are for research purposes only and not intended for clinical diagnosis.
+                </div>
                 </div>
               </div>
             </>

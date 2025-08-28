@@ -397,8 +397,8 @@ export function VerificationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={handleClose} />
-      <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-xl">
+      <div className="absolute inset-0 bg-black/40 " onClick={handleClose} />
+      <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-xl mx-5">
         {modalLoading && (
           <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center rounded-lg z-20">
             <div className="flex flex-col items-center gap-3">
@@ -407,7 +407,7 @@ export function VerificationModal({
             </div>
           </div>
         )}
-        <div className="flex items-center justify-between px-5 py-4 border-b">
+        <div className="flex items-center justify-between align-start px-5 py-4 border-b">
           <div className="flex-1">
             <h3 className="text-lg font-semibold">
               {step === 'email' && config.title}

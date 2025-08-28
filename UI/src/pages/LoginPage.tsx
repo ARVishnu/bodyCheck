@@ -260,17 +260,8 @@ export function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <img
-                style={{ width: "250px" }}
-                src="src/Images/Logo.png"
-                alt=""
-              />
-            </div>
-            <p className="mt-2 text-gray-600">
+          <div className="text-center mb-8 text-gray-600">
               Secure access to cardiovascular AI platform
-            </p>
           </div>
 
           {/* Tabs */}

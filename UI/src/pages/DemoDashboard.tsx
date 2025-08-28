@@ -156,8 +156,8 @@ export function DemoDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
+          <div className="flex items-center sm:justify-between mb-4 flex-wrap gap-4 justify-center">
+            <div className="sm:text-start text-center">
               <h1 className="text-3xl font-bold text-gray-900">
                 Demo Care Coordination Dashboard
               </h1>
@@ -166,7 +166,7 @@ export function DemoDashboard() {
                 and care coordination dashboard.
               </p>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
               <p className="text-sm text-blue-800 font-medium">
                 🔓 Demo Mode - Read Only
               </p>
@@ -295,7 +295,7 @@ export function DemoDashboard() {
                   />
                 </div>
                 {/* Modal Buttons */}
-                <div className="flex justify-end gap-2">
+                <div className="flex sm:justify-end justify-center gap-2 flex-wrap">
                   <button
                     className="px-4 py-2 rounded bg-green-500 text-white font-semibold hover:bg-green-600 transition"
                     onClick={() => handleRiskFilterClick("Low")}
