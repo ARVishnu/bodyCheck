@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import {  MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 import { bodyCheckLogoLight } from '../assets/images';
 
 export function Footer() {
@@ -10,11 +10,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-             <img style={{width:'250px'}} src={bodyCheckLogoLight} alt="" />
+            <div className="mb-4">
+              <img style={{ width: '250px' }} src={bodyCheckLogoLight} alt="" />
             </div>
-            <p className="text-white mb-4 max-w-md">
-            AI opportunistic screening and care coordination for Cardiovascular and Metabolic diseases
+            <p className="text-white mb-4 max-w-md ">
+              AI opportunistic screening and care coordination for Cardiovascular and Metabolic diseases
             </p>
             {/* <div className="space-y-2 text-sm text-white ">
               <div className="flex items-center space-x-2 hover:text-bright-turquoise">
@@ -31,27 +31,29 @@ export function Footer() {
               </div>
             </div> */}
           </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold mb-4 text-turquoise">Quick Links</h3>
-            <ul className="space-y-2 text-sm text-white">
-              <li><Link to="/demo-dashboard" className="hover:text-bright-turquoise transition-colors">Demo Dashboard</Link></li>
-              <li><Link to="/sample-report" className="hover:text-bright-turquoise transition-colors">Sample Report</Link></li>
-              {/* <li><Link to="/ai-pipeline" className="hover:text-bright-turquoise transition-colors">AI Pipeline</Link></li>
+          {/* Footer Links */}
+          <div className='col-span-1 md:col-span-2  flex gap-5'>
+            {/* Quick Links */}
+            <div className='flex-1'>
+              <h3 className="font-semibold mb-4 text-turquoise">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-white">
+                <li><Link to="/demo-dashboard" className="hover:text-bright-turquoise transition-colors">Demo Dashboard</Link></li>
+                <li><Link to="/sample-report" className="hover:text-bright-turquoise transition-colors">Sample Report</Link></li>
+                {/* <li><Link to="/ai-pipeline" className="hover:text-bright-turquoise transition-colors">AI Pipeline</Link></li>
               <li><Link to="/documentation" className="hover:text-bright-turquoise transition-colors">Documentation</Link></li> */}
-              <li><Link to="/contact" className="hover:text-bright-turquoise transition-colors">Contact Us</Link></li>
-            </ul>
-          </div>
+                <li><Link to="/contact" className="hover:text-bright-turquoise transition-colors">Contact Us</Link></li>
+              </ul>
+            </div>
 
-          {/* Legal */}
-          <div>
-            <h3 className="font-semibold mb-4 text-turquoise">Legal</h3>
-            <ul className="space-y-2 text-sm text-white">
-              <li><Link to="/privacy" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-bright-turquoise transition-colors">Terms of Use</Link></li>
-              {/* <li><Link to="/disclaimer" className="hover:text-bright-turquoise transition-colors">AI Disclaimer</Link></li> */}
-            </ul>
+            {/* Legal */}
+            <div className='flex-1'>
+              <h3 className="font-semibold mb-4 text-turquoise">Legal</h3>
+              <ul className="space-y-2 text-sm text-white">
+                <li><Link to="/privacy" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-bright-turquoise transition-colors">Terms of Use</Link></li>
+                {/* <li><Link to="/disclaimer" className="hover:text-bright-turquoise transition-colors">AI Disclaimer</Link></li> */}
+              </ul>
+            </div>
           </div>
         </div>
 

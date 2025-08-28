@@ -90,7 +90,7 @@ export const HomePage: React.FC = () => {
             </button>
           </div>
           {/* Trust Indicators */}
-          <div className="mt-16 flex items-center justify-center space-x-8 opacity-60">
+          <div className="mt-16 mb-5 flex items-center justify-center space-x-8 opacity-60">
             <div className="flex items-center">
               <Shield className="w-5 h-5 text-green-600 mr-2" />
               <span className="text-sm text-gray-600">HIPAA Secure</span>

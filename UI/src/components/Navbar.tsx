@@ -42,10 +42,15 @@ export function Navbar() {
     };
   }, [isMenuOpen]);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsHomeDropdownOpen(false);
+  }, [location.pathname]);
+
   const handleHomeDropdownToggle = () => {
     setIsHomeDropdownOpen(!isHomeDropdownOpen);
   };
-
 
   const handleLogout = () => {
     logout();
@@ -101,20 +106,22 @@ export function Navbar() {
   const homeDropdownItems = [
     ...(isProd
       ? [
-          { to: "/", label: "Home" },
-          // { to: "/researchersV3", label: "Researchers" },
-          // { to: "/patientsV2", label: "Patients" },
-          // { to: "/providers", label: "Providers" },
-        ]
+        { to: "/", label: "Home" },
+        // { to: "/researchersV3", label: "Researchers" },
+        // { to: "/patientsV2", label: "Patients" },
+        // { to: "/providers", label: "Providers" },
+      ]
       : [
-          { to: "/", label: "Home" },
-          { to: "/researchersV3", label: "Researchers" },
-          // { to: '/researchersV2', label: 'Researchers V2' },
-          // { to: '/researchersV3', label: 'Researchers V3' },
-          { to: "/patients", label: "Patients" },
-          { to: "/providers", label: "Providers" },
-        ]),
+        { to: "/", label: "Home" },
+        { to: "/researchersV3", label: "Researchers" },
+        // { to: '/researchersV2', label: 'Researchers V2' },
+        // { to: '/researchersV3', label: 'Researchers V3' },
+        { to: "/patients", label: "Patients" },
+        { to: "/providers", label: "Providers" },
+      ]),
   ];
+
+
 
   return (
     <nav className="bg-white shadow-sm  sticky top-0 z-50">
@@ -139,19 +146,17 @@ export function Navbar() {
               <div className="relative" ref={homeDropdownRef}>
                 <button
                   onClick={handleHomeDropdownToggle}
-                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${
-                    homeDropdownItems.some(
-                      (item) => location.pathname === item.to
-                    )
+                  className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-turquoise ${homeDropdownItems.some(
+                    (item) => location.pathname === item.to
+                  )
                       ? "text-turquoise border-b-2 border-turquoise pb-1"
                       : "text-cloud-burst"
-                  }`}
+                    }`}
                 >
                   <span>Home</span>
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform ${
-                      isHomeDropdownOpen ? "rotate-180" : ""
-                    }`}
+                    className={`w-4 h-4 transition-transform ${isHomeDropdownOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
                 {isHomeDropdownOpen && (
@@ -160,11 +165,10 @@ export function Navbar() {
                       <Link
                         key={item.to}
                         to={item.to}
-                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                          location.pathname === item.to
+                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${location.pathname === item.to
                             ? "text-turquoise bg-gray-50"
                             : "text-cloud-burst"
-                        }`}
+                          }`}
                         onClick={() => setIsHomeDropdownOpen(false)}
                       >
                         {item.label}
@@ -177,11 +181,10 @@ export function Navbar() {
               homeDropdownItems.length === 1 && (
                 <Link
                   to={homeDropdownItems[0].to}
-                  className={`text-sm font-medium transition-colors hover:text-turquoise ${
-                    location.pathname === homeDropdownItems[0].to
+                  className={`text-sm font-medium transition-colors hover:text-turquoise ${location.pathname === homeDropdownItems[0].to
                       ? "text-turquoise border-b-2 border-turquoise pb-1"
                       : "text-cloud-burst"
-                  }`}
+                    }`}
                 >
                   {homeDropdownItems[0].label}
                 </Link>
@@ -193,11 +196,10 @@ export function Navbar() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`text-sm font-medium transition-colors hover:text-turquoise ${
-                  location.pathname === link.to
+                className={`text-sm font-medium transition-colors hover:text-turquoise ${location.pathname === link.to
                     ? "text-turquoise border-b-2 border-turquoise pb-1"
                     : "text-cloud-burst"
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
@@ -266,101 +268,115 @@ export function Navbar() {
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-3">
               {/* Mobile Home Dropdown */}
-              <div>
-                <button
-                  onClick={handleHomeDropdownToggle}
-                  className="flex items-center justify-between w-full text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <span>Home</span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${
-                      isHomeDropdownOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {isHomeDropdownOpen && (
-                  <div className="ml-4 mt-2 space-y-2">
-                    {homeDropdownItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          setIsHomeDropdownOpen(false);
-                        }}
-                        className={`block text-sm transition-colors hover:text-blue-600 ${
-                          location.pathname === item.to
-                            ? "text-blue-600"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Regular Mobile Links */}
-              {currentLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                    location.pathname === link.to
-                      ? "text-blue-600"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <a
-                href="/admin/"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-medium text-gray-700"
-              >
-                Admin
-              </a>
-
-              {isAuthenticated && user ? (
-                <div className="pt-3 border-t border-gray-200">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
-                    {getRoleIcon(user.role)}
-                    <span>{user.name}</span>
-                  </div>
+              {homeDropdownItems.length > 1 ? (
+                <div>
                   <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                    onClick={handleHomeDropdownToggle}
+                    className="flex items-center justify-between w-full text-sm font-medium text-gray-700 hover:text-turquoise transition-colors"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <span>Home</span>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${isHomeDropdownOpen ? "rotate-180" : ""
+                        }`}
+                    />
                   </button>
+                  {isHomeDropdownOpen && (
+                    <div className="ml-4 mt-2 space-y-2">
+                      {homeDropdownItems.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            setIsHomeDropdownOpen(false);
+                          }}
+                          className={`block text-sm transition-colors hover:text-turquoise ${location.pathname === item.to
+                              ? "text-turquoise"
+                              : "text-gray-600"
+                            }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="pt-3 border-t border-gray-200 flex flex-col space-y-2">
+              ): (
+                homeDropdownItems.length === 1 && (
                   <Link
-                    to="/login?screen=login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-sm font-medium text-gray-700"
+                  key={homeDropdownItems[0].to}
+                    to={homeDropdownItems[0].to}
+                    onClick={() => { setIsMenuOpen(false); setIsHomeDropdownOpen(false); }}
+                    className={`text-sm font-medium transition-colors hover:text-turquoise ${location.pathname === homeDropdownItems[0].to
+                        ? "text-turquoise"
+                        : "text-cloud-burst"
+                      }`}
                   >
-                    Login
+                    {homeDropdownItems[0].label}
                   </Link>
-                  <Link
-                    to="/login?screen=signup"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium text-center"
-                  >
-                    Get Started
-                  </Link>
-                </div>
+                )
               )}
-            </div>
+
+                  {/* Regular Mobile Links */}
+                  {currentLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`text-sm font-medium transition-colors hover:text-turquoise ${location.pathname === link.to
+                          ? "text-turquoise"
+                          : "text-gray-700"
+                        }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <a
+                    href="https://cerulean-sunburst-dff662.netlify.app/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-medium text-gray-700 hover:text-turquoise"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Admin
+                  </a>
+
+                  {isAuthenticated && user ? (
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="flex items-center space-x-2 text-sm text-gray-600 mb-3">
+                        {getRoleIcon(user.role)}
+                        <span>{user.name}</span>
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="pt-3 border-t border-gray-200 flex flex-col space-y-2">
+                      <Link
+                        to="/login?screen=login"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="text-sm font-medium text-gray-700 hover:text-turquoise"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        to="/login?screen=signup"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="bg-turquoise text-white px-4 py-2 rounded-lg text-sm font-medium text-center hover:bg-bright-turquoise"
+                      >
+                        Get Started
+                      </Link>
+                    </div>
+                  )}
+                </div>
           </div>
         )}
-      </div>
+          </div>
     </nav>
   );
 }
