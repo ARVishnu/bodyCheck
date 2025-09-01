@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import { Shield, Lock, Eye, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { Shield, Lock, Eye, FileText, AlertCircle, CheckCircle, User, ChevronRight, Calendar, Download, ExternalLink } from 'lucide-react';
+import { patents } from './Home/Researcher/data';
 
 export function PrivacyPage() {
   const [activeSection, setActiveSection] = useState('privacy');
+  const [hoveredPatent, setHoveredPatent] = useState<string | null>(null);
+  const [selectedPatent, setSelectedPatent] = useState<string | null>(null);
 
   const sections = [
     { id: 'privacy', title: 'Privacy Policy', icon: <Shield className="w-4 h-4" /> },
     { id: 'terms', title: 'Terms of Use', icon: <FileText className="w-4 h-4" /> },
+    { id: 'Patent', title: 'Patent Portfolio', icon: <User className="w-4 h-4" /> },
     // { id: 'disclaimer', title: 'AI Disclaimer', icon: <AlertCircle className="w-4 h-4" /> },
     // { id: 'hipaa', title: 'HIPAA Compliance', icon: <Lock className="w-4 h-4" /> }
   ];
+  const handlePatentClick = (patentId: string) => {
+    setSelectedPatent(selectedPatent === patentId ? null : patentId);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,8 +40,8 @@ export function PrivacyPage() {
                     key={section.id}
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${activeSection === section.id
-                        ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600'
-                        : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50'
                       }`}
                   >
                     {section.icon}
@@ -105,18 +112,18 @@ export function PrivacyPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">6. Data Retention</h3>
                       <p className="text-gray-700 mt-2">We retain information for as long as necessary for the purposes described in this Policy, unless a longer retention period is required or permitted by law.</p>
                     </section>
-                    
+
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Children’s Privacy</h3>
                       <p className="text-gray-700 mt-2">The Website is not directed to individuals under 18, and we do not knowingly collect personal information from them.</p>
                     </section>
-                    
+
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">8. International Users</h3>
                       <p className="text-gray-700 mt-2">If you access the Website from outside the United States, you understand that your information may be processed in the United States, where data protection laws may differ from those in your jurisdiction.</p>
                     </section>
-                    
-                   <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">9. Your Choices</h3>
                       <ul className="space-y-2 text-gray-700">
                         <li>• Marketing communications: You can opt out by following the unsubscribe instructions in our emails or by contacting us.</li>
@@ -124,21 +131,21 @@ export function PrivacyPage() {
                       </ul>
                     </section>
 
-                     <section>
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">10. Third-Party Sites</h3>
                       <p className="text-gray-700 mt-2">The Website may contain links to third-party websites. We are not responsible for the privacy practices of those sites.</p>
                     </section>
-                    
-                     <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">11. Changes to This Policy</h3>
                       <p className="text-gray-700 mt-2">We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised “Last updated” date. Your continued use of the Website after an update signifies your acceptance of the changes.</p>
                     </section>
-                    
-                     <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">12. Contact</h3>
                       <p className="text-gray-700 mt-2">Questions about this Privacy Policy? Contact us at: <b>support@bodycheck.ai</b></p>
                     </section>
-                    
+
                   </div>
                 </div>
               )}
@@ -184,37 +191,37 @@ export function PrivacyPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">6. Disclaimer of Warranties</h3>
                       <p className="text-gray-700 mt-2">The website and all content are provided “as is” and “as available,” without warranties of any kind, express or implied, including implied warranties of merchantability, fitness for a particular purpose, title, and non-infringement. We do not warrant that the website will be uninterrupted, error-free, or secure. </p>
                     </section>
-                    
+
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Limitation of Liability</h3>
                       <p className="text-gray-700 mt-2">To the fullest extent permitted by law, body check shall not be liable for any indirect, incidental, consequential, special, exemplary, or punitive damages, or any loss of profits, revenue, data, or use, arising out of or relating to your use of (or inability to use) the website, even if advised of the possibility of such damages. Our total liability for any claims arising from or relating to the website shall not exceed one hundred u. S. Dollars (us $100). </p>
                     </section>
-                    
+
                     <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">8. Indemnification</h3>
                       <p className="text-gray-700 mt-2">You agree to indemnify, defend, and hold harmless Body Check and its affiliates and licensors, and each of their respective officers, directors, employees, and agents, from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable attorneys’ fees) arising out of or related to: (a) your access to or use of the Website; (b) your violation of these Terms; or (c) your violation of any law or the rights of any third party.</p>
                     </section>
-                    
-                   <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">9. Governing Law</h3>
-                       <p className="text-gray-700 mt-2">These Terms are governed by the laws of the State of Delaware, without regard to its conflict of laws principles. You agree to the exclusive jurisdiction and venue of the state and federal courts located in Delaware for any dispute arising out of or relating to these Terms or the Website.</p>
+                      <p className="text-gray-700 mt-2">These Terms are governed by the laws of the State of Delaware, without regard to its conflict of laws principles. You agree to the exclusive jurisdiction and venue of the state and federal courts located in Delaware for any dispute arising out of or relating to these Terms or the Website.</p>
                     </section>
 
-                     <section>
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">10. Changes to Terms</h3>
                       <p className="text-gray-700 mt-2">We may modify or discontinue the Website (in whole or in part) at any time without notice. We may also update these Terms from time to time. Changes will be posted on this page with a revised “Last updated” date. Your continued use of the Website after any change constitutes your acceptance of the updated Terms.</p>
                     </section>
-                    
-                     <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">11. No Medical Advice</h3>
                       <p className="text-gray-700 mt-2">The content on the Website is provided for general informational purposes only and is not intended as medical advice, diagnosis, or treatment. The Website does not create a doctor-patient relationship between you and Body Check or any of its affiliates. You should not rely on the Website as a substitute for professional medical advice. Always seek the guidance of a qualified healthcare provider with any questions you may have regarding a medical condition or treatment.</p>
                     </section>
-                    
-                     <section>
+
+                    <section>
                       <h3 className="text-lg font-semibold text-gray-900 mb-3">12. Contact</h3>
                       <p className="text-gray-700 mt-2">Questions about these Terms? Contact us at: <b>support@bodycheck.ai</b></p>
                     </section>
-                    
+
                   </div>
                 </div>
               )}
@@ -398,6 +405,145 @@ export function PrivacyPage() {
                         </p>
                       </div>
                     </section>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'Patent' && (
+                <div>
+                  {/* Animated Header Section */}
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Patent Portfolio</h2>
+                  <p className="text-gray-700 mb-4">Pioneering healthcare innovation through cutting-edge diagnostic technologies and opportunistic screening methodologies</p>
+                  {/* Interactive Patents Grid */}
+                  <div className=" mx-auto ">
+                    <div className="grid gap-8 lg:grid-cols-2">
+                      {patents.map((patent, index) => (
+                        <div
+                          key={patent.id}
+                          className={`group relative bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl ${hoveredPatent === patent.id ? 'ring-2 ring-blue-500/20' : ''
+                            } ${selectedPatent === patent.id ? 'ring-2 ring-purple-500/30 shadow-2xl' : ''}`}
+                          onMouseEnter={() => setHoveredPatent(patent.id)}
+                          onMouseLeave={() => setHoveredPatent(null)}
+                          style={{
+                            animationDelay: `${index * 200}ms`,
+                            animation: 'fadeInUp 0.8s ease-out forwards'
+                          }}
+                        >
+                          {/* Animated Background Gradient */}
+                          <div className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-500 ${patent.color === 'blue' ? 'from-blue-500 to-cyan-500' : 'from-purple-500 to-pink-500'
+                            }`}></div>
+
+                          {/* Patent Header */}
+                          <div className="relative p-8 pb-6">
+                            <div className="flex items-start justify-between mb-6">
+                              <div className="flex items-center space-x-4">
+                                <div className={`flex items-center justify-center w-14 h-14 rounded-xl transition-all duration-300 group-hover:scale-110 ${patent.color === 'blue'
+                                  ? 'bg-blue-50 group-hover:bg-blue-100'
+                                  : 'bg-purple-50 group-hover:bg-purple-100'
+                                  }`}>
+                                  <FileText className={`w-7 h-7 ${patent.color === 'blue' ? 'text-blue-600' : 'text-purple-600'
+                                    }`} />
+                                </div>
+                                <div>
+                                  <div className={`text-sm font-semibold mb-1 ${patent.color === 'blue' ? 'text-blue-600' : 'text-purple-600'
+                                    }`}>
+                                    {patent.category}
+                                  </div>
+                                  <div className="text-lg font-bold text-gray-900">
+                                    {patent.id}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end space-y-2">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200 shadow-sm">
+                                  {patent.status}
+                                </span>
+                                <button
+                                  onClick={() => handlePatentClick(patent.id)}
+                                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                                >
+                                  <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${selectedPatent === patent.id ? 'rotate-90' : ''
+                                    }`} />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Patent Title */}
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-gray-800 transition-colors duration-200">
+                              {patent.title}
+                            </h3>
+
+                            {/* Patent Description */}
+                            <p className="text-gray-600 mb-6 leading-relaxed">
+                              {patent.description}
+                            </p>
+
+                            {/* Patent Meta */}
+                            <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
+                              <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-2">
+                                  <Calendar className="w-4 h-4" />
+                                  <span>Published {new Date(patent.date).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                              <div className={`px-3 py-1 rounded-full text-xs font-medium ${patent.color === 'blue'
+                                ? 'bg-blue-50 text-blue-700'
+                                : 'bg-purple-50 text-purple-700'
+                                }`}>
+                                {patent.impact}
+                              </div>
+                            </div>
+
+                            {/* Expandable Details */}
+                            <div className={`overflow-hidden transition-all duration-500 ${selectedPatent === patent.id ? 'max-h-40 opacity-100 mb-6' : 'max-h-0 opacity-0'
+                              }`}>
+                              <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <h4 className="font-semibold text-gray-900 mb-2">Patent Impact</h4>
+                                <p className="text-sm text-gray-600 mb-3">{patent.impact}</p>
+                                <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                  <div className="flex items-center space-x-1">
+                                    <Eye className="w-3 h-3" />
+                                    <span>Public Domain</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Download className="w-3 h-3" />
+                                    <span>PDF Available</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center space-x-4">
+                              <a
+                                href={patent.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center px-6 py-3 font-medium rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${patent.color === 'blue'
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+                                  }`}
+                              >
+                                <span>View Patent</span>
+                                <ExternalLink className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+                              </a>
+                              <button
+                                onClick={() => handlePatentClick(patent.id)}
+                                className="inline-flex items-center px-4 py-3 font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                              >
+                                {selectedPatent === patent.id ? 'Less Info' : 'More Info'}
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Decorative Bottom Border */}
+                          <div className={`h-1 bg-gradient-to-r transition-all duration-500 ${patent.color === 'blue'
+                            ? 'from-blue-500 to-cyan-500'
+                            : 'from-purple-500 to-pink-500'
+                            } ${hoveredPatent === patent.id ? 'h-2' : ''}`}></div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

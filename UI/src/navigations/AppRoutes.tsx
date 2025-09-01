@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { AIPipelinePage, ContactPage, DemoDashboard,  LoginPage, ReportPage, SampleReport, Dashboard, PrivacyPage, UploadPage, HomePage } from '../pages'
-import {  PatientsPage, ProvidersPage, ResearcherPage, ResearcherPageV2, ResearcherPageV3 } from '../pages/Home'
+import {  PatientsPage, ProvidersPage, ResearcherPage } from '../pages/Home'
 import { useAuth } from '../context/AuthContext';
 import { Footer, Navbar, ScrollToTop, PageTransitionLoader } from '../components';
 
@@ -64,14 +64,13 @@ export const AppRoutes = () => {
     />
     {/* <Route path="/documentation" element={<DocumentationPage />} /> */}
     <Route path="/contact" element={<ContactPage />} />
-    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="/leagel" element={<PrivacyPage />} />
+    <Route path="/terms" element={<PrivacyPage />} />
     <Route path="/terms" element={<PrivacyPage />} />
     <Route path="/disclaimer" element={<PrivacyPage />} />
     <Route path="/providers" element={<ProvidersPage />} />
     <Route path="/patients" element={<PatientsPage />} />
     <Route path="/researchers" element={<ResearcherPage />} />
-    <Route path="/researchersV3" element={<ResearcherPageV3 />} />
-    <Route path="/researchersV2" element={<ResearcherPageV2 />} />
     {/* Protected Routes */}
     <Route
       path="/dashboard"

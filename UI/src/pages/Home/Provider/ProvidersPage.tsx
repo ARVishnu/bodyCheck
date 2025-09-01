@@ -24,126 +24,43 @@ import {
   Phone
 } from 'lucide-react';
 import { useState } from 'react';
-import { LiveReport } from '../../shared';
+import { LiveReport } from '../../../shared';
+import { clinicalFeatures, faqs, testimonials } from './data';
 
+const coreCapabilities = [
+  {
+    icon: <Heart className="w-8 h-8 text-red-500" />,
+    title: "Cardiovascular Biomarker Calculation",
+    description: "Actionable metrics for heart health",
+    benefit: "Automated coronary artery calcium (Agastston) scoring and cardiothoracic ratio measurements"
+  },
+  {
+    icon: <Activity className="w-8 h-8 text-blue-500" />,
+    title: "Valve & Aortic Measurements",
+    description: "For structural heart evaluation",
+    benefit: "Mitral valve, aortic valve leaflet, aortic annulus quantification"
+  },
+  {
+    icon: <Users className="w-8 h-8 text-green-500" />,
+    title: "Body Composition",
+    description: "AI segmentation of muscle, fat, liver, bone density",
+    benefit: "Visceral fat, sarcopenia risk, bone attenuation analysis"
+  },
+  {
+    icon: <FileText className="w-8 h-8 text-purple-500" />,
+    title: "Automated Reporting",
+    description: "HL7/FHIR-ready, annotated, patient-friendly PDFs",
+    benefit: "EMR integration with structured data output"
+  }
+];
+const outcomes = [
+  { metric: "70%", label: "Reduction in review time", icon: <Clock className="w-6 h-6 text-blue-600" /> },
+  { metric: "3x", label: "Higher patient follow-up", icon: <Users className="w-6 h-6 text-green-600" /> },
+  { metric: "40%", label: "Faster report turnaround", icon: <TrendingUp className="w-6 h-6 text-purple-600" /> },
+  { metric: "99.2%", label: "AI accuracy vs experts", icon: <Target className="w-6 h-6 text-red-600" /> }
+];
 export function ProvidersPage() {
-  const [activeReportTab, setActiveReportTab] = useState('cardiac');
   const [activeFAQ, setActiveFAQ] = useState<string | null>(null);
-
-  const coreCapabilities = [
-    {
-      icon: <Heart className="w-8 h-8 text-red-500" />,
-      title: "Calcium Scoring (Agatston)",
-      description: "Structured risk stratification for cardiac health",
-      benefit: "Automated LAD, RCA, LCX, LM scoring with percentile ranking"
-    },
-    {
-      icon: <Activity className="w-8 h-8 text-blue-500" />,
-      title: "Valve & Aortic Measurements",
-      description: "For structural heart evaluation",
-      benefit: "Mitral valve, aortic valve leaflet, aortic annulus quantification"
-    },
-    {
-      icon: <Users className="w-8 h-8 text-green-500" />,
-      title: "Body Composition",
-      description: "AI segmentation of muscle, fat, liver, bone density",
-      benefit: "Visceral fat, sarcopenia risk, bone attenuation analysis"
-    },
-    {
-      icon: <FileText className="w-8 h-8 text-purple-500" />,
-      title: "Automated Reporting",
-      description: "HL7/FHIR-ready, annotated, patient-friendly PDFs",
-      benefit: "EMR integration with structured data output"
-    }
-  ];
-
-  const clinicalFeatures = [
-    {
-      feature: "AI Pre-Screening",
-      benefit: "Reduces review time by 70%",
-      description: "Automated triage flags high-risk cases for priority review"
-    },
-    {
-      feature: "PACS-Compatible Upload",
-      benefit: "No installation required",
-      description: "Direct DICOM integration with existing radiology workflows"
-    },
-    {
-      feature: "HL7/FHIR Integration",
-      benefit: "EMR-friendly workflows",
-      description: "Structured data export to Epic, Cerner, and other major EMRs"
-    },
-    {
-      feature: "HIPAA & FDA Compliance",
-      benefit: "Built with privacy and safety at core",
-      description: "510(k) pathway models with full audit trails"
-    },
-    {
-      feature: "PDF + Annotated DICOM",
-      benefit: "Easy review, patient sharing",
-      description: "Professional reports with interactive 3D visualizations"
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "We've reduced CT reporting backlog by 40% while delivering clearer results to patients.",
-      author: "Dr. Sarah Mehta, MD",
-      role: "Director of Imaging",
-      organization: "HeartWell Clinics",
-      metric: "40% faster reporting"
-    },
-    {
-      quote: "The AI pre-screening helps us prioritize high-risk cases immediately. It's like having an extra radiologist.",
-      author: "Dr. Michael Chen, MD",
-      role: "Interventional Cardiologist",
-      organization: "Metro Cardiac Center",
-      metric: "70% time savings"
-    },
-    {
-      quote: "Patient understanding and follow-up compliance has dramatically improved with the visual reports.",
-      author: "Jennifer Rodriguez",
-      role: "Imaging Center Director",
-      organization: "Advanced Diagnostics Group",
-      metric: "3x higher follow-up"
-    }
-  ];
-
-  const faqs = [
-    {
-      id: 'fda',
-      question: "Is it FDA-cleared?",
-      answer: "Yes, we use models validated on public and proprietary datasets including TotalSegmentator, nnU-Net, and WARF scoring algorithms. Our calcium scoring algorithm follows the FDA 510(k) pathway with continuous benchmarking against expert radiologists."
-    },
-    {
-      id: 'software',
-      question: "Will I need new software?",
-      answer: "No, BodyCheck works with standard DICOMs and provides results via web dashboard, API, or PDF. Integration is seamless with your existing PACS and EMR systems."
-    },
-    {
-      id: 'accuracy',
-      question: "How accurate is the AI?",
-      answer: "Our models achieve 99.2% accuracy compared to expert radiologists, with inter-reader agreement κ = 0.94. We continuously validate against multi-center datasets and provide confidence scores with each analysis."
-    },
-    {
-      id: 'cost',
-      question: "How do I justify the cost?",
-      answer: "Most providers see ROI within 3 months through increased efficiency, reduced reporting time, and value-based care opportunities. We provide detailed cost-benefit analysis during implementation."
-    },
-    {
-      id: 'training',
-      question: "What training is required?",
-      answer: "Minimal training required. Most radiologists are productive within 30 minutes. We provide comprehensive onboarding, clinical support, and ongoing education resources."
-    }
-  ];
-
-  const outcomes = [
-    { metric: "70%", label: "Reduction in review time", icon: <Clock className="w-6 h-6 text-blue-600" /> },
-    { metric: "3x", label: "Higher patient follow-up", icon: <Users className="w-6 h-6 text-green-600" /> },
-    { metric: "40%", label: "Faster report turnaround", icon: <TrendingUp className="w-6 h-6 text-purple-600" /> },
-    { metric: "99.2%", label: "AI accuracy vs experts", icon: <Target className="w-6 h-6 text-red-600" /> }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -151,11 +68,11 @@ export function ProvidersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Bring Precision Preventive Care to Every CT Scan
+              <h1 className="text-2xl md:text-3xl font-bold mb-6">
+              AI Opportunistic Screening and Care Coordination for Cardiovascular and Metabolic Diseases
               </h1>
-              <p className="text-xl mb-8 text-bright-turquoise/90">
-                AI-driven cardiac and body composition analysis in under 5 minutes — without changing how you practice.
+              <p className="text-l mb-8 text-bright-turquoise/90">
+              Fully automated AI-derived cardiac and body composition analysis that fits seamlessly into your worlflow.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -178,12 +95,12 @@ export function ProvidersPage() {
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                 <div className="flex items-center mb-4">
                   <Stethoscope className="w-6 h-6 mr-2 text-bright-turquoise" />
-                  <span className="font-semibold text-white">Clinical Dashboard Preview</span>
+                  <span className="font-semibold text-white">Care Coordination Dashboard Preview</span>
                 </div>
                 <div className="bg-white/20 rounded-lg h-48 flex items-center justify-center hover:bg-white/30 transition-all duration-300">
                   <div className="text-center">
                     <Monitor className="w-16 h-16 mx-auto mb-4 text-bright-turquoise/80" />
-                    <p className="text-white/90">AI-Generated Report Interface</p>
+                    <p className="text-white/90">Flexible -  Configurable - Actionable</p>
                     <p className="text-sm text-white/70">Click to explore live demo</p>
                   </div>
                 </div>
@@ -205,20 +122,20 @@ export function ProvidersPage() {
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-4xl mx-auto">
               <p className="text-sm text-blue-800">
-              Based on validated proprietarymodels with continuous benchmarking against expert radiologists.
+              Based on validated proprietary models with continuous benchmarking against expert radiologists.
               </p>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 ">
             {coreCapabilities.map((capability, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                <div className="flex items-center mb-4">
+              <div key={index} className="flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center mb-4 flex-1">
                   {capability.icon}
                   <h3 className="text-lg font-semibold text-gray-900 ml-3">{capability.title}</h3>
                 </div>
-                <p className="text-gray-600 mb-3">{capability.description}</p>
-                <p className="text-sm font-medium text-slate-700">{capability.benefit}</p>
+                <p className="text-gray-600 mb-3 flex-1">{capability.description}</p>
+                <p className="text-sm font-medium text-slate-700 flex-1">{capability.benefit}</p>
               </div>
             ))}
           </div>

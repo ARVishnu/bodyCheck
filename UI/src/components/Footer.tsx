@@ -1,6 +1,5 @@
 
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail } from 'lucide-react';
 import { bodyCheckLogoLight } from '../assets/images';
 
 export function Footer() {
@@ -14,7 +13,7 @@ export function Footer() {
               <img style={{ width: '250px' }} src={bodyCheckLogoLight} alt="" />
             </div>
             <p className="text-white mb-4 max-w-md ">
-              AI opportunistic screening and care coordination for Cardiovascular and Metabolic diseases
+              AI Opportunistic Screening and Care Coordination for Cardiovascular and Metabolic Diseases
             </p>
             {/* <div className="space-y-2 text-sm text-white ">
               <div className="flex items-center space-x-2 hover:text-bright-turquoise">
@@ -49,8 +48,9 @@ export function Footer() {
             <div className='flex-1'>
               <h3 className="font-semibold mb-4 text-turquoise">Legal</h3>
               <ul className="space-y-2 text-sm text-white">
-                <li><Link to="/privacy" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-bright-turquoise transition-colors">Terms of Use</Link></li>
+                <li><Link to="/leagel" className="hover:text-bright-turquoise transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/leagel" className="hover:text-bright-turquoise transition-colors">Terms of Use</Link></li>
+                <li><Link to="/leagel" className="hover:text-bright-turquoise transition-colors">Patent Portfolio</Link></li>
                 {/* <li><Link to="/disclaimer" className="hover:text-bright-turquoise transition-colors">AI Disclaimer</Link></li> */}
               </ul>
             </div>

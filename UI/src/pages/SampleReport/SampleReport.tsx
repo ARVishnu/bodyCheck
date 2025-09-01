@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Download, Heart, Activity, FileText } from "lucide-react";
 
 import { body1, body2, body3, body4, ctr1, ctr2 } from "../../assets/images";
-import { GeorgeCardiovascularReport, GeorgeMetabolicReport } from "../../assets";
+import { DavidCardiovascularReport, GeorgeCardiovascularReport, GeorgeMetabolicReport, LindaMetabolicReport } from "../../assets";
 import { styles } from "./SampleReport.styles";
 import {
   cardiovascularRows,
@@ -134,8 +134,8 @@ export function SampleReport() {
                 </p>
               </div>
               <a
-                href={activeReport == 'cardiac' ? GeorgeCardiovascularReport : GeorgeMetabolicReport}
-                download={activeReport == 'cardiac' ? "George_Cardiovascular_report.pdf" : "George_Metabolic_report.pdf"}
+                href={activeReport == 'cardiac' ? DavidCardiovascularReport : LindaMetabolicReport}
+                download={activeReport == 'cardiac' ? "David_Cardiovascular_Report.pdf" : "Linda_Metabolic_Report.pdf"}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -153,7 +153,7 @@ export function SampleReport() {
                   Patient ID
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
-                  {patient.id}
+                {activeReport === "cardiac" ? "74156158" :"87456565"}
                 </p>
               </div>
               <div>
@@ -161,7 +161,7 @@ export function SampleReport() {
                   Patient Name
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
-                  {patient.name}
+                {activeReport === "cardiac" ? "David" :"Linda"}
                 </p>
               </div>
               <div>
@@ -170,7 +170,7 @@ export function SampleReport() {
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {/* {new Date(patient.examDate).toLocaleDateString()} */}
-                  {patient.examDate}
+                  {activeReport === "cardiac" ? "2022/12/11" :"2022/12/05"}
                 </p>
               </div>
             </div>

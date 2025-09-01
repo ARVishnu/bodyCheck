@@ -12,5 +12,6 @@ import body1 from "./body1.png"
 import body2 from "./body2.png"
 import body3 from "./body3.png"
 import body4 from "./body4.png"
+import radiostics_logo from "./radiostics_logo.webp"
 
-export { bodyCheckLogoDark, bodyCheckLogoLight, ThreeDHeartvideo, yujan, andrew, steven, jack, ctr1, ctr2, body1, body2, body3, body4};
+export { bodyCheckLogoDark, bodyCheckLogoLight, ThreeDHeartvideo, yujan, andrew, steven, jack, ctr1, ctr2, body1, body2, body3, body4, radiostics_logo};

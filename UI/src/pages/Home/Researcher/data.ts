@@ -1,4 +1,4 @@
-import { FlaskConical, BarChart3, Zap, Search,  Server, Shield, Cpu, Globe, Network,FileText ,UserCheck} from 'lucide-react';
+import { FlaskConical, BarChart3, Zap, Search,  Server, Shield, Cpu, Globe, Network} from 'lucide-react';
 export const metrics = {
   cac: {
     name: 'Coronary Artery Calcium',
@@ -54,18 +54,18 @@ export const features = [
     },
     {
       icon: Search,
-      title: 'Searchable Metric Database',
+      title: 'Searchable Biomarker Database',
       description: 'Comprehensive database with advanced search and filtering capabilities for longitudinal research studies',
       benefits: ['Automated indexing', 'Advanced search', 'Longitudinal tracking']
     }
   ];
 
   export const workflowSteps = [
-    { title: 'CT Scans', description: 'Secure DICOM upload' },
-    { title: 'AI Processing', description: 'Model execution' },
-    { title: 'Metrics Extraction', description: 'Biomarker analysis' },
-    { title: 'Database Storage', description: 'Indexed storage' },
-    { title: 'Review Dashboard', description: 'Interactive review' }
+    { title: 'Imaging Exam', description: 'Routing configuration' },
+    { title: 'DICOM Receiver', description: 'Custom AE title' },
+    { title: 'Biomarker Extraction', description: 'AI inference' },
+    { title: 'Database Storage', description: 'Searchable metrics' },
+    { title: 'Review Pipeline', description: 'Rapid review UI' }
   ];
 
   export const capabilities = [

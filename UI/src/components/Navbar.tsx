@@ -107,15 +107,13 @@ export function Navbar() {
     ...(isProd
       ? [
         { to: "/", label: "Home" },
-        // { to: "/researchersV3", label: "Researchers" },
+        // { to: "/researchers", label: "Researchers" },
         // { to: "/patientsV2", label: "Patients" },
         // { to: "/providers", label: "Providers" },
       ]
       : [
         { to: "/", label: "Home" },
-        { to: "/researchersV3", label: "Researchers" },
-        // { to: '/researchersV2', label: 'Researchers V2' },
-        // { to: '/researchersV3', label: 'Researchers V3' },
+        { to: "/researchers", label: "Researchers" },
         { to: "/patients", label: "Patients" },
         { to: "/providers", label: "Providers" },
       ]),
