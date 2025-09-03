@@ -2,20 +2,21 @@ import { useEffect, useState } from "react";
 import {
   Activity,
   Calendar,
-  ChevronRight,
-  Download,
   ArrowRight,
   CheckCircle,
   Shield,
-  LineChart,
-  Copy, FileText, ExternalLink, Eye,
+  Copy,
+  Camera,
+  Server,
+  Brain,
+  Database,
+  Search,
 } from "lucide-react";
 import {
   apiExamples,
   capabilities,
   complianceFeatures,
   features,
-  patents,
   workflowSteps,
 } from "./data";
 import { radiostics_logo, ResearcherVideo } from "../../../assets";
@@ -161,7 +162,6 @@ export const ResearcherPage = () => {
           </div>
         </div>
       </section>
-
       {/* 2nd section */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
@@ -255,11 +255,11 @@ export const ResearcherPage = () => {
                     ];
 
                     const icons = [
-                      <FileText className="w-8 h-8 text-white drop-shadow-lg" />,      // Data Collection
-                      <Activity className="w-8 h-8 text-white drop-shadow-lg" />,       // Data Processing
-                      <LineChart className="w-8 h-8 text-white drop-shadow-lg" />,      // Model Training
-                      <CheckCircle className="w-8 h-8 text-white drop-shadow-lg" />,    // Validation
-                      <Eye className="w-8 h-8 text-white drop-shadow-lg" />,            // Insights
+                      <Camera className="w-8 h-8 text-white drop-shadow-lg" />,      // Data Collection
+                      <Server className="w-8 h-8 text-white drop-shadow-lg" />,       // Data Processing
+                      <Brain className="w-8 h-8 text-white drop-shadow-lg" />,      // Model Training
+                      <Database className="w-8 h-8 text-white drop-shadow-lg" />,    // Validation
+                      <Search className="w-8 h-8 text-white drop-shadow-lg" />,            // Insights
                     ];
 
                     return (
@@ -370,8 +370,6 @@ export const ResearcherPage = () => {
           </div>
         </div>
       </section>
-
-
       {/* Contribute to Disease Research */}
       <section className="bg-white py-20">
         <div className="text-center max-w-7xl mx-auto px-6">
@@ -385,7 +383,7 @@ export const ResearcherPage = () => {
             <img onClick={() => { window.open("https://www.radiostics.com", "_blank") }} src={radiostics_logo} alt="Radiostics Logo" className="h-24 mx-auto mb-2 cursor-pointer" />
             <button onClick={() => { navigate("/contact") }} className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors">
               <span className="relative z-10 flex items-center justify-center space-x-2">
-                <span>Call to action</span>
+                <span>Start Collaborating</span>
                 <ArrowRight className="w-4 h-4" />
               </span>
             </button>
@@ -393,7 +391,7 @@ export const ResearcherPage = () => {
         </div>
       </section>
       {/* Research-Ready Tools & APIs */}
-      <section className="py-16 bg-white">
+      <section className="pb-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-cloud-burst mb-4">Integrate & Innovate with Our Platform</h2>
@@ -428,8 +426,6 @@ export const ResearcherPage = () => {
 
         </div>
       </section>
-
-
       {/* 6th section */}
       <section className="py-20 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-6">

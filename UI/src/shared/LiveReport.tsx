@@ -1,6 +1,6 @@
 import { Play, Heart, Activity } from "lucide-react";
 import { useState } from "react";
-  import { case141_original, case141_seg, case141_segBody } from "../assets";
+  import { case141_original, case141_seg, case141_segBody, davidCardiovascularReport, lindaMetabolicReport } from "../assets";
 
 
 
@@ -95,7 +95,7 @@ const LiveReport = () => {
                 }`}
               >
                 <Heart className="w-5 h-5 inline mr-2" />
-                Cardiac Report
+                Cardiovascular Report
               </button>
               <button
                 onClick={() => setActiveReport("body")}
@@ -163,10 +163,10 @@ const LiveReport = () => {
                       style={{ height: "100%" }}
                     >
                       {/* Decorative Gradient Bar */}
-                      <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
+                      {/* <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
                         Agatston Score Breakdown by Artery
-                      </h3>
-                      <div className="flex-grow overflow-y-auto">
+                      </h3> */}
+                      {/* <div className="flex-grow overflow-y-auto">
                         <table className="w-full text-left text-sm rounded-lg overflow-hidden">
                           <thead>
                             <tr className="text-xs uppercase bg-blue-50 text-jacarta">
@@ -204,7 +204,8 @@ const LiveReport = () => {
                             ))}
                           </tbody>
                         </table>
-                      </div>
+                      </div> */}
+                      <img src={davidCardiovascularReport} alt="" />
                     </div>
                   </div>
                 </>
@@ -217,7 +218,7 @@ const LiveReport = () => {
                       style={{ height: "100%" }}
                     >
                       {/* Decorative Gradient Bar */}
-                      <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
+                      {/* <h3 className="text-lg font-extrabold text-jacarta  mb-4 text-left ">
                         Body Composition Analysis
                       </h3>
                       <div className="flex-grow overflow-y-auto">
@@ -256,7 +257,8 @@ const LiveReport = () => {
                             ))}
                           </tbody>
                         </table>
-                      </div>
+                      </div> */}
+                       <img src={lindaMetabolicReport} alt="" />
                     </div>
                   </div>
                   {[

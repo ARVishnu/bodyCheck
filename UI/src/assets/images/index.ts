@@ -13,5 +13,7 @@ import body2 from "./body2.png"
 import body3 from "./body3.png"
 import body4 from "./body4.png"
 import radiostics_logo from "./radiostics_logo.webp"
+import lindaMetabolicReport from "./Linda_Metabolic.png"
+import davidCardiovascularReport from "./David_Cardiovascular.png"
 
-export { bodyCheckLogoDark, bodyCheckLogoLight, ThreeDHeartvideo, yujan, andrew, steven, jack, ctr1, ctr2, body1, body2, body3, body4, radiostics_logo};
+export {lindaMetabolicReport,davidCardiovascularReport, bodyCheckLogoDark, bodyCheckLogoLight, ThreeDHeartvideo, yujan, andrew, steven, jack, ctr1, ctr2, body1, body2, body3, body4, radiostics_logo};
