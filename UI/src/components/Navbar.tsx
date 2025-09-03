@@ -74,6 +74,7 @@ export function Navbar() {
   };
 
   const publicLinks = [
+    { to: "/sample-report", label: "Sample Report" },
     { to: "/demo-dashboard", label: "Demo Dashboard" },
     // { to: '/documentation', label: 'Documentation' },
     { to: "/contact", label: "Contact" },
@@ -107,9 +108,6 @@ export function Navbar() {
     ...(isProd
       ? [
         { to: "/", label: "Home" },
-        // { to: "/researchers", label: "Researchers" },
-        // { to: "/patientsV2", label: "Patients" },
-        // { to: "/providers", label: "Providers" },
       ]
       : [
         { to: "/", label: "Home" },
@@ -330,7 +328,7 @@ export function Navbar() {
                     </Link>
                   ))}
                   <a
-                    href="https://cerulean-sunburst-dff662.netlify.app/"
+                    href="https://bodycheck.ai/admin/"
                     target="_blank"
                     rel="noreferrer"
                     className="text-sm font-medium text-gray-700 hover:text-turquoise"
