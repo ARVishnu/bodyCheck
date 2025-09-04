@@ -2,7 +2,7 @@ import { BodyCompositionData, Patient, Report } from "../types";
 
 export const mockPatients: Patient[] = [
   {
-    id: "Ai037S01ID0034",
+    id: "74156158",
     name: "George",
     age: 61,
     gender: "Female",
@@ -21,7 +21,7 @@ export const mockPatients: Patient[] = [
     AVCScore: 300,
   },
   {
-    id: "9685745852",
+    id: "65156159",
     name: "Maria Garcia",
     age: 58,
     gender: "Female",
@@ -40,7 +40,7 @@ export const mockPatients: Patient[] = [
     AVCScore: 125.58,
   },
   {
-    id: "8548968574",
+    id: "85415245",
     name: "Robert Johnson",
     age: 72,
     gender: "Male",
@@ -59,7 +59,7 @@ export const mockPatients: Patient[] = [
     AVCScore: 125.58,
   },
   {
-    id: "9823541578",
+    id: "98541254",
     name: "Linda Davis",
     age: 61,
     gender: "Female",

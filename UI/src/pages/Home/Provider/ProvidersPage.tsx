@@ -240,8 +240,8 @@ export function ProvidersPage() {
                   <div className="text-sm text-green-800">Higher patient follow-up compliance</div>
                 </div>
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">2x</div>
-                  <div className="text-sm text-blue-800">Revenue via value-add screening</div>
+                  <div className="text-2xl font-bold text-blue-600 mb-1">10x</div>
+                  <div className="text-sm text-blue-800">ROI with value added services</div>
                 </div>
               </div>
             </div>
@@ -436,24 +436,11 @@ export function ProvidersPage() {
               className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center"
             >
               <Phone className="w-5 h-5 mr-2" />
-              Schedule Demo with Our Medical Advisor
+              Schedule a Demo Today
             </Link>
-            <button className="bg-blue-500 text-white border-2 border-blue-400 px-8 py-4 rounded-lg font-semibold hover:bg-blue-400 transition-colors flex items-center justify-center">
-              <Upload className="w-5 h-5 mr-2" />
-              Upload Test Scan Anonymously
-            </button>
-            <Link
-              to="/login"
-              className="bg-transparent text-white border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors flex items-center justify-center"
-            >
-              <Shield className="w-5 h-5 mr-2" />
-              Request Provider Portal Access
-            </Link>
+           
           </div>
-          
-          <p className="text-sm text-blue-200">
-            No installation required. Start in 24 hours.
-          </p>
+
         </div>
       </section>
     </div>
