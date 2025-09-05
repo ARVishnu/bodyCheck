@@ -1,4 +1,4 @@
-import { FlaskConical, BarChart3, Zap, Search,  Server, Shield, Cpu, Globe, Network} from 'lucide-react';
+import { FlaskConical, BarChart3, Zap, Search,  Server, Shield, Cpu, Globe, Network, Camera, Brain, Database} from 'lucide-react';
 export const metrics = {
   cac: {
     name: 'Coronary Artery Calcium',
@@ -61,11 +61,46 @@ export const features = [
   ];
 
   export const workflowSteps = [
-    { title: 'Imaging Exam', description: 'Routing configuration' },
-    { title: 'DICOM Receiver', description: 'Custom AE title' },
-    { title: 'Biomarker Extraction', description: 'AI inference' },
-    { title: 'Database Storage', description: 'Searchable metrics' },
-    { title: 'Review Pipeline', description: 'Rapid review UI' }
+    {
+      id: 1,
+      title: 'Imaging Exam',
+      description: 'Routing configuration',
+      icon: Camera,
+      bgColor: 'from-teal-400 to-teal-600',
+      hoverColor: 'hover:from-teal-500 hover:to-teal-700'
+    },
+    {
+      id: 2,
+      title: 'DICOM Receiver',
+      description: 'Custom AE title',
+      icon: Server,
+      bgColor: 'from-amber-400 to-amber-600',
+      hoverColor: 'hover:from-amber-500 hover:to-amber-700'
+    },
+    {
+      id: 3,
+      title: 'Biomarker Extraction',
+      description: 'AI inference',
+      icon: Brain,
+      bgColor: 'from-emerald-400 to-emerald-600',
+      hoverColor: 'hover:from-emerald-500 hover:to-emerald-700'
+    },
+    {
+      id: 4,
+      title: 'Database Storage',
+      description: 'Searchable metrics',
+      icon: Database,
+      bgColor: 'from-indigo-400 to-indigo-600',
+      hoverColor: 'hover:from-indigo-500 hover:to-indigo-700'
+    },
+    {
+      id: 5,
+      title: 'Review Pipeline',
+      description: 'Rapid review UI',
+      icon: Search,
+      bgColor: 'from-pink-400 to-pink-600',
+      hoverColor: 'hover:from-pink-500 hover:to-pink-700'
+    }
   ];
 
   export const capabilities = [

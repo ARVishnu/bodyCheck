@@ -11,6 +11,8 @@ import {
   Brain,
   Database,
   Search,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import {
   apiExamples,
@@ -235,90 +237,78 @@ export const ResearcherPage = () => {
                   </h3>
                   <div className="w-3 h-3 bg-gradient-to-r from-bay-of-many to-bright-turquoise rounded-full animate-pulse ml-3"></div>
                 </div>
-                <p className="text-xl text-bay-of-many/80 max-w-3xl mx-auto">
+                <p className="text-xl max-w-3xl mx-auto">
                   Streamlined workflow from data acquisition to research
                   insights with validated AI models
                 </p>
               </div>
 
-              {/* Interactive Workflow Visualization */}
-              <div className="relative">
-                {/* Horizontal Workflow Steps */}
-                <div className="flex items-center justify-between space-x-8 py-12">
-                  {workflowSteps.map((step, index) => {
-                    const colors = [
-                      "from-cloud-burst to-bright-turquoise",
-                      "from-yellow-300 to-orange-400",
-                      "from-bright-turquoise to-bay-of-many",
-                      "from-bay-of-many to-cloud-burst",
-                      "from-fuchsia-400 to-pink-400",
-                    ];
+        {/* Workflow Steps */}
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-2 mb-16">
+          {workflowSteps.map((step, index) => {
+            const IconComponent = step.icon;
+            const isLast = index === workflowSteps.length - 1;
+            
+            return (
+              <div key={step.id} className="flex flex-col lg:flex-row items-center gap-2 lg:gap-3">
+                {/* Step Card */}
+                <div className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105">
+                  {/* Icon Circle */}
+                  <div className={`
+                    relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${step.bgColor} ${step.hoverColor}
+                    flex items-center justify-center shadow-lg group-hover:shadow-xl
+                    transition-all duration-300 mb-4 group-hover:rotate-3
+                  `}>
+                    <IconComponent 
+                      size={32} 
+                      className="text-white drop-shadow-sm" 
+                      strokeWidth={2.5}
+                    />
+                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                  </div>
 
-                    const icons = [
-                      <Camera className="w-8 h-8 text-white drop-shadow-lg" />,      // Data Collection
-                      <Server className="w-8 h-8 text-white drop-shadow-lg" />,       // Data Processing
-                      <Brain className="w-8 h-8 text-white drop-shadow-lg" />,      // Model Training
-                      <Database className="w-8 h-8 text-white drop-shadow-lg" />,    // Validation
-                      <Search className="w-8 h-8 text-white drop-shadow-lg" />,            // Insights
-                    ];
-
-                    return (
-                      <div key={index} className="flex-1 group cursor-pointer">
-                        {/* Step Card */}
-                        <div className="relative">
-                          {/* Icon Circle */}
-                          <div
-                            className={`w-16 h-16 bg-gradient-to-br ${colors[index]} rounded-full flex items-center justify-center shadow-2xl transform transition-all duration-500 group-hover:scale-125 animate-bounce-in border-4 border-white/20 mx-auto mb-4`}
-                            style={{ animationDelay: `${index * 0.15}s` }}
-                          >
-                            <span className="text-2xl drop-shadow-lg">
-                              {icons[index]}
-                            </span>
-
-                            {/* Glow Effect */}
-                            <div
-                              className={`absolute inset-0 bg-gradient-to-br ${colors[index]} rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300 -z-10`}
-                            ></div>
-                          </div>
-
-                          {/* Step Content */}
-                          <div className="text-center">
-                            <h4 className="font-bold text-cloud-burst text-lg mb-2 group-hover:text-bright-turquoise transition-colors ">
-                              {step.title}
-                            </h4>
-                            <p className="text-bay-of-many/80 text-sm">
-                              {step.description}
-                            </p>
-                          </div>
-
-                          {/* Connecting Arrow */}
-                          {index < workflowSteps.length - 1 && (
-                            <div className="absolute top-8 -right-4 transform translate-x-full">
-                              <div className="w-8 h-0.5 bg-gradient-to-r from-bright-turquoise to-bay-of-many animate-pulse"></div>
-                              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1">
-                                <div className="w-0 h-0 border-l-4 border-l-bright-turquoise border-t-2 border-b-2 border-t-transparent border-b-transparent"></div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Pulsing Ring */}
-                          <div
-                            className={`absolute top-0 le w-16 h-16 rounded-full border-2 border-gradient-to-r ${colors[index]} animate-ping opacity-30`}
-                            style={{ animationDelay: `${index * 0.4}s` ,left:"50%",transform:"translateX(-50%)"}}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {/* Step Content */}
+                  <div className="max-w-xs">
+                    <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors duration-300">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
 
+                {/* Connector Arrow - Only show if not last step */}
+                {!isLast && (
+                  <div className="hidden lg:flex items-center">
+                    <div className="w-12 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                    <ArrowRight 
+                      size={20} 
+                      className="text-gray-400 ml-2 animate-pulse" 
+                      strokeWidth={2}
+                    />
+                  </div>
+                )}
+
+                {/* Mobile Connector - Only show if not last step */}
+                {!isLast && (
+                  <div className="lg:hidden flex flex-col items-center">
+                    <div className="w-0.5 h-8 bg-gradient-to-b from-gray-300 to-gray-400"></div>
+                    <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center animate-pulse">
+                      <ChevronDown size={12} className="text-gray-600" strokeWidth={3} />
+                    </div>
+                  </div>
+                )}
               </div>
+            );
+          })}
+        </div>
 
               {/* Interactive Research Journey */}
 
               {/* Enhanced CTA */}
               <div className="mt-12 text-center">
-                <button onClick={() => { navigate("/contact") }} className="group relative bg-gradient-to-r from-cloud-burst to-bright-turquoise hover:from-bay-of-many hover:via-bright-turquoise hover:to-fuchsia-400 text-white px-12 py-5 rounded-2xl font-bold text-xl transition-all duration-500 transform hover:scale-110 shadow-2xl overflow-hidden">
+                <button onClick={() => { navigate("/contact") }} className="group relative bg-gradient-to-r from-cloud-burst to-bright-turquoise hover:from-bay-of-many hover:via-bright-turquoise hover:to-fuchsia-400 text-white px-10 py-3 rounded-2xl font-bold text-xl transition-all duration-500 transform hover:scale-110 shadow-2xl overflow-hidden">
                   <span className="relative z-10 flex items-center justify-center space-x-3">
                     <span>Call to action</span>
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
