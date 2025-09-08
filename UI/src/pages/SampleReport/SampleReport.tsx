@@ -135,7 +135,7 @@ export function SampleReport() {
               </div>
               <a
                 href={activeReport == 'cardiac' ? DavidCardiovascularReport : LindaMetabolicReport}
-                download={activeReport == 'cardiac' ? "David_Cardiovascular_Report.pdf" : "Linda_Metabolic_Report.pdf"}
+                download={activeReport == 'cardiac' ? "David_Morris_Cardiovascular_Report.pdf" : "Linda_Dean_Metabolic_Report.pdf"}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
