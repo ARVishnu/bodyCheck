@@ -243,66 +243,66 @@ export const ResearcherPage = () => {
                 </p>
               </div>
 
-        {/* Workflow Steps */}
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-2 mb-16">
-          {workflowSteps.map((step, index) => {
-            const IconComponent = step.icon;
-            const isLast = index === workflowSteps.length - 1;
-            
-            return (
-              <div key={step.id} className="flex flex-col lg:flex-row items-center gap-2 lg:gap-3">
-                {/* Step Card */}
-                <div className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105">
-                  {/* Icon Circle */}
-                  <div className={`
+              {/* Workflow Steps */}
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-2 mb-16">
+                {workflowSteps.map((step, index) => {
+                  const IconComponent = step.icon;
+                  const isLast = index === workflowSteps.length - 1;
+
+                  return (
+                    <div key={step.id} className="flex flex-col lg:flex-row items-center gap-2 lg:gap-3">
+                      {/* Step Card */}
+                      <div className="group flex flex-col items-center text-center transition-all duration-300 hover:scale-105">
+                        {/* Icon Circle */}
+                        <div className={`
                     relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-br ${step.bgColor} ${step.hoverColor}
                     flex items-center justify-center shadow-lg group-hover:shadow-xl
                     transition-all duration-300 mb-4 group-hover:rotate-3
                   `}>
-                    <IconComponent 
-                      size={32} 
-                      className="text-white drop-shadow-sm" 
-                      strokeWidth={2.5}
-                    />
-                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                  </div>
+                          <IconComponent
+                            size={32}
+                            className="text-white drop-shadow-sm"
+                            strokeWidth={2.5}
+                          />
+                          <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </div>
 
-                  {/* Step Content */}
-                  <div className="max-w-xs">
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors duration-300">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
+                        {/* Step Content */}
+                        <div className="max-w-xs">
+                          <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors duration-300">
+                            {step.title}
+                          </h3>
+                          <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
 
-                {/* Connector Arrow - Only show if not last step */}
-                {!isLast && (
-                  <div className="hidden lg:flex items-center">
-                    <div className="w-12 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
-                    <ArrowRight 
-                      size={20} 
-                      className="text-gray-400 ml-2 animate-pulse" 
-                      strokeWidth={2}
-                    />
-                  </div>
-                )}
+                      {/* Connector Arrow - Only show if not last step */}
+                      {!isLast && (
+                        <div className="hidden lg:flex items-center">
+                          <div className="w-12 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                          <ArrowRight
+                            size={20}
+                            className="text-gray-400 ml-2 animate-pulse"
+                            strokeWidth={2}
+                          />
+                        </div>
+                      )}
 
-                {/* Mobile Connector - Only show if not last step */}
-                {!isLast && (
-                  <div className="lg:hidden flex flex-col items-center">
-                    <div className="w-0.5 h-8 bg-gradient-to-b from-gray-300 to-gray-400"></div>
-                    <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center animate-pulse">
-                      <ChevronDown size={12} className="text-gray-600" strokeWidth={3} />
+                      {/* Mobile Connector - Only show if not last step */}
+                      {!isLast && (
+                        <div className="lg:hidden flex flex-col items-center">
+                          <div className="w-0.5 h-8 bg-gradient-to-b from-gray-300 to-gray-400"></div>
+                          <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center animate-pulse">
+                            <ChevronDown size={12} className="text-gray-600" strokeWidth={3} />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
 
               {/* Interactive Research Journey */}
 

@@ -161,16 +161,25 @@ export function SampleReport() {
                   Patient Name
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
-                {activeReport === "cardiac" ? "David" :"Linda"}
+                {activeReport === "cardiac" ? "David Morris" :"Linda Dean"}
                 </p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">
-                  Scan Date
+                  Gender
                 </h3>
                 <p className="text-lg font-semibold text-gray-900">
                   {/* {new Date(patient.examDate).toLocaleDateString()} */}
-                  {activeReport === "cardiac" ? "2022/12/11" :"2022/12/05"}
+                  {activeReport === "cardiac" ? "Male" :"Female"}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-1">
+                  Study Date
+                </h3>
+                <p className="text-lg font-semibold text-gray-900">
+                  {/* {new Date(patient.examDate).toLocaleDateString()} */}
+                  {activeReport === "cardiac" ? "Dec 12, 2025" :"Dec 1, 2025"}
                 </p>
               </div>
             </div>

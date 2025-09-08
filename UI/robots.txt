@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block sensitive pages
+Disallow: /admin
+Disallow: /sample-report
+
+Sitemap: https://bodycheck.ai/sitemap.xml
