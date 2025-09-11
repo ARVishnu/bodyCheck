@@ -6,15 +6,15 @@ export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row:
   const { rows, onRowClick, loading = false } = props;
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl bg-white" style={{ height: '70vh' }}>
-      <table className="w-full border-separate border-spacing-0">
+      <table className="w-full border-separate border-spacing-0 bg-gray-50" style={{paddingRight:"15px"}}>
         <thead>
-          <tr className="bg-gray-50 text-left">
+          <tr className=" text-left">
             {/* <th className="p-3">Time</th> */}
-            <th className="p-3">Name</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">Role</th>
-            <th className="p-3">Organization</th>
-            <th className="p-3">Message</th>
+            <th className="p-3" style={{width:'10%'}}>Name</th>
+            <th className="p-3" style={{width:'20%'}}>Email</th>
+            <th className="p-3" style={{width:'10%'}}>Role</th>
+            <th className="p-3" style={{width:'20%'}}>Organization</th>
+            <th className="p-3" style={{width:'40%'}}>Message</th>
           </tr>
         </thead>
       </table>
@@ -50,11 +50,11 @@ export function ContactTable(props: { rows: ContactFormRow[]; onRowClick?: (row:
                     className={onRowClick ? 'cursor-pointer hover:bg-gray-100 transition-colors' : ''}
                     title="Click to view details"
                   >
-                    <td className="p-3 border-t border-gray-100">{name}</td>
-                    <td className="p-3 border-t border-gray-100">{r.email}</td>
-                    <td className="p-3 border-t border-gray-100">{r.role ?? '-'}</td>
-                    <td className="p-3 border-t border-gray-100">{r.organization ?? '-'}</td>
-                    <td
+                    <td className="p-3 border-t border-gray-100" style={{width:'10%'}}>{name}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'20%'}}>{r.email}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'10%'}}>{r.role ?? '-'}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'20%'}}>{r.organization ?? '-'}</td>
+                    <td style={{width:'40%'}}
                       className="p-3 border-t border-gray-100 max-w-[480px] whitespace-nowrap overflow-hidden text-ellipsis"
                       title="Click to show all user detail"
                     >

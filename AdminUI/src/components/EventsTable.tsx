@@ -6,15 +6,15 @@ export function EventsTable(props: { rows: LoginEventRow[], loading?: boolean })
   const { rows, loading = false } = props;
   return (
     <div className="overflow-x-auto border border-gray-200 rounded-xl bg-white" style={{height: '70vh'}}>
-      <table className="w-full border-separate border-spacing-0">
+      <table className="w-full border-separate border-spacing-0 bg-gray-50" style={{paddingRight:"15px"}}>
         <thead>
-          <tr className="bg-gray-50 text-left">
-            <th className="p-3">Time</th>
-            <th className="p-3">User</th>
-            <th className="p-3">Email</th>
-            <th className="p-3">IP</th>
-            <th className="p-3">Agent</th>
-            <th className="p-3">Success</th>
+          <tr className=" text-left">
+            <th className="p-3" style={{width:'15%'}}>Time</th>
+            <th className="p-3" style={{width:'5%'}}>User ID</th>
+            <th className="p-3" style={{width:'20%'}}>Email</th>
+            <th className="p-3" style={{width:'10%'}}>IP</th>
+            <th className="p-3" style={{width:'30%'}}>Agent</th>
+            <th className="p-3 text-center" style={{width:'10%'}}>Success</th>
           </tr>
         </thead>
       </table>
@@ -42,12 +42,12 @@ export function EventsTable(props: { rows: LoginEventRow[], loading?: boolean })
             ) : (
               rows.map((e) => (
                 <tr key={e.id}>
-                  <td className="p-3 border-t border-gray-100">{new Date(e.login_at).toLocaleString()}</td>
-                  <td className="p-3 border-t border-gray-100">{e.user_id ?? '-'}</td>
-                  <td className="p-3 border-t border-gray-100">{e.user_email}</td>
-                  <td className="p-3 border-t border-gray-100">{e.ip_address ?? '-'}</td>
-                  <td className="p-3 border-t border-gray-100 max-w-[380px] whitespace-nowrap overflow-hidden text-ellipsis">{e.user_agent ?? '-'}</td>
-                  <td className="p-3 border-t border-gray-100">{e.success ? 'Yes' : 'No'}</td>
+                  <td className="p-3 border-t border-gray-100"style={{width:'15%'}}>{new Date(e.login_at).toLocaleString()}</td>
+                  <td className="p-3 border-t border-gray-100"style={{width:'5%'}}>{e.user_id ?? '-'}</td>
+                  <td className="p-3 border-t border-gray-100"style={{width:'20%'}}>{e.user_email}</td>
+                  <td className="p-3 border-t border-gray-100"style={{width:'10%'}}>{e.ip_address ?? '-'}</td>
+                  <td className="p-3 border-t border-gray-100 " style={{width:'30%'}}>{e.user_agent ?? '-'}</td>
+                  <td className="p-3 border-t border-gray-100 text-center"style={{width:'10%'}}>{e.success ? 'Yes' : 'No'}</td>
                 </tr>
               ))
             )}

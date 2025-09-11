@@ -10,14 +10,14 @@ export function UsersTable(props: { rows: UserRow[], loading?: boolean }): JSX.E
         <h3 className="text-lg font-medium">Users</h3>
       </div>
       <div className="overflow-x-auto border border-gray-200 rounded-xl bg-white" style={{ maxHeight: '60vh' }}>
-        <table className="w-full border-separate border-spacing-0">
+        <table className="w-full border-separate border-spacing-0 bg-gray-50" style={{paddingRight:"15px"}}>
           <thead>
-            <tr className="bg-gray-50 text-left">
-              <th className="p-3">ID</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Created</th>
-              <th className="p-3">Status</th>
+            <tr className='text-left'>
+              <th className="p-3" style={{width:'10%'}}>ID</th>
+              <th className="p-3" style={{width:'30%'}}>Name</th>
+              <th className="p-3" style={{width:'30%'}}>Email</th>
+              <th className="p-3" style={{width:'20%'}}>Created</th>
+              <th className="p-3 text-center" style={{width:'10%'}}>Status</th>
             </tr>
           </thead>
         </table>
@@ -40,12 +40,12 @@ export function UsersTable(props: { rows: UserRow[], loading?: boolean }): JSX.E
                 </tr>
               ) : (
                 rows.map((u) => (
-                  <tr key={u.id}>
-                    <td className="p-3 border-t border-gray-100">{u.id}</td>
-                    <td className="p-3 border-t border-gray-100">{u.full_name}</td>
-                    <td className="p-3 border-t border-gray-100">{u.email}</td>
-                    <td className="p-3 border-t border-gray-100">{new Date(u.created_at).toLocaleString()}</td>
-                    <td className="p-3 border-t border-gray-100">{u.status}</td>
+                  <tr key={u.id} className='text-left'>
+                    <td className="p-3 border-t border-gray-100" style={{width:'10%'}}>{u.id}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'30%'}}>{u.full_name}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'30%'}}>{u.email}</td>
+                    <td className="p-3 border-t border-gray-100" style={{width:'20%'}}>{new Date(u.created_at).toLocaleString()}</td>
+                    <td className="p-3 border-t border-gray-100 text-center" style={{width:'10%'}}>{u.status}</td>
                   </tr>
                 ))
               )}
