@@ -32,6 +32,8 @@ API/__pycache__/
 PublicUI/public/3Dheart/case005.html
 PublicUI/public/3Dheart/case141.html
 
+services
+
 
 # Backend git Ignore
 *venv
