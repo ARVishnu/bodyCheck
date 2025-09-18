@@ -29,8 +29,8 @@ API/__pycache__/
 
 
 # Ignore large 3D heart HTML exports in BodyCheckUi
-UI/public/3Dheart/case005.html
-UI/public/3Dheart/case141.html
+PublicUI/public/3Dheart/case005.html
+PublicUI/public/3Dheart/case141.html
 
 
 # Backend git Ignore

@@ -12,9 +12,9 @@ export function UploadPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
 
-  if (user?.role !== 'admin') {
-    return <Navigate to="/dashboard" replace />;
-  }
+  // if (user?.role !== 'user') {
+  //   return <Navigate to="/dashboard" replace />;
+  // }
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();

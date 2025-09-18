@@ -77,6 +77,7 @@ export function Navbar() {
     { to: "/sample-report", label: "Sample Report" },
     { to: "/demo-dashboard", label: "Demo Dashboard" },
     // { to: '/documentation', label: 'Documentation' },
+    // { to: "/upload", label: "Upload Scans" },
     { to: "/contact", label: "Contact" },
   ];
 
@@ -87,15 +88,16 @@ export function Navbar() {
     // { to: '/documentation', label: 'Documentation' },
   ];
 
-  if (user?.role === "admin") {
-    secureLinks.splice(1, 0, { to: "/upload", label: "Upload Scans" });
-  }
+  // if (user?.role === "admin") {
+  //   secureLinks.splice(1, 0, { to: "/upload", label: "Upload Scans" });
+  // }
 
   if (user?.role === "user") {
     // Basic users should see Demo Dashboard instead of Dashboard
     secureLinks = [
       { to: "/sample-report", label: "Sample Report" },
       { to: "/demo-dashboard", label: "Demo Dashboard" },
+      // { to: "/upload", label: "Upload Scans" },
       { to: "/contact", label: "Contact" },
     ];
   }
@@ -328,7 +330,7 @@ export function Navbar() {
                     </Link>
                   ))}
                   <a
-                    href="https://bodycheck.ai/admin/"
+              href="https://bodycheck.ai/admin/"
                     target="_blank"
                     rel="noreferrer"
                     className="text-sm font-medium text-gray-700 hover:text-turquoise"
