@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '../types';
-import { ApiUrl } from '../services/ApiUrl';
 
 interface AuthContextType {
   user: User | null;
@@ -77,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Check with backend API if user exists
     try {
-      const response = await fetch(`${ApiUrl.baseUrl}/login`, {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: inputPassword }),
@@ -128,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // First, send signup data to backend API
     try {
-      const response = await fetch(`${ApiUrl.baseUrl}/signup`, {
+      const response = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({full_name :name, email, password: inputPassword }),

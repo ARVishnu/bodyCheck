@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Clock, Mail, KeyRound, ShieldCheck, CheckCircle2, ArrowLeft, RefreshCw } from 'lucide-react';
 import { LoadingSpinner } from './LoadingSpinner';
-import { ApiUrl } from '../services/ApiUrl';
 
 export interface VerificationConfig {
   title: string;
@@ -202,7 +201,7 @@ export function VerificationModal({
     if (!config.emailCheckEndpoint) return true; // Skip check if no endpoint provided
     
     try {
-      const resp = await fetch(`${ApiUrl.baseUrl}${config.emailCheckEndpoint}`, {
+      const resp = await fetch(`${baseUrl}${config.emailCheckEndpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: targetEmail, password: '__CHECK__' }),
@@ -223,7 +222,7 @@ export function VerificationModal({
       // For signup verification, we need to create the account first
       if (config.sendOtpEndpoint === '/signup') {
         // This is a signup flow - create account with actual name and password
-        const resp = await fetch(`${ApiUrl.baseUrl}${config.sendOtpEndpoint}`, {
+        const resp = await fetch(`${baseUrl}${config.sendOtpEndpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -245,7 +244,7 @@ export function VerificationModal({
           return;
         }
 
-        const resp = await fetch(`${ApiUrl.baseUrl}${config.sendOtpEndpoint}`, {
+        const resp = await fetch(`${baseUrl}${config.sendOtpEndpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
@@ -295,7 +294,7 @@ export function VerificationModal({
         throw new Error('No verification endpoint configured');
       }
 
-      const resp = await fetch(`${ApiUrl.baseUrl}${endpoint}`, {
+      const resp = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp }),
@@ -333,7 +332,7 @@ export function VerificationModal({
       // Check if this is a signup completion or password reset
       if (config.completeSignupEndpoint) {
         // This is a signup completion
-        const resp = await fetch(`${ApiUrl.baseUrl}${config.completeSignupEndpoint}`, {
+        const resp = await fetch(`${baseUrl}${config.completeSignupEndpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otp, password }),
@@ -345,7 +344,7 @@ export function VerificationModal({
         }
       } else if (config.resetPasswordEndpoint) {
         // This is a password reset
-        const resp = await fetch(`${ApiUrl.baseUrl}${config.resetPasswordEndpoint}`, {
+        const resp = await fetch(`${baseUrl}${config.resetPasswordEndpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otp, new_password: password }),
@@ -374,7 +373,7 @@ export function VerificationModal({
     setLoading(true);
     
     try {
-      const resp = await fetch(`${ApiUrl.baseUrl}${config.sendOtpEndpoint}`, {
+      const resp = await fetch(`${baseUrl}${config.sendOtpEndpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
